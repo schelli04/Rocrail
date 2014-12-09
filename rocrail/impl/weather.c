@@ -132,15 +132,16 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
     int sunrise = wSunrise.gethour(sunriseProps) * 60 + wSunrise.getminute(sunriseProps);
     int noon    = 12 * 60;
     int sunset  = wSunset.gethour(sunsetProps) * 60 + wSunset.getminute(sunsetProps);
-    float maxbri = wWeather.getmaxbri(data->props);
-    float minbri = wWeather.getminbri(data->props);
 
-    float percent = 0.0;
+    float maxbri     = wWeather.getmaxbri(data->props);
+    float minbri     = wWeather.getminbri(data->props);
+    float percent    = 0.0;
     float brightness = 0.0;
 
-    int daylight = sunset - sunrise;
-    float minutes = hour * 60 + min;
-    int adjustBri = 0;
+    int daylight  = sunset - sunrise;
+    int minutes   = hour * 60 + min;
+
+    Boolean adjustBri = False;
 
     if( minutes <= noon ) {
       float range = noon - sunrise;
@@ -148,7 +149,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       float l_brightness = (percent * maxbri) / 100.0;
       if( l_brightness != brightness ) {
         brightness = l_brightness;
-        adjustBri = 1;
+        adjustBri = True;
       }
     }
 
@@ -159,7 +160,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
 
       if( l_brightness != brightness ) {
         brightness = l_brightness;
-        adjustBri = 1;
+        adjustBri = True;
       }
     }
 
@@ -190,13 +191,14 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
         iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
         wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
         TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
-            "lamp %s brightness=%d(of %.2f), dayminutes=%d, sunrise=%d, sunset=%d", wOutput.getid(OutputOp.base.properties(output)), lampBri, brightness, minutes, sunrise, sunset );
+            "lamp %s brightness=%d(of %.2f), lampAngle=%.2f sunAngle=%.2f dayminutes=%d sunrise=%d sunset=%d",
+            wOutput.getid(OutputOp.base.properties(output)), lampBri, brightness, lampangle, angle, minutes, sunrise, sunset );
         wOutput.setvalue(cmd, lampBri);
         wOutput.setcmd(cmd, shutdown?wOutput.off:wOutput.value);
         OutputOp.cmd(output, cmd, False);
 
       }
-      adjustBri = 0;
+      adjustBri = False;
     }
 
   }
