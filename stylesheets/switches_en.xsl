@@ -15,6 +15,7 @@
 	  <TR>
 	     <TH width="20%" height="30" bgcolor="lightgrey">ID</TH>
  	     <TH width="40%" bgcolor="lightgrey">Description</TH>
+ 	     <TH width="10%" bgcolor="lightgrey">Switched</TH>
  	     <TH bgcolor="lightgrey">IID</TH>
  	     <TH bgcolor="lightgrey">Address</TH>
  	     <TH bgcolor="lightgrey">Port</TH>
@@ -44,6 +45,7 @@
 	<TR>	
 	   <TD align="left"><xsl:value-of select="@id" /></TD>
 	   <TD align="left"><xsl:value-of select="@desc" /></TD>
+	   <TD align="right"><xsl:value-of select="@switched" /></TD>
 	   <TD align="center"><xsl:value-of select="@iid" /></TD>
 	   <TD align="center"><xsl:value-of select="@addr1" />,<xsl:value-of select="@addr2" /></TD>
 	   <TD align="center"><xsl:value-of select="@port1" />,<xsl:value-of select="@port2" /></TD>
