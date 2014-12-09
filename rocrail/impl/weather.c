@@ -115,47 +115,90 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
   StrTokOp.base.del(tok);
 
   if( ListOp.size(list) > 0 ) {
-    int i = 0;
-    int cnt = ListOp.size(list);
-    for(i = 0; i < cnt; i++) {
-      iOOutput output = (iOOutput)ListOp.get(list, i);
-      iONode sunrise = wWeather.getsunrise(data->props);
-      iONode sunset = wWeather.getsunset(data->props);
+    iONode sunriseProps = wWeather.getsunrise(data->props);
+    iONode sunsetProps = wWeather.getsunset(data->props);
 
-      if( sunrise == NULL ) {
-        sunrise = NodeOp.inst(wSunrise.name(), data->props, ELEMENT_NODE );
-        NodeOp.addChild(data->props, sunrise);
-        wSunrise.sethour(sunrise, 6) ;
-      }
-      if( sunset == NULL ) {
-        sunset = NodeOp.inst(wSunset.name(), data->props, ELEMENT_NODE );
-        NodeOp.addChild(data->props, sunset);
-        wSunset.sethour(sunset, 18) ;
-      }
-
-      float sunriseMinutes = wSunrise.gethour(sunrise) * 60 + wSunrise.getminute(sunrise);
-      float sunsetMinutes  = wSunset.gethour(sunset) * 60 + wSunset.getminute(sunset);
-      float maxbri = wWeather.getmaxbri(data->props);
-      float minbri = wWeather.getminbri(data->props);
-
-      iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
-      float bri = 0;
-      float minutes = hour * 60 + min;
-      /* sunrise=06:00(360) sunset=18:00(1080) day=1080-360=720*/
-      if( minutes <= 720 )
-        bri = maxbri - ((maxbri / (720.0-sunriseMinutes)) * ((720.0-sunriseMinutes) - (minutes-sunriseMinutes))) ;
-      else
-        bri = maxbri - ((maxbri / (sunsetMinutes-720.0)) * (minutes - 720.0));
-
-      if( bri < minbri )
-        bri = minbri;
-
-      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
-          "brightness=%f, minutes=%d, sunriseMinute=%d, sunsetMinutes=%d", bri, (int)minutes, (int)sunriseMinutes, (int)sunsetMinutes );
-      wOutput.setvalue(cmd, (int)bri);
-      wOutput.setcmd(cmd, shutdown?wOutput.off:wOutput.value);
-      OutputOp.cmd(output, cmd, False);
+    if( sunriseProps == NULL ) {
+      sunriseProps = NodeOp.inst(wSunrise.name(), data->props, ELEMENT_NODE );
+      NodeOp.addChild(data->props, sunriseProps);
+      wSunrise.sethour(sunriseProps, 6) ;
     }
+    if( sunsetProps == NULL ) {
+      sunsetProps = NodeOp.inst(wSunset.name(), data->props, ELEMENT_NODE );
+      NodeOp.addChild(data->props, sunsetProps);
+      wSunset.sethour(sunsetProps, 18) ;
+    }
+
+    int sunrise = wSunrise.gethour(sunriseProps) * 60 + wSunrise.getminute(sunriseProps);
+    int noon    = 12 * 60;
+    int sunset  = wSunset.gethour(sunsetProps) * 60 + wSunset.getminute(sunsetProps);
+    float maxbri = wWeather.getmaxbri(data->props);
+    float minbri = wWeather.getminbri(data->props);
+
+    float percent = 0.0;
+    float brightness = 0.0;
+
+    int daylight = sunset - sunrise;
+    float minutes = hour * 60 + min;
+    int adjustBri = 0;
+
+    if( minutes <= noon ) {
+      float range = noon - sunrise;
+      percent = (100.0 / range) * (float)(minutes - sunrise);
+      float l_brightness = (percent * maxbri) / 100.0;
+      if( l_brightness != brightness ) {
+        brightness = l_brightness;
+        adjustBri = 1;
+      }
+    }
+
+    if( minutes > noon ) {
+      float range = sunset - noon;
+      percent = 100.0 - ((100.0 / range) * (float)(minutes - noon));
+      float l_brightness = (percent * maxbri) / 100.0;
+
+      if( l_brightness != brightness ) {
+        brightness = l_brightness;
+        adjustBri = 1;
+      }
+    }
+
+    if(adjustBri) {
+      int LAMPS = ListOp.size(list);
+      float segment = 180.0 / (float)(LAMPS-1);
+      int n = 0;
+      float angle = (180.0 / (float)(sunset - sunrise)) * (minutes-sunrise);
+
+      for( n = 0; n < LAMPS; n++) {
+        iOOutput output = (iOOutput)ListOp.get(list, n);
+        int lampBri = 0;
+        float lampangle = segment * n;
+        if( lampangle + segment > angle && lampangle < angle + segment ) {
+          float lampPercent = 0.0;
+
+          if( angle < lampangle )
+            lampPercent = 100.0 - ((100.0 / segment) * (lampangle - angle));
+          else
+            lampPercent = 100.0 - ((100.0 / segment) * (angle - lampangle));
+
+          lampBri = (lampPercent * brightness) / 100.0;
+        }
+        else {
+          lampBri = 0;
+        }
+
+        iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+        wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
+            "lamp %s brightness=%d(of %.2f), dayminutes=%d, sunrise=%d, sunset=%d", wOutput.getid(OutputOp.base.properties(output)), lampBri, brightness, minutes, sunrise, sunset );
+        wOutput.setvalue(cmd, lampBri);
+        wOutput.setcmd(cmd, shutdown?wOutput.off:wOutput.value);
+        OutputOp.cmd(output, cmd, False);
+
+      }
+      adjustBri = 0;
+    }
+
   }
   ListOp.base.del(list);
 
