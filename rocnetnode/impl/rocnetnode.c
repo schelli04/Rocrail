@@ -1311,11 +1311,13 @@ static byte* __handleOutput( iORocNetNode rocnetnode, byte* rn ) {
     }
     else if( rn[RN_PACKET_DATA + 1] == wProgram.porttype_light ) {
       if( port < 129 && data->channels[port] != NULL ) {
+        int brightness = rn[RN_PACKET_DATA + 2] * 16;
         data->channels[port]->state = (rn[RN_PACKET_DATA + 0] & RN_OUTPUT_ON) ? 1:0;
         data->channels[port]->blink = (rn[RN_PACKET_DATA + 0] & RN_OUTPUT_ON) ? True:False;
         data->channels[port]->ready = False;
         data->channels[port]->sleep = False;
-        data->channels[port]->onpos = rn[RN_PACKET_DATA + 2];
+        data->channels[port]->onpos = brightness;
+        data->channels[port]->offpos = 0;
         data->channels[port]->porttype = rn[RN_PACKET_DATA + 1];
         data->channels[port]->idle  = 0;
       }
