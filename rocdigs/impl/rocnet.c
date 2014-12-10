@@ -403,7 +403,7 @@ static iONode __translate( iOrocNet inst, iONode node ) {
       rn[RN_PACKET_LEN] = 5;
       rn[RN_PACKET_DATA + 0] = cmd;
       rn[RN_PACKET_DATA + 1] = wOutput.getporttype(node);
-      rn[RN_PACKET_DATA + 2] = 0;
+      rn[RN_PACKET_DATA + 2] = wOutput.getvalue(node);
       rn[RN_PACKET_DATA + 3] = addr;
       rn[RN_PACKET_DATA + 4] = 0;
     }

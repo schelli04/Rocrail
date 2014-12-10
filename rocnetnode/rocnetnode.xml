@@ -70,6 +70,7 @@
 			<var name="onpos" vt="int"/>
 			<var name="offpos" vt="int"/>
       <var name="curpos" vt="int"/>
+      <var name="porttype" vt="int"/>
 			<var name="options" vt="int"/>
       <var name="blink" vt="Boolean"/>
 			<var name="state" vt="int"/>
