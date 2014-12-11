@@ -42,6 +42,8 @@
 
 /* host group actions */
 #define RN_HOST_SHUTDOWN     1
+#define RN_HOST_PING         2
+#define RN_HOST_PONG         3
 
 /* command station group actions */
 #define RN_CS_NOP            0

@@ -1452,6 +1452,16 @@ static void __evaluateRN( iORocNetNode rocnetnode, byte* rn ) {
         TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "host shutdown from %d to %d", sndr, rcpt );
         data->identack = False;
       }
+      else if( action == RN_HOST_PING ) {
+        rnReply = allocMem(128);
+        rnReply[RN_PACKET_NETID] = data->location;
+        rnReply[RN_PACKET_GROUP] = RN_GROUP_HOST;
+        rnReceipientAddresToPacket( 0, rnReply, 0 );
+        rnSenderAddresToPacket( data->id, rnReply, 0 );
+        rnReply[RN_PACKET_ACTION] = RN_HOST_PONG;
+        rnReply[RN_PACKET_ACTION] |= (RN_ACTIONTYPE_EVENT << 5);
+        rnReply[RN_PACKET_LEN] = 0;
+      }
       break;
 
     case RN_GROUP_STATIONARY:
