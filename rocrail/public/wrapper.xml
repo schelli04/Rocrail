@@ -665,6 +665,7 @@
         <var name="port" vt="int" defval="4321" range="0-*" remark="multicast port"/>
         <var name="crc" vt="bool" defval="false"/>
         <var name="wd" vt="bool" defval="false"/>
+        <var name="watchnodes" vt="bool" defval="false"/>
         <var name="sack" vt="bool" defval="false"/>
         <var name="shutdownall" vt="bool" defval="false"/>
         <var name="lcbus" vt="int" defval="0" range="0-*" remark="Default loco bus if greater then zero."/>

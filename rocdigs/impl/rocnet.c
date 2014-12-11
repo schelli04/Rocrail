@@ -169,6 +169,19 @@ static int __getbusByNickname(iOrocNet inst, iONode node) {
   return -1;
 }
 
+static iONode __getNodeByID(iOrocNet inst, int id) {
+  iOrocNetData data = Data(inst);
+  iONode rnnode = wRocNet.getrocnetnode( data->ini );
+  TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999,"searching ID [%d]", id );
+  while( rnnode != NULL ) {
+    if( wRocNetNode.getid(rnnode) == id ) {
+      return rnnode;
+    }
+    rnnode = wRocNet.nextrocnetnode( data->ini, rnnode );
+  }
+  return NULL;
+}
+
 /** ----- OrocNet ----- */
 static iONode __translate( iOrocNet inst, iONode node ) {
   iOrocNetData data = Data(inst);
@@ -1599,6 +1612,7 @@ static void __evaluateRN( iOrocNet rocnet, byte* rn ) {
   int actionType = rnActionTypeFromPacket(rn);
   int sndr = rnSenderAddrFromPacket(rn, data->seven);
   int port = rn[RN_PACKET_DATA + 3];
+  int action = rnActionFromPacket(rn);
   byte* rnReply = NULL;
 
   TraceOp.dump ( name, TRCLEVEL_BYTE, (char*)rn, 8 + rn[RN_PACKET_LEN] );
@@ -1669,6 +1683,13 @@ static void __evaluateRN( iOrocNet rocnet, byte* rn ) {
       rnReply = __evaluateSensor( rocnet, rn );
       break;
 
+    case RN_GROUP_HOST:
+      if( action == RN_HOST_PONG ) {
+        iONode rrnode = __getNodeByID(rocnet, sndr);
+        /* ToDo: Reset ping ticker. */
+      }
+      break;
+
     default:
       TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "unsupported group [%d]", group );
       break;
@@ -1732,6 +1753,20 @@ static void __reader( void* threadinst ) {
   };
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "rocNet reader stopped." );
+}
+
+
+static void __watchNodes( void* threadinst ) {
+  iOThread th = (iOThread)threadinst;
+  iOrocNet rocnet = (iOrocNet)ThreadOp.getParm( th );
+  iOrocNetData data = Data(rocnet);
+
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "rocNet watch nodes started." );
+  ThreadOp.sleep(1000);
+  while( data->run ) {
+    ThreadOp.sleep(100);
+  }
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "rocNet watch nodes ended." );
 }
 
 
@@ -1984,6 +2019,11 @@ static struct OrocNet* _inst( const iONode ini ,const iOTrace trc ) {
 
     data->writer = ThreadOp.inst( "rnwriter", &__writer, __rocNet );
     ThreadOp.start( data->writer );
+
+    if( wRocNet.iswatchnodes(data->rnini) ) {
+      data->watchNodes = ThreadOp.inst( "rnping", &__watchNodes, __rocNet );
+      ThreadOp.start( data->watchNodes );
+    }
 
     if( wRocNet.iswd(data->rnini) ) {
       data->watchdog = ThreadOp.inst( "rnwatchdog", &__watchdog, __rocNet );
