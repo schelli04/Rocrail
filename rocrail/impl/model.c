@@ -1515,6 +1515,14 @@ static Boolean _modifyItem( iOModel inst, iONode item ) {
         iONode child = NodeOp.getChild( item, i );
         NodeOp.addChild( weather, (iONode)NodeOp.base.clone(child) );
       }
+      cnt = NodeOp.getAttrCnt( item );
+      for( i = 0; i < cnt; i++ ) {
+        iOAttr attr = NodeOp.getAttr( item, i );
+        const char* name  = AttrOp.getName( attr );
+        const char* value = AttrOp.getVal( attr );
+        NodeOp.setStr( weather, name, value );
+      }
+
     }
   }
 
