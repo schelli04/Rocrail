@@ -221,11 +221,30 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       adjustBri = False;
     }
 
-    if( minutes+30 > sunset || minutes-30 < sunrise || shutdown ) {
+    if( minutes+30 > sunset || minutes < sunrise-30 || shutdown ) {
       /* Night. */
       if( ListOp.size(nightList) > 0 ) {
         int LAMPS = ListOp.size(nightList);
+        int bri = wNight.getbri(nightProps);
         int n = 0;
+
+        if( minutes+30 > sunset ) {
+          if( sunset - minutes > 0 ) {
+            float l_bri = bri;
+            l_bri = l_bri - ((l_bri / 30.0) * (sunset - minutes));
+            bri = (int)l_bri;
+          }
+        }
+
+        if( minutes-30 < sunrise ) {
+          if( minutes - sunrise > 0 ) {
+            float l_bri = bri;
+            l_bri = l_bri - ((l_bri / 30.0) * (minutes - sunrise));
+            bri = (int)l_bri;
+          }
+        }
+
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "night brightness=%d of %d", bri, wNight.getbri(nightProps));
 
         for( n = 0; n < LAMPS; n++) {
           iOOutput output = (iOOutput)ListOp.get(nightList, n);
@@ -233,7 +252,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
           iONode color = NodeOp.inst( wColor.name(), cmd, ELEMENT_NODE);
           NodeOp.addChild( cmd, color );
           wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
-          wOutput.setvalue(cmd, wNight.getbri(nightProps));
+          wOutput.setvalue(cmd, bri);
           wColor.setred(color, wNight.getred(nightProps));
           wColor.setgreen(color, wNight.getgreen(nightProps));
           wColor.setblue(color, wNight.getblue(nightProps));
