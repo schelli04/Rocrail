@@ -123,17 +123,17 @@ static char* __httpRequest( iOHUE inst, const char* method, const char* request 
   char* reply = NULL;
   Boolean OK = True;
 
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "trying to connected to %s:80", wDigInt.gethost(data->ini) );
+  TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "trying to connected to %s:80", wDigInt.gethost(data->ini) );
   iOSocket sh = SocketOp.inst( wDigInt.gethost(data->ini), 80, False, False, False );
   if( SocketOp.connect( sh ) ) {
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Connected to %s", wDigInt.gethost(data->ini) );
+    TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "Connected to %s", wDigInt.gethost(data->ini) );
 
     char* httpReq = StrOp.fmt("%s HTTP/1.1\nHost: %s\nContent-Type: application/json\nContent-Length: %d\n\n%s", method, wDigInt.gethost(data->ini), StrOp.len(request), request );
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "length=%d\n%s", StrOp.len(httpReq), httpReq );
+    TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "length=%d\n%s", StrOp.len(httpReq), httpReq );
     SocketOp.write( sh, httpReq, StrOp.len(httpReq) );
     StrOp.free(httpReq);
 
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Read response..." );
+    TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "Read response..." );
     char str[RSPSIZE] = {'\0'};
     int idx = 0;
     SocketOp.setRcvTimeout( sh, 1000 );
@@ -141,10 +141,10 @@ static char* __httpRequest( iOHUE inst, const char* method, const char* request 
     OK = False;
 
     if( SocketOp.readln( sh, str ) ) {
-      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, str );
+      TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, str );
       if( StrOp.find( str, "200 OK" ) ) {
         OK = True;
-        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "OK" );
+        TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "OK" );
       }
 
       /* Reading rest of HTTP header: */
@@ -156,7 +156,7 @@ static char* __httpRequest( iOHUE inst, const char* method, const char* request 
         if( StrOp.find( str, "Content-Length:" ) ) {
           char* p = StrOp.find( str, ": " ) + 2;
           contlen = atoi( p );
-          TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "contlen = %d", contlen );
+          TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "contlen = %d", contlen );
         }
 
         TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, str );
@@ -165,7 +165,7 @@ static char* __httpRequest( iOHUE inst, const char* method, const char* request 
       if( OK && contlen > 0 ) {
         reply = (char*)allocMem(contlen+1);
         SocketOp.read( sh, reply, contlen );
-        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "reply = %.200s", reply );
+        TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "reply = %.200s", reply );
       }
       else if( OK ) {
         while( SocketOp.read( sh, &str[idx], 1 ) && !SocketOp.isBroken( sh ) && idx < RSPSIZE) {
@@ -253,10 +253,12 @@ static iONode __translate( iOHUE inst, iONode node ) {
 
     iHueCmd cmd = allocMem(sizeof(struct HueCmd));
     cmd->methode = StrOp.fmt("PUT /api/%s/lights/%d/state", wDigInt.getuserid(data->ini), addr);
-    if( hue > 0 )
+    if( active && hue > 0 )
       cmd->request = StrOp.fmt("{\"on\":%s, \"bri\":%d, \"alert\":\"%s\", \"hue\":%d}", active?"true":"false", val, blink?"lselect":"none", hue);
-    else
+    else if( active )
       cmd->request = StrOp.fmt("{\"on\":%s, \"bri\":%d, \"alert\":\"%s\"}", active?"true":"false", val, blink?"lselect":"none");
+    else
+      cmd->request = StrOp.fmt("{\"on\":%s}", active?"true":"false");
     ThreadOp.post( data->transactor, (obj)cmd );
 
   }
@@ -360,7 +362,7 @@ static void __transactor( void* threadinst ) {
         if( StrOp.find(reply, "error") )
           TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "error: %s", reply );
         else
-          TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "ok: %s", reply );
+          TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "ok: %s", reply );
       }
       StrOp.free(reply);
       StrOp.free(cmd->methode);
