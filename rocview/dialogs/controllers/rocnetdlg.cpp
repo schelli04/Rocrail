@@ -71,6 +71,8 @@ void RocNetDlg::initLabels() {
   m_Port->SetLabel(wxGetApp().getMsg( "port" ));
   m_Sack->SetLabel(wxGetApp().getMsg( "secureack" ));
   m_ShutdownAll->SetLabel(wxGetApp().getMsg( "shutdownall" ));
+  m_Watchdog->SetLabel(wxGetApp().getMsg( "watchdog" ));
+  m_WatchNodes->SetLabel(wxGetApp().getMsg( "watchnodes" ));
 
   m_OptionsBox->GetStaticBox()->SetLabel(wxGetApp().getMsg( "options" ));
 
@@ -145,6 +147,7 @@ void RocNetDlg::initValues() {
   m_Address->SetValue( wxString( wRocNet.getaddr( rnini ), wxConvUTF8 ) );
   m_Port->SetValue( wRocNet.getport( rnini ) );
   m_LocoBus->SetValue( wRocNet.getlcbus( rnini ) );
+  m_WatchNodes->SetValue( wRocNet.iswatchnodes(rnini) ? true:false);
 
   initNodeList();
 }
@@ -183,6 +186,7 @@ void RocNetDlg::evaluate() {
   wRocNet.setwd(rnini, m_Watchdog->IsChecked()?True:False);
   wRocNet.setsack(rnini, m_Sack->IsChecked()?True:False);
   wRocNet.setshutdownall(rnini, m_ShutdownAll->IsChecked()?True:False);
+  wRocNet.setwatchnodes(rnini, m_WatchNodes->IsChecked()?True:False);
 
   wRocNet.setlcbus( rnini, m_LocoBus->GetValue() );
 }

@@ -1686,7 +1686,9 @@ static void __evaluateRN( iOrocNet rocnet, byte* rn ) {
     case RN_GROUP_HOST:
       if( action == RN_HOST_PONG ) {
         iONode rrnode = __getNodeByID(rocnet, sndr);
-        /* ToDo: Reset ping ticker. */
+        if( rrnode != NULL ) {
+          wRocNetNode.setpongtick(rrnode, SystemOp.getTick());
+        }
       }
       break;
 
@@ -1764,7 +1766,42 @@ static void __watchNodes( void* threadinst ) {
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "rocNet watch nodes started." );
   ThreadOp.sleep(1000);
   while( data->run ) {
-    ThreadOp.sleep(100);
+    if( data->power ) {
+      iONode rrnode = wRocNet.getrocnetnode( data->ini );
+      while( rrnode != NULL ) {
+        Boolean gotPong = True;
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "ping tick on node %d is %ld, pong=%ld",
+            wRocNetNode.getid(rrnode), wRocNetNode.getpingtick(rrnode), wRocNetNode.getpongtick(rrnode) );
+        if( wRocNetNode.getpingtick(rrnode) > 0 ) {
+          if( wRocNetNode.getpongtick(rrnode) == 0 ) {
+            unsigned long pingTick = SystemOp.getTick() - wRocNetNode.getpingtick(rrnode);
+            if( pingTick > 200 ) {
+              TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999, "node %d did not respond within 2 seconds", wRocNetNode.getid(rrnode) );
+              /* STOP */
+              data->power = False;
+              __reportState(rocnet, True);
+              wRocNetNode.setpingtick(rrnode, 0);
+            }
+            gotPong = False;
+          }
+        }
+        if( gotPong ) {
+          byte*  rn  = allocMem(128);
+          rn[RN_PACKET_GROUP] = RN_GROUP_HOST;
+          TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "ping node %d...", wRocNetNode.getid(rrnode) );
+          rnReceipientAddresToPacket( wRocNetNode.getid(rrnode), rn, data->seven );
+          rn[RN_PACKET_ACTION] = RN_HOST_PING;
+          rn[RN_PACKET_LEN] = 0;
+          ThreadOp.post( data->writer, (obj)rn );
+          wRocNetNode.setpongtick(rrnode, 0);
+          wRocNetNode.setpingtick(rrnode, SystemOp.getTick());
+        }
+        ThreadOp.sleep(10);
+        rrnode = wRocNet.nextrocnetnode( data->ini, rrnode );
+      }
+    }
+
+    ThreadOp.sleep(1000);
   }
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "rocNet watch nodes ended." );
 }

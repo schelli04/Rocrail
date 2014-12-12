@@ -29209,4 +29209,7 @@
   <Msg id="sunset">
     <en txt="Sunset"/>
   </Msg>
+  <Msg id="watchnodes">
+    <en txt="Watch nodes"/>
+  </Msg>
 </Messages>

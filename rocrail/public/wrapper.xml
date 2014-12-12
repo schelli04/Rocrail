@@ -694,7 +694,9 @@
           <var name="nrio" vt="int" defval="0" range="0-255" remark="Number of I/Os"/>
           <var name="subip" vt="int" defval="0" remark="Last 16 bits of the IP."/>
           <var name="nickname" vt="string" defval=""/>
-          </rocnetnode>
+          <var name="pingtick" vt="long" defval="0"/>
+          <var name="pongtick" vt="long" defval="0"/>
+        </rocnetnode>
         <portsetup wrappername="PortSetup" cardinality="n">
           <var name="port" vt="int" defval="1" range="1-*"/>
           <var name="type" vt="int" defval="0" range="0-*" remark="0=output, 1=input"/>

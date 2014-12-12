@@ -245,8 +245,11 @@ static iONode __translate( iOHUE inst, iONode node ) {
     int val  = wOutput.getvalue( node );
     int hue  = wOutput.getparam( node );
     Boolean blink = wOutput.isblink( node );
-    Boolean active = StrOp.equals( wOutput.getcmd( node ), wOutput.on );
-    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output addr=%d", addr );
+    Boolean active = False;
+    if( StrOp.equals( wOutput.getcmd( node ), wOutput.on ) || StrOp.equals( wOutput.getcmd( node ), wOutput.value ) )
+      active = True;
+
+    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output addr=%d active=%d cmd=%s", addr, active, wOutput.getcmd( node ) );
 
     iHueCmd cmd = allocMem(sizeof(struct HueCmd));
     cmd->methode = StrOp.fmt("PUT /api/%s/lights/%d/state", wDigInt.getuserid(data->ini), addr);
