@@ -29212,4 +29212,10 @@
   <Msg id="watchnodes">
     <en txt="Watch nodes"/>
   </Msg>
+  <Msg id="night">
+    <en txt="Night"/>
+  </Msg>
+  <Msg id="brightness">
+    <en txt="Brightness"/>
+  </Msg>
 </Messages>

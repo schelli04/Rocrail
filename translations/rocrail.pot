@@ -7607,3 +7607,15 @@ msgstr ""
 msgid "Watch nodes"
 msgstr ""
 
+#. 
+# id="night"
+#, c-format
+msgid "Night"
+msgstr ""
+
+#. 
+# id="brightness"
+#, c-format
+msgid "Brightness"
+msgstr ""
+

@@ -38,7 +38,9 @@
 #include "rocrail/wrapper/public/Weather.h"
 #include "rocrail/wrapper/public/Sunrise.h"
 #include "rocrail/wrapper/public/Sunset.h"
+#include "rocrail/wrapper/public/Night.h"
 #include "rocrail/wrapper/public/Output.h"
+#include "rocrail/wrapper/public/Color.h"
 
 
 static int instCnt = 0;
@@ -101,6 +103,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
   iOWeatherData data = Data(weather);
   iOModel model = AppOp.getModel();
   iOList list = ListOp.inst();
+  iOList nightList = ListOp.inst();
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "do daylight at %02d:%02d on %s", hour, min, wWeather.getoutputs(data->props) );
 
@@ -116,7 +119,8 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
 
   if( ListOp.size(list) > 0 ) {
     iONode sunriseProps = wWeather.getsunrise(data->props);
-    iONode sunsetProps = wWeather.getsunset(data->props);
+    iONode sunsetProps  = wWeather.getsunset(data->props);
+    iONode nightProps   = wWeather.getnight(data->props);
 
     if( sunriseProps == NULL ) {
       sunriseProps = NodeOp.inst(wSunrise.name(), data->props, ELEMENT_NODE );
@@ -128,6 +132,22 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       NodeOp.addChild(data->props, sunsetProps);
       wSunset.sethour(sunsetProps, 18) ;
     }
+    if( nightProps == NULL ) {
+      nightProps = NodeOp.inst(wNight.name(), data->props, ELEMENT_NODE );
+      NodeOp.addChild(data->props, nightProps);
+    }
+
+    iOStrTok tok = StrTokOp.inst( wNight.getoutputs(nightProps), ',' );
+    while( StrTokOp.hasMoreTokens(tok) ) {
+      const char* id = StrTokOp.nextToken(tok);
+      iOOutput output = ModelOp.getOutput(model, id);
+      if( output != NULL ) {
+        ListOp.add(nightList, (obj)output);
+      }
+    };
+    StrTokOp.base.del(tok);
+
+
 
     int sunrise = wSunrise.gethour(sunriseProps) * 60 + wSunrise.getminute(sunriseProps);
     int noon    = 12 * 60;
@@ -143,7 +163,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
 
     Boolean adjustBri = False;
 
-    if( minutes <= noon ) {
+    if( minutes <= noon && minutes > sunrise) {
       float range = noon - sunrise;
       percent = (100.0 / range) * (float)(minutes - sunrise);
       float l_brightness = (percent * maxbri) / 100.0;
@@ -153,7 +173,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       }
     }
 
-    if( minutes > noon ) {
+    if( minutes > noon && minutes < sunset) {
       float range = sunset - noon;
       percent = 100.0 - ((100.0 / range) * (float)(minutes - noon));
       float l_brightness = (percent * maxbri) / 100.0;
@@ -164,7 +184,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       }
     }
 
-    if(adjustBri) {
+    if(adjustBri || shutdown) {
       int LAMPS = ListOp.size(list);
       float segment = 180.0 / (float)(LAMPS-1);
       int n = 0;
@@ -201,8 +221,31 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       adjustBri = False;
     }
 
+    if( minutes+30 > sunset || minutes-30 < sunrise || shutdown ) {
+      /* Night. */
+      if( ListOp.size(nightList) > 0 ) {
+        int LAMPS = ListOp.size(nightList);
+        int n = 0;
+
+        for( n = 0; n < LAMPS; n++) {
+          iOOutput output = (iOOutput)ListOp.get(nightList, n);
+          iONode cmd   = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+          iONode color = NodeOp.inst( wColor.name(), cmd, ELEMENT_NODE);
+          NodeOp.addChild( cmd, color );
+          wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+          wOutput.setvalue(cmd, wNight.getbri(nightProps));
+          wColor.setred(color, wNight.getred(nightProps));
+          wColor.setgreen(color, wNight.getgreen(nightProps));
+          wColor.setblue(color, wNight.getblue(nightProps));
+          wOutput.setcmd(cmd, shutdown?wOutput.off:wOutput.value);
+          OutputOp.cmd(output, cmd, False);
+        }
+      }
+    }
+
   }
   ListOp.base.del(list);
+  ListOp.base.del(nightList);
 
 }
 

@@ -28,6 +28,7 @@
 #include "rocrail/wrapper/public/SysCmd.h"
 #include "rocrail/wrapper/public/Output.h"
 #include "rocrail/wrapper/public/Program.h"
+#include "rocrail/wrapper/public/Color.h"
 
 #include <math.h>
 
@@ -244,16 +245,28 @@ static iONode __translate( iOHUE inst, iONode node ) {
     int addr = wOutput.getaddr( node );
     int val  = wOutput.getvalue( node );
     int hue  = wOutput.getparam( node );
+    iONode color = wOutput.getcolor(node);
     Boolean blink = wOutput.isblink( node );
     Boolean active = False;
+    float x = 0;
+    float y = 0;
+    Boolean useXY = False;
+
     if( StrOp.equals( wOutput.getcmd( node ), wOutput.on ) || StrOp.equals( wOutput.getcmd( node ), wOutput.value ) )
       active = True;
 
+    if( color != NULL ) {
+      __RGBtoXY(wColor.getred(color), wColor.getgreen(color), wColor.getblue(color), &x, &y );
+      useXY = True;
+    }
     TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output addr=%d active=%d cmd=%s", addr, active, wOutput.getcmd( node ) );
 
     iHueCmd cmd = allocMem(sizeof(struct HueCmd));
     cmd->methode = StrOp.fmt("PUT /api/%s/lights/%d/state", wDigInt.getuserid(data->ini), addr);
-    if( active && hue > 0 )
+    if( active && useXY ) {
+      cmd->request = StrOp.fmt("{\"on\":%s, \"bri\":%d, \"alert\":\"%s\", \"xy\":[%f,%f]}", active?"true":"false", val, blink?"lselect":"none", x, y);
+    }
+    else if( active && hue > 0 )
       cmd->request = StrOp.fmt("{\"on\":%s, \"bri\":%d, \"alert\":\"%s\", \"hue\":%d}", active?"true":"false", val, blink?"lselect":"none", hue);
     else if( active )
       cmd->request = StrOp.fmt("{\"on\":%s, \"bri\":%d, \"alert\":\"%s\"}", active?"true":"false", val, blink?"lselect":"none");
