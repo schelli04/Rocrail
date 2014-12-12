@@ -154,7 +154,6 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
     int sunset  = wSunset.gethour(sunsetProps) * 60 + wSunset.getminute(sunsetProps);
 
     float maxbri     = wWeather.getmaxbri(data->props);
-    float minbri     = wWeather.getminbri(data->props);
     float percent    = 0.0;
     float brightness = 0.0;
 
@@ -163,25 +162,20 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
 
     Boolean adjustBri = False;
 
-    if( minutes <= noon && minutes > sunrise) {
+    if( minutes <= noon && minutes >= sunrise) {
       float range = noon - sunrise;
       percent = (100.0 / range) * (float)(minutes - sunrise);
       float l_brightness = (percent * maxbri) / 100.0;
-      if( l_brightness != brightness ) {
-        brightness = l_brightness;
-        adjustBri = True;
-      }
+      brightness = l_brightness;
+      adjustBri = True;
     }
 
-    if( minutes > noon && minutes < sunset) {
+    if( minutes > noon && minutes <= sunset) {
       float range = sunset - noon;
       percent = 100.0 - ((100.0 / range) * (float)(minutes - noon));
       float l_brightness = (percent * maxbri) / 100.0;
-
-      if( l_brightness != brightness ) {
-        brightness = l_brightness;
-        adjustBri = True;
-      }
+      brightness = l_brightness;
+      adjustBri = True;
     }
 
     if(adjustBri || shutdown) {
