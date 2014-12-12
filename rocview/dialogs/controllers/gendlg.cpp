@@ -604,5 +604,9 @@ void GenericCtrlDlg::OnHelpClick( wxCommandEvent& event )
     wxGetApp().openLink( "easydcc" );
   else if( StrOp.equals( wDigInt.inter10, wDigInt.getlib( m_Props ) ) )
     wxGetApp().openLink( "inter10" );
+  else if( StrOp.equals( wDigInt.zimobin, wDigInt.getlib( m_Props ) ) )
+    wxGetApp().openLink( "zimo" );
+  else if( StrOp.equals( wDigInt.zimo, wDigInt.getlib( m_Props ) ) )
+    wxGetApp().openLink( "zimo" );
 }
 
