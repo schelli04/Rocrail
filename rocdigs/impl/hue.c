@@ -223,7 +223,7 @@ void __RGBtoXY(int R, int G, int B, float* x, float* y) {
 static iONode __translate( iOHUE inst, iONode node ) {
   iOHUEData data = Data(inst);
 
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "cmd=%s", NodeOp.getName( node ) );
+  TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "cmd=%s", NodeOp.getName( node ) );
   if( StrOp.equals( NodeOp.getName( node ), wSysCmd.name() ) ) {
 
   /* System command. */
@@ -250,16 +250,23 @@ static iONode __translate( iOHUE inst, iONode node ) {
     Boolean active = False;
     float x = 0;
     float y = 0;
+    int r = 0;
+    int g = 0;
+    int b = 0;
     Boolean useXY = False;
 
     if( StrOp.equals( wOutput.getcmd( node ), wOutput.on ) || StrOp.equals( wOutput.getcmd( node ), wOutput.value ) )
       active = True;
 
     if( color != NULL ) {
+      r = wColor.getred(color);
+      g = wColor.getgreen(color);
+      b = wColor.getblue(color);
       __RGBtoXY(wColor.getred(color), wColor.getgreen(color), wColor.getblue(color), &x, &y );
       useXY = True;
     }
-    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output addr=%d active=%d cmd=%s", addr, active, wOutput.getcmd( node ) );
+    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output addr=%d active=%d cmd=%s bri=%d RGB=%d,%d,%d xy=%f,%f hue=%d",
+        addr, active, wOutput.getcmd( node ), val, r, g, b, x, y, hue );
 
     iHueCmd cmd = allocMem(sizeof(struct HueCmd));
     cmd->methode = StrOp.fmt("PUT /api/%s/lights/%d/state", wDigInt.getuserid(data->ini), addr);
