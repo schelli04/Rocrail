@@ -172,7 +172,7 @@ static int __getbusByNickname(iOrocNet inst, iONode node) {
 static iONode __getNodeByID(iOrocNet inst, int id) {
   iOrocNetData data = Data(inst);
   iONode rnnode = wRocNet.getrocnetnode( data->ini );
-  TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999,"searching ID [%d]", id );
+  TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999,"searching ID [%d]", id );
   while( rnnode != NULL ) {
     if( wRocNetNode.getid(rnnode) == id ) {
       return rnnode;
@@ -1770,7 +1770,7 @@ static void __watchNodes( void* threadinst ) {
       iONode rrnode = wRocNet.getrocnetnode( data->ini );
       while( rrnode != NULL ) {
         Boolean gotPong = True;
-        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "ping tick on node %d is %ld, pong=%ld",
+        TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "ping tick on node %d is %ld, pong=%ld",
             wRocNetNode.getid(rrnode), wRocNetNode.getpingtick(rrnode), wRocNetNode.getpongtick(rrnode) );
         if( wRocNetNode.getpingtick(rrnode) > 0 ) {
           if( wRocNetNode.getpongtick(rrnode) == 0 ) {
@@ -1788,7 +1788,7 @@ static void __watchNodes( void* threadinst ) {
         if( gotPong ) {
           byte*  rn  = allocMem(128);
           rn[RN_PACKET_GROUP] = RN_GROUP_HOST;
-          TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "ping node %d...", wRocNetNode.getid(rrnode) );
+          TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "ping node %d...", wRocNetNode.getid(rrnode) );
           rnReceipientAddresToPacket( wRocNetNode.getid(rrnode), rn, data->seven );
           rn[RN_PACKET_ACTION] = RN_HOST_PING;
           rn[RN_PACKET_LEN] = 0;
