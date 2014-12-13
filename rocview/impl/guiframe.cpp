@@ -1212,18 +1212,15 @@ void RocGuiFrame::InitActiveLocs(wxCommandEvent& event) {
           // list only loco's with the show flag set.
           if( (m_LocoCategory & LOCO_VIEW_TRAIN) && (wLoc.gettrain(lc) != NULL && StrOp.len(wLoc.gettrain(lc)) > 0 ) )
             ListOp.add( list, (obj)lc );
-          else if( (m_LocoCategory & LOCO_VIEW_STEAM) && StrOp.equals(wLoc.engine_steam, wLoc.getengine(lc)) &&
-              !wLoc.iscommuter(lc) && !StrOp.equals(wLoc.cargo_cleaning, wLoc.getcargo(lc)) )
+          else if( (m_LocoCategory & LOCO_VIEW_STEAM) && StrOp.equals(wLoc.engine_steam, wLoc.getengine(lc)) )
             ListOp.add( list, (obj)lc );
-          else if( (m_LocoCategory & LOCO_VIEW_DIESEL) && StrOp.equals(wLoc.engine_diesel, wLoc.getengine(lc)) &&
-              !wLoc.iscommuter(lc) && !StrOp.equals(wLoc.cargo_cleaning, wLoc.getcargo(lc)) )
+          else if( (m_LocoCategory & LOCO_VIEW_DIESEL) && StrOp.equals(wLoc.engine_diesel, wLoc.getengine(lc)) )
             ListOp.add( list, (obj)lc );
-          else if( (m_LocoCategory & LOCO_VIEW_ELECTRIC) && StrOp.equals(wLoc.engine_electric, wLoc.getengine(lc)) &&
-              !wLoc.iscommuter(lc) && !StrOp.equals(wLoc.cargo_cleaning, wLoc.getcargo(lc)) )
+          else if( (m_LocoCategory & LOCO_VIEW_ELECTRIC) && StrOp.equals(wLoc.engine_electric, wLoc.getengine(lc)) )
             ListOp.add( list, (obj)lc );
-          else if( (m_LocoCategory & LOCO_VIEW_COMMUTER) && wLoc.iscommuter(lc) && !StrOp.equals(wLoc.cargo_cleaning, wLoc.getcargo(lc)) )
+          else if( (m_LocoCategory & LOCO_VIEW_COMMUTER) && wLoc.iscommuter(lc) )
             ListOp.add( list, (obj)lc );
-          else if( (m_LocoCategory & LOCO_VIEW_SPECIAL) && !wLoc.iscommuter(lc) && StrOp.equals(wLoc.cargo_cleaning, wLoc.getcargo(lc)) )
+          else if( (m_LocoCategory & LOCO_VIEW_SPECIAL) && StrOp.equals(wLoc.cargo_cleaning, wLoc.getcargo(lc)) )
             ListOp.add( list, (obj)lc );
           else if( (m_LocoCategory & LOCO_VIEW_AUTOMOBILE) && StrOp.equals(wLoc.engine_automobile, wLoc.getengine(lc)) )
             ListOp.add( list, (obj)lc );
