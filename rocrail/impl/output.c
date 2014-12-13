@@ -269,6 +269,7 @@ static Boolean __doCmd( struct OOutput* inst ,iONode nodeA ,Boolean update ) {
     iONode nodeF = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE );
     wOutput.setid( nodeF, wOutput.getid( o->props ) );
     wOutput.setstate( nodeF, wOutput.getstate( o->props ) );
+    wOutput.setvalue( nodeF, wOutput.getvalue( o->props ) );
     if( wOutput.getiid( o->props ) != NULL )
       wOutput.setiid( nodeF, wOutput.getiid( o->props ) );
     AppOp.broadcastEvent( nodeF );

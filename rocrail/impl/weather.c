@@ -209,7 +209,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
             wOutput.getid(OutputOp.base.properties(output)), lampBri, brightness, lampangle, angle, minutes, sunrise, sunset );
         wOutput.setvalue(cmd, lampBri);
         wOutput.setcmd(cmd, shutdown?wOutput.off:wOutput.value);
-        OutputOp.cmd(output, cmd, False);
+        OutputOp.cmd(output, cmd, True);
 
       }
       adjustBri = False;
@@ -251,7 +251,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
           wColor.setgreen(color, wNight.getgreen(nightProps));
           wColor.setblue(color, wNight.getblue(nightProps));
           wOutput.setcmd(cmd, shutdown?wOutput.off:wOutput.value);
-          OutputOp.cmd(output, cmd, False);
+          OutputOp.cmd(output, cmd, True);
         }
       }
     }

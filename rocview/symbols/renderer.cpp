@@ -46,6 +46,7 @@
 #include "rocrail/wrapper/public/SelTab.h"
 #include "rocrail/wrapper/public/SelTabPos.h"
 #include "rocrail/wrapper/public/DataReq.h"
+#include "rocrail/wrapper/public/Program.h"
 
 #include "rocs/public/system.h"
 
@@ -1895,8 +1896,25 @@ void SymbolRenderer::drawOutput( wxPaintDC& dc, bool occupied, bool actroute, co
   const char* state = wOutput.getstate( m_Props );
   TraceOp.trc( "render", TRCLEVEL_DEBUG, __LINE__, 9999, "setting output %s to %s", wSignal.getid( m_Props ), state );
 
+  if( m_UseGC && (wOutput.getporttype(m_Props) == wProgram.porttype_backlight || wOutput.getporttype(m_Props) == wProgram.porttype_light) ) {
+    // Render light.
+    wxPen* pen = (wxPen*)wxBLACK_PEN;
+    pen->SetWidth(2);
+    pen->SetStyle(wxSOLID);
+    if( m_UseGC ) {
+      int bri = wOutput.getvalue(m_Props);
+      float factor = (1.0 / 255.0) * (float)bri;
+      TraceOp.trc( "render", TRCLEVEL_INFO, __LINE__, 9999, "setting output %s to brightness %d, factor=%.2f", wOutput.getid( m_Props ), bri, factor );
+      setPen( *pen );
+      setBrush( wxBrush(wxColour(bri, bri, bri)) );
+      m_GC->DrawEllipse(6, 6, 20, 20);
+      setPen( wxPen(wxColour(255, 255, 0)));
+      setBrush( wxBrush(wxColour(255, 255, 0)) );
+      m_GC->DrawEllipse(6 + (10.0 - 10.0 * factor), 6 + (10.0 - 10.0 * factor), 18.0 * factor, 18.0 * factor);
+    }
+  }
   // SVG Symbol:
-  if( m_SvgSym3!=NULL && StrOp.equals( state, wOutput.active ) ) {
+  else if( m_SvgSym3!=NULL && StrOp.equals( state, wOutput.active ) ) {
     if(occupied && m_SvgSym6!= NULL)
       drawSvgSym(dc, m_SvgSym6, ori);
     else if(actroute && m_SvgSym9!= NULL)

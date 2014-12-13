@@ -2959,8 +2959,13 @@ void Symbol::modelEvent( iONode node, bool oncreate ) {
   }
   else if( StrOp.equals( wOutput.name(), NodeOp.getName( m_Props ) ) ) {
     const char* state = wOutput.getstate( node );
+    int value = wOutput.getvalue( node );
     if( state != NULL ) {
       wOutput.setstate( m_Props, state );
+      refresh = true;
+    }
+    if( wOutput.getvalue(m_Props) != value ) {
+      wOutput.setvalue(m_Props, value);
       refresh = true;
     }
   }
