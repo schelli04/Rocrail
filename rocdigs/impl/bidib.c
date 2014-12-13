@@ -795,6 +795,15 @@ static iONode __translate( iOBiDiB inst, iONode node ) {
               wSwitch.getbus( node ), msgdata[1], msgdata[0], msgdata[2], blink?" blink":"" );
           data->subWrite((obj)inst, bidibnode->path, MSG_LC_OUTPUT, msgdata, 3, bidibnode);
         }
+        else if( wOutput.getporttype(node) == wProgram.porttype_backlight ) {
+          msgdata[0] = BIDIB_OUTTYPE_BACKLIGHT;
+          msgdata[1] = addr-1;
+          msgdata[2] = wOutput.getvalue(node);
+
+          TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "lc %d:%d backlight set to %d",
+              wSwitch.getbus( node ), msgdata[1], msgdata[2] );
+          data->subWrite((obj)inst, bidibnode->path, MSG_LC_OUTPUT, msgdata, 3, bidibnode);
+        }
         else if( (setvalue || on) && wOutput.getporttype(node) == wProgram.porttype_analog ) {
           msgdata[0] = wOutput.getporttype(node);
           msgdata[1] = addr-1;
