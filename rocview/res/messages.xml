@@ -26640,7 +26640,7 @@
     <zh_CN txt="分"/>
   </Msg>
   <Msg id="day">
-    <en txt="day"/>
+    <en txt="day" alttxt="Day"/>
     <de txt="Tag"/>
     <it txt="giorno"/>
     <nl txt="dag"/>
