@@ -7619,3 +7619,9 @@ msgstr ""
 msgid "Brightness"
 msgstr ""
 
+#. 
+# id="rgb"
+#, c-format
+msgid "RGB"
+msgstr ""
+

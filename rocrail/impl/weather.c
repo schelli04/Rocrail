@@ -153,29 +153,56 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
     int noon    = 12 * 60;
     int sunset  = wSunset.gethour(sunsetProps) * 60 + wSunset.getminute(sunsetProps);
 
+    int sunriseRed   = wSunrise.getred(sunriseProps);
+    int sunriseGreen = wSunrise.getgreen(sunriseProps);
+    int sunriseBlue  = wSunrise.getblue(sunriseProps);
+
+    int sunsetRed   = wSunset.getred(sunsetProps);
+    int sunsetGreen = wSunset.getgreen(sunsetProps);
+    int sunsetBlue  = wSunset.getblue(sunsetProps);
+
     float maxbri     = wWeather.getmaxbri(data->props);
     float percent    = 0.0;
     float brightness = 0.0;
+    float red   = 0.0;
+    float green = 0.0;
+    float blue  = 0.0;
 
     int daylight  = sunset - sunrise;
     int minutes   = hour * 60 + min;
 
     Boolean adjustBri = False;
 
+    // AM
     if( minutes <= noon && minutes >= sunrise) {
       float range = noon - sunrise;
       percent = (100.0 / range) * (float)(minutes - sunrise);
       float l_brightness = (percent * maxbri) / 100.0;
       brightness = l_brightness;
       adjustBri = True;
+
+      float redDif = (255.0 - sunriseRed) / 100.0;
+      red = sunriseRed + redDif * percent;
+      float greenDif = (255.0 - sunriseGreen) / 100.0;
+      green = sunriseGreen + greenDif * percent;
+      float blueDif = (255.0 - sunriseBlue) / 100.0;
+      blue = sunriseBlue + blueDif * percent;
     }
 
+    // PM
     if( minutes > noon && minutes <= sunset) {
       float range = sunset - noon;
       percent = 100.0 - ((100.0 / range) * (float)(minutes - noon));
       float l_brightness = (percent * maxbri) / 100.0;
       brightness = l_brightness;
       adjustBri = True;
+
+      float redDif = (255.0 - sunsetRed) / 100.0;
+      red = sunsetRed + (255.0 - sunsetRed) - (redDif * percent);
+      float greenDif = (255.0 - sunsetGreen) / 100.0;
+      green = sunsetGreen + (255.0 - sunsetGreen) - (greenDif * percent);
+      float blueDif = (255.0 - sunsetBlue) / 100.0;
+      blue = sunsetBlue + (255.0 - sunsetBlue) - (blueDif * percent);
     }
 
     if(adjustBri || shutdown) {
@@ -203,6 +230,11 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
         }
 
         iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+        iONode color = NodeOp.inst( wColor.name(), cmd, ELEMENT_NODE);
+        NodeOp.addChild( cmd, color );
+        wColor.setred(color, red);
+        wColor.setgreen(color, green);
+        wColor.setblue(color, blue);
         wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
         TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
             "lamp %s brightness=%d(of %.2f), lampAngle=%.2f sunAngle=%.2f dayminutes=%d sunrise=%d sunset=%d",

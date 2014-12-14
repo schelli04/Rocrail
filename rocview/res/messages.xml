@@ -29218,4 +29218,7 @@
   <Msg id="brightness">
     <en txt="Brightness"/>
   </Msg>
+  <Msg id="rgb">
+    <en txt="RGB"/>
+  </Msg>
 </Messages>

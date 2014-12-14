@@ -81,7 +81,7 @@
 
   <Global structname="GC" remark="For internal use only.">
     <const name="productname" vt="string" val="Rocrail"/>
-    <const name="releasename" vt="string" val="Sunrise"/>
+    <const name="releasename" vt="string" val=""/>
     <const name="releasesuffix" vt="string" val="snapshot"/>
     <const name="vmajor" vt="int" val="2"/>
     <const name="vminor" vt="int" val="0"/>
@@ -1560,28 +1560,28 @@
       <sunrise cardinality="1" remark="Sunrise definition" wrappername="Sunrise">
         <var name="hour" vt="int" defval="6" range="0-23"/>
         <var name="minute" vt="int" defval="0" range="0-59"/>
-        <var name="red" vt="int" defval="0" range="0-255"/>
-        <var name="green" vt="int" defval="0" range="0-255"/>
-        <var name="blue" vt="int" defval="0" range="0-255"/>
+        <var name="red" vt="int" defval="255" range="0-255"/>
+        <var name="green" vt="int" defval="255" range="0-255"/>
+        <var name="blue" vt="int" defval="255" range="0-255"/>
       </sunrise>
       <sunset cardinality="1" remark="Sunset definition" wrappername="Sunset">
         <var name="hour" vt="int" defval="18" range="0-23"/>
         <var name="minute" vt="int" defval="0" range="0-59"/>
-        <var name="red" vt="int" defval="0" range="0-255"/>
-        <var name="green" vt="int" defval="0" range="0-255"/>
-        <var name="blue" vt="int" defval="0" range="0-255"/>
+        <var name="red" vt="int" defval="255" range="0-255"/>
+        <var name="green" vt="int" defval="255" range="0-255"/>
+        <var name="blue" vt="int" defval="255" range="0-255"/>
       </sunset>
       <noon cardinality="1" remark="Noon definition" wrappername="Noon">
-        <var name="red" vt="int" defval="0" range="0-255"/>
-        <var name="green" vt="int" defval="0" range="0-255"/>
-        <var name="blue" vt="int" defval="0" range="0-255"/>
+        <var name="red" vt="int" defval="255" range="0-255"/>
+        <var name="green" vt="int" defval="255" range="0-255"/>
+        <var name="blue" vt="int" defval="255" range="0-255"/>
       </noon>
       <night cardinality="1" remark="Night definition" wrappername="Night">
         <var name="outputs" vt="string" defval="" range="*" remark="Comma separated list of outputs."/>
         <var name="bri" vt="int" defval="5" range="0-255" remark="brightness."/>
         <var name="red" vt="int" defval="0" range="0-255"/>
         <var name="green" vt="int" defval="0" range="0-255"/>
-        <var name="blue" vt="int" defval="0" range="0-255"/>
+        <var name="blue" vt="int" defval="255" range="0-255"/>
       </night>
       <weathertheme cardinality="n" wrappername="WeatherTheme">
         <var name="id" vt="string" defval="" range="*"/>
