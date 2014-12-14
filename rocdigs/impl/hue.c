@@ -247,6 +247,7 @@ static iONode __translate( iOHUE inst, iONode node ) {
     int hue  = wOutput.getparam( node );
     iONode color = wOutput.getcolor(node);
     Boolean blink = wOutput.isblink( node );
+    Boolean colortype = wOutput.iscolortype( node );
     Boolean active = False;
     float x = 0;
     float y = 0;
@@ -270,10 +271,10 @@ static iONode __translate( iOHUE inst, iONode node ) {
 
     iHueCmd cmd = allocMem(sizeof(struct HueCmd));
     cmd->methode = StrOp.fmt("PUT /api/%s/lights/%d/state", wDigInt.getuserid(data->ini), addr);
-    if( active && useXY ) {
+    if( active && useXY && colortype) {
       cmd->request = StrOp.fmt("{\"on\":%s, \"bri\":%d, \"alert\":\"%s\", \"xy\":[%f,%f]}", active?"true":"false", val, blink?"lselect":"none", x, y);
     }
-    else if( active && hue > 0 )
+    else if( active && hue > 0 && colortype)
       cmd->request = StrOp.fmt("{\"on\":%s, \"bri\":%d, \"alert\":\"%s\", \"hue\":%d}", active?"true":"false", val, blink?"lselect":"none", hue);
     else if( active )
       cmd->request = StrOp.fmt("{\"on\":%s, \"bri\":%d, \"alert\":\"%s\"}", active?"true":"false", val, blink?"lselect":"none");

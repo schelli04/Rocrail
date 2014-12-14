@@ -74,7 +74,7 @@ BEGIN_EVENT_TABLE( OutputDialog, wxDialog )
     EVT_BUTTON( ID_OUTPUT_DOC, OutputDialog::onDoc )
     EVT_BUTTON( ID_OUTPUT_ACTIONS, OutputDialog::OnOutputActionsClick )
     EVT_CHECKBOX( ID_OUTPUT_SWITCH, OutputDialog::OnOutputSwitchClick )
-    EVT_CHECKBOX( wxID_ANY, OutputDialog::onAccessory )
+    EVT_CHECKBOX( ID_CO_ACCESSORY, OutputDialog::onAccessory )
     EVT_BUTTON( wxID_CANCEL, OutputDialog::OnCancelClick )
     EVT_BUTTON( wxID_OK, OutputDialog::OnOkClick )
     EVT_BUTTON( wxID_APPLY, OutputDialog::OnApplyClick )
@@ -186,6 +186,7 @@ void OutputDialog::initLabels() {
 
   m_Invert->SetLabel( wxGetApp().getMsg( "invert" ) );
   m_Blink->SetLabel( wxGetApp().getMsg( "blink" ) );
+  m_ColorType->SetLabel( wxGetApp().getMsg( "color" ) );
   m_AsSwitch->SetLabel( wxGetApp().getMsg( "turnout" ) );
   m_Accessory->SetLabel( wxGetApp().getMsg( "accessory" ) );
 
@@ -330,6 +331,7 @@ void OutputDialog::initValues() {
 
   m_Invert->SetValue( wOutput.isinv( m_Props )?true:false );
   m_Blink->SetValue( wOutput.isblink( m_Props )?true:false );
+  m_ColorType->SetValue( wOutput.iscolortype( m_Props )?true:false );
   m_AsSwitch->SetValue( wOutput.isasswitch( m_Props )?true:false );
   m_Accessory->SetValue( wOutput.isaccessory( m_Props )?true:false );
   m_Gate->Enable(!m_AsSwitch->GetValue());
@@ -410,6 +412,7 @@ bool OutputDialog::evaluate() {
 
   wOutput.setinv( m_Props, m_Invert->GetValue()?True:False);
   wOutput.setblink( m_Props, m_Blink->IsChecked()?True:False);
+  wOutput.setcolortype( m_Props, m_ColorType->IsChecked()?True:False);
   wOutput.setasswitch( m_Props, m_AsSwitch->GetValue()?True:False);
   wOutput.setaccessory( m_Props, m_Accessory->GetValue()?True:False);
 
@@ -487,6 +490,7 @@ bool OutputDialog::Create( wxWindow* parent, wxWindowID id, const wxString& capt
     m_AsSwitch = NULL;
     m_Invert = NULL;
     m_Blink = NULL;
+    m_ColorType = NULL;
     m_Accessory = NULL;
     m_PortType = NULL;
     m_LocationPanel = NULL;
@@ -699,7 +703,11 @@ void OutputDialog::CreateControls()
     m_Blink->SetValue(false);
     itemStaticBoxSizer50->Add(m_Blink, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
-    m_Accessory = new wxCheckBox( m_InterfacePanel, wxID_ANY, _("Accessory"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_ColorType = new wxCheckBox( m_InterfacePanel, wxID_ANY, _("Color"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_ColorType->SetValue(false);
+    itemStaticBoxSizer50->Add(m_ColorType, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_Accessory = new wxCheckBox( m_InterfacePanel, ID_CO_ACCESSORY, _("Accessory"), wxDefaultPosition, wxDefaultSize, 0 );
     m_Accessory->SetValue(false);
     itemBoxSizer29->Add(m_Accessory, 0, wxALIGN_LEFT|wxLEFT|wxRIGHT, 5);
 
@@ -719,28 +727,28 @@ void OutputDialog::CreateControls()
     m_Notebook->AddPage(m_InterfacePanel, _("Interface"));
 
     m_LocationPanel = new wxPanel( m_Notebook, ID_PANEL_CO_LOCATION, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
-    wxBoxSizer* itemBoxSizer57 = new wxBoxSizer(wxHORIZONTAL);
-    m_LocationPanel->SetSizer(itemBoxSizer57);
+    wxBoxSizer* itemBoxSizer58 = new wxBoxSizer(wxHORIZONTAL);
+    m_LocationPanel->SetSizer(itemBoxSizer58);
 
-    wxFlexGridSizer* itemFlexGridSizer58 = new wxFlexGridSizer(0, 2, 0, 0);
-    itemBoxSizer57->Add(itemFlexGridSizer58, 0, wxALIGN_TOP|wxALL, 5);
+    wxFlexGridSizer* itemFlexGridSizer59 = new wxFlexGridSizer(0, 2, 0, 0);
+    itemBoxSizer58->Add(itemFlexGridSizer59, 0, wxALIGN_TOP|wxALL, 5);
     m_LabelX = new wxStaticText( m_LocationPanel, wxID_STATIC_CO_X, _("x"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer58->Add(m_LabelX, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
+    itemFlexGridSizer59->Add(m_LabelX, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
     m_x = new wxTextCtrl( m_LocationPanel, ID_TEXTCTRL_CO_X, _("0"), wxDefaultPosition, wxDefaultSize, wxTE_CENTRE );
-    itemFlexGridSizer58->Add(m_x, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer59->Add(m_x, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_LabelY = new wxStaticText( m_LocationPanel, wxID_STATIC_CO_Y, _("y"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer58->Add(m_LabelY, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
+    itemFlexGridSizer59->Add(m_LabelY, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
     m_y = new wxTextCtrl( m_LocationPanel, ID_TEXTCTRL_CO_Y, _("0"), wxDefaultPosition, wxDefaultSize, wxTE_CENTRE );
-    itemFlexGridSizer58->Add(m_y, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer59->Add(m_y, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_LabelZ = new wxStaticText( m_LocationPanel, wxID_STATIC_CO_Z, _("z"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer58->Add(m_LabelZ, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
+    itemFlexGridSizer59->Add(m_LabelZ, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
     m_z = new wxTextCtrl( m_LocationPanel, ID_TEXTCTRL_CO_Z, _("0"), wxDefaultPosition, wxDefaultSize, wxTE_CENTRE );
-    itemFlexGridSizer58->Add(m_z, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer59->Add(m_z, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxArrayString m_oriStrings;
     m_oriStrings.Add(_("&north"));
@@ -749,29 +757,29 @@ void OutputDialog::CreateControls()
     m_oriStrings.Add(_("&west"));
     m_ori = new wxRadioBox( m_LocationPanel, ID_RADIOBOX_CO_ORI, _("Orientation"), wxDefaultPosition, wxDefaultSize, m_oriStrings, 1, wxRA_SPECIFY_COLS );
     m_ori->SetSelection(0);
-    itemBoxSizer57->Add(m_ori, 0, wxALIGN_TOP|wxALL, 5);
+    itemBoxSizer58->Add(m_ori, 0, wxALIGN_TOP|wxALL, 5);
 
     m_Notebook->AddPage(m_LocationPanel, _("Location"));
 
     itemBoxSizer2->Add(m_Notebook, 1, wxGROW|wxALL, 5);
 
-    wxStdDialogButtonSizer* itemStdDialogButtonSizer66 = new wxStdDialogButtonSizer;
+    wxStdDialogButtonSizer* itemStdDialogButtonSizer67 = new wxStdDialogButtonSizer;
 
-    itemBoxSizer2->Add(itemStdDialogButtonSizer66, 0, wxGROW|wxALL, 5);
+    itemBoxSizer2->Add(itemStdDialogButtonSizer67, 0, wxGROW|wxALL, 5);
     m_Cancel = new wxButton( itemDialog1, wxID_CANCEL, _("&Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemStdDialogButtonSizer66->AddButton(m_Cancel);
+    itemStdDialogButtonSizer67->AddButton(m_Cancel);
 
     m_OK = new wxButton( itemDialog1, wxID_OK, _("&OK"), wxDefaultPosition, wxDefaultSize, 0 );
     m_OK->SetDefault();
-    itemStdDialogButtonSizer66->AddButton(m_OK);
+    itemStdDialogButtonSizer67->AddButton(m_OK);
 
     m_Apply = new wxButton( itemDialog1, wxID_APPLY, _("&Apply"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemStdDialogButtonSizer66->AddButton(m_Apply);
+    itemStdDialogButtonSizer67->AddButton(m_Apply);
 
-    wxButton* itemButton70 = new wxButton( itemDialog1, wxID_HELP, _("&Help"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemStdDialogButtonSizer66->AddButton(itemButton70);
+    wxButton* itemButton71 = new wxButton( itemDialog1, wxID_HELP, _("&Help"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemStdDialogButtonSizer67->AddButton(itemButton71);
 
-    itemStdDialogButtonSizer66->Realize();
+    itemStdDialogButtonSizer67->Realize();
 
 ////@end OutputDialog content construction
 }

@@ -226,6 +226,7 @@ static Boolean __doCmd( struct OOutput* inst ,iONode nodeA ,Boolean update ) {
 
   wOutput.setprot( nodeA, wOutput.getprot( o->props ) );
   wOutput.setblink( nodeA, wOutput.isblink( o->props ) );
+  wOutput.setcolortype( nodeA, wOutput.iscolortype( o->props ) );
   wOutput.setparam( nodeA, wOutput.getparam( o->props ) );
   if( inv )
     wOutput.setvalue( nodeA, StrOp.equals(wOutput.off, state ) ? wOutput.getvalue( o->props ):0 );
