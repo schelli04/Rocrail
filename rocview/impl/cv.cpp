@@ -685,6 +685,7 @@ void CV::OnButton(wxCommandEvent& event)
     m_PTonoff->SetLabel( on ? _T("PT on"):_T("PT off") );
     TraceOp.trc( "cv", TRCLEVEL_INFO, __LINE__, 9999, "PT %s", on?"on":"off" );
     iONode cmd = NodeOp.inst( wProgram.name(), NULL, ELEMENT_NODE );
+    wProgram.setiid( cmd, m_IID->GetValue().mb_str(wxConvUTF8) );
     wProgram.setcmd( cmd, wProgram.ptstat );
     wxGetApp().sendToRocrail( cmd );
     wProgram.setcmd( cmd, on?wProgram.pton:wProgram.ptoff );
