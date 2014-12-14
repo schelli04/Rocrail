@@ -198,11 +198,11 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       adjustBri = True;
 
       float redDif = (255.0 - sunsetRed) / 100.0;
-      red = sunsetRed + (255.0 - sunsetRed) - (redDif * percent);
+      red = sunsetRed + redDif * percent;
       float greenDif = (255.0 - sunsetGreen) / 100.0;
-      green = sunsetGreen + (255.0 - sunsetGreen) - (greenDif * percent);
+      green = sunsetGreen + greenDif * percent;
       float blueDif = (255.0 - sunsetBlue) / 100.0;
-      blue = sunsetBlue + (255.0 - sunsetBlue) - (blueDif * percent);
+      blue = sunsetBlue + blueDif * percent;
     }
 
     if(adjustBri || shutdown) {
