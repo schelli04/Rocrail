@@ -1070,7 +1070,7 @@ static void __evaluatePacket(iOZ21 inst, byte* packet, int packetSize) {
 
   while( packetIdx < packetSize ) {
 
-    if( packet[packetIdx+2] == LAN_LOCONET_Z21_TX || packet[packetIdx+2] == LAN_LOCONET_Z21_RX ) {
+    if( packet[packetIdx+2] == LAN_LOCONET_Z21_TX || packet[packetIdx+2] == LAN_LOCONET_Z21_RX || packet[packetIdx+2] == LAN_LOCONET_FROM_LAN ) {
       __handleLocoNet(inst, packet+packetIdx);
     }
 
