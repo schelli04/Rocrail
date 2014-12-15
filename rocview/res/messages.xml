@@ -21884,8 +21884,8 @@
     <ru txt="Анализ плана" tip="Провести анализ плана пути, для генерирования маршрутов"/>
     <en_AU txt="Analyse" tip="Analyse track plan for generating routes."/>
     <es txt="Analizar" tip="Analizar mapa de vias para generar rutas"/>
-    <it txt="Analyser" tip="Analizzare il tracciato binari per generare gli itinerari"/>
-    <sr_latin txt="Analiza" tip="Analiziraj plan koloseka za određivanje ruta."/>
+    <it txt="Analyser" tip="Analizzare il tracciato per generare itinerari."/>
+    <sr_latin txt="Analiza" tip="Analiziraj plan pruga za određivanje ruta."/>
     <ja txt="解析"/>
     <cs txt="Analyzovat" tip="Analyzovat plán trati pro vytváření cest"/>
     <sv txt="Analysera." tip="Analysera spårplan för att generera tågvägar."/>
@@ -25709,7 +25709,7 @@
     <en txt="Force"/>
     <it txt="Forzare"/>
     <sr_latin txt="Prisilno"/>
-    <de txt="erzwingen"/>
+    <de txt="Erzwingen"/>
     <nl txt="Dwingen"/>
     <sv txt="Tvinga."/>
     <zh_CN txt="强制"/>
@@ -29176,6 +29176,8 @@
     <nl txt="Stop de klok bij spanning uit"/>
     <pt_BR txt="Parar o relógio ao desligar"/>
     <sl txt="Ustavi uro ob izklopu"/>
+    <it txt="Fermare orologio allo spegnimento"/>
+    <sr_latin txt="Zaustavi sat kod isključenja"/>
   </Msg>
   <Msg id="showtrainidinblock">
     <en txt="Show train ID in block"/>
@@ -29184,42 +29186,104 @@
     <nl txt="Toon de trein ID in het blok"/>
     <pt_BR txt="Exibir identificador do trem no bloco"/>
     <sl txt="Prikaži ID vlaka v odseku"/>
+    <it txt="Mostrare ID treno nel blocco"/>
+    <sr_latin txt="Prikaži ID voza u bloku"/>
   </Msg>
   <Msg id="sensormonitorauto">
     <en txt="Sensor monitor in automatic mode"/>
+    <de txt="Rückmeldermonitor im Auto-Modus"/>
+    <en_GB txt="Sensor monitor in automatic mode"/>
+    <it txt="Controllo sensore in modalità automatica"/>
+    <nl txt="Melder monitor in automaat mode"/>
+    <pt_BR txt="Monitor de sensor em modo automático"/>
+    <sr_latin txt="Nadgledanje senzora u automatskom modu"/>
   </Msg>
   <Msg id="userid">
     <en txt="User ID"/>
+    <de txt="Benutzerkennung"/>
+    <en_GB txt="User ID"/>
+    <it txt="ID Utente"/>
+    <nl txt="Gebruikers-ID"/>
+    <pt_BR txt="Identificador de usuário"/>
+    <sr_latin txt="ID korisnika"/>
   </Msg>
   <Msg id="weather" dialog="true">
     <en txt="Weather" tip="Weather setup"/>
+    <de txt="Wetter" tip="Wetter-Einstellungen"/>
+    <en_GB txt="Weather" tip="Weather setup"/>
+    <it txt="Meteo" tip="Impostare meteo"/>
+    <nl txt="Weer" tip="Weer instellingen"/>
+    <sr_latin txt="Vremenske prilike" tip="Podešavanje vremenskih prilika"/>
   </Msg>
   <Msg id="outputs">
     <en txt="Outputs"/>
+    <de txt="Ausgänge"/>
+    <en_GB txt="Outputs"/>
+    <it txt="Uscite"/>
+    <nl txt="Uitgangen"/>
+    <sr_latin txt="Izlazi"/>
   </Msg>
   <Msg id="minbri">
     <en txt="Min. brightness"/>
+    <de txt="Min. Helligkeit"/>
+    <en_GB txt="Min. brightness"/>
+    <it txt="Luminosità minima"/>
+    <nl txt="Min. helderheid"/>
+    <sr_latin txt="Min. osvetljenost"/>
   </Msg>
   <Msg id="maxbri">
     <en txt="Max. brightness"/>
+    <de txt="Max. Helligkeit"/>
+    <en_GB txt="Max. brightness"/>
+    <it txt="Luminosità massima"/>
+    <nl txt="Max. helderheid"/>
+    <sr_latin txt="Maks. osvetljenost"/>
   </Msg>
   <Msg id="sunrise">
     <en txt="Sunrise"/>
+    <de txt="Sonnenaufgang"/>
+    <en_GB txt="Sunrise"/>
+    <it txt="Alba"/>
+    <nl txt="Zonsopgang"/>
+    <sr_latin txt="Izlazak sunca"/>
   </Msg>
   <Msg id="sunset">
     <en txt="Sunset"/>
+    <de txt="Sonnenuntergang"/>
+    <en_GB txt="Sunset"/>
+    <it txt="Tramonto"/>
+    <nl txt="Zonsondergang"/>
+    <sr_latin txt="Zalazak sunca"/>
   </Msg>
   <Msg id="watchnodes">
     <en txt="Watch nodes"/>
+    <de txt="Nodes überwachen"/>
+    <en_GB txt="Watch nodes"/>
+    <it txt="Controllare nodi"/>
+    <nl txt="Bewaak beschikbaarheid"/>
+    <sr_latin txt="Nadzor čvorova"/>
   </Msg>
   <Msg id="night">
     <en txt="Night"/>
+    <de txt="Nacht"/>
+    <en_GB txt="Night"/>
+    <it txt="Notte"/>
+    <nl txt="Nacht"/>
+    <sr_latin txt="Noć"/>
   </Msg>
   <Msg id="brightness">
     <en txt="Brightness"/>
+    <de txt="Helligkeit"/>
+    <en_GB txt="Brightness"/>
+    <it txt="Luminosità"/>
+    <nl txt="Helderheid"/>
+    <sr_latin txt="Sjajnost"/>
   </Msg>
   <Msg id="rgb">
     <en txt="RGB"/>
+    <de txt="RGB"/>
+    <en_GB txt="RGB"/>
+    <nl txt="RGB"/>
   </Msg>
   <Msg id="slidingdaylight">
     <en txt="Sliding daylight"/>
