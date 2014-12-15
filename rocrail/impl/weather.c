@@ -210,10 +210,10 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       float segment = 180.0 / (float)(LAMPS-1);
       int n = 0;
       float angle = (180.0 / (float)(sunset - sunrise)) * (minutes-sunrise);
-
       for( n = 0; n < LAMPS; n++) {
         iOOutput output = (iOOutput)ListOp.get(list, n);
         int lampBri = 0;
+
         float lampangle = segment * n;
         if( lampangle + segment > angle && lampangle < angle + segment ) {
           float lampPercent = 0.0;
@@ -227,6 +227,10 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
         }
         else {
           lampBri = 0;
+        }
+
+        if( !wWeather.isslidingdaylight(data->props) ) {
+          lampBri = brightness;
         }
 
         iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
