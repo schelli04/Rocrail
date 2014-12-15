@@ -47,10 +47,17 @@
 #define CMD_SYSSUB_EMBREAK    0x03
 #define CMD_SYSSUB_STOPCYCLE  0x04
 #define CMD_SYSSUB_SWTIME     0x06
+#define CMD_SYSSUB_ENAPROT    0x08
 #define CMD_SYSSUB_NEWREGNR   0x09
 #define CMD_SYSSUB_OVERLOAD   0x0A
 #define CMD_SYSSUB_STATUS     0x0B
+#define CMD_SYSSUB_GKENNUNG   0x0C
+#define CMD_SYSSUB_RESET      0x80
 
+/* PROTOCOLS */
+#define PROT_MM2              0x01
+#define PROT_MFX              0x02
+#define PROT_DCC              0x04
 
 /* LOCOs */
 #define CMD_LOCO_DISCOVERY    0x01
@@ -95,5 +102,6 @@
 
 /* CAN device control */
 # define CMD_CAN_BOOT_BOUND  0x1B
+# define ID_CAN_BOOT_BOUND   0x36
 
 #endif /* MCS2CONST_H_ */

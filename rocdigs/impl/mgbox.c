@@ -2,8 +2,8 @@
  Rocrail - Model Railroad Control System
 
  Copyright (C) 2002-2014 Rob Versluis, Rocrail.net
-
-
+                    2014 Bert Havinga
+ 
 
 
  This program is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@
 
 /** ------------------------------------------------------------
   * Module: RocDigs
-  * Object: MGBOX
+  * Object: MGBOX using MCS2 wrapper
   * ------------------------------------------------------------
   */
 
@@ -39,7 +39,8 @@
  */
 
 #include <stdlib.h>
-#include "rocdigs/impl/mgbox_impl.h"
+#include <time.h>
+#include "rocdigs/impl/mcs2_impl.h"
 #include "rocdigs/impl/mcs2/mcs2-const.h"
 
 #include "rocs/public/trace.h"
@@ -70,14 +71,17 @@
 
 
 static int instCnt = 0;
-static int rrHash = 0x1314;
+static int rrHash = 0x230F;
+static char idname[17] = { '\0' }; // mfx loc readable name
 
-static void __reportState(iOMGBOXData data);
+
+static void __reportState(iOMCS2Data data);
+
 
 /** ----- OBase ----- */
 static void __del( void* inst ) {
   if( inst != NULL ) {
-    iOMGBOXData data = Data(inst);
+    iOMCS2Data data = Data(inst);
     /* Cleanup data->xxx members...*/
 
     freeMem( data );
@@ -87,47 +91,58 @@ static void __del( void* inst ) {
   return;
 }
 
+
 static const char* __name( void ) {
   return name;
 }
+
 
 static unsigned char* __serialize( void* inst, long* size ) {
   return NULL;
 }
 
+
 static void __deserialize( void* inst,unsigned char* bytestream ) {
   return;
 }
+
 
 static char* __toString( void* inst ) {
   return NULL;
 }
 
+
 static int __count( void ) {
   return instCnt;
 }
+
 
 static struct OBase* __clone( void* inst ) {
   return NULL;
 }
 
+
 static Boolean __equals( void* inst1, void* inst2 ) {
   return False;
 }
+
 
 static void* __properties( void* inst ) {
   return NULL;
 }
 
+
 static const char* __id( void* inst ) {
   return NULL;
 }
+
 
 static void* __event( void* inst, const void* evt ) {
   return NULL;
 }
 
-/** ----- OGBOX ----- */
+
+/** ----- OMCS2 ----- */
 static byte* __makeMsg( int prio, int cmd, Boolean rsp, int len, byte* buffer ) {
   int i = 0;
   byte* msg = allocMem(32);
@@ -142,7 +157,6 @@ static byte* __makeMsg( int prio, int cmd, Boolean rsp, int len, byte* buffer ) 
     msg[5+i]  = buffer[i];
   return msg;
 }
-
 
 
 static Boolean __getFunctionState(iONode node, int fnchanged) {
@@ -199,8 +213,9 @@ static void __setSysMsg( byte* msg, int prio, int cmd, Boolean rsp, int len, lon
   msg[12] = subcmd4;
 }
 
-static void __SoD( iOMGBOX inst ) {
-  iOMGBOXData data = Data(inst);
+
+static void __SoD( iOMCS2 inst ) {
+  iOMCS2Data data = Data(inst);
 
   TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "Start of Day..." );
 
@@ -252,12 +267,11 @@ static void __SoD( iOMGBOX inst ) {
       data->sod_sensorend   = data->sensorend;
     }
   }
-
 }
 
 
-static iONode __translate( iOMGBOX inst, iONode node ) {
-  iOMGBOXData data = Data(inst);
+static iONode __translate( iOMCS2 inst, iONode node ) {
+  iOMCS2Data data = Data(inst);
   iONode rsp   = NULL;
 
   /* System command. */
@@ -282,19 +296,14 @@ static iONode __translate( iOMGBOX inst, iONode node ) {
     }
     else if( StrOp.equals( cmd, wSysCmd.go ) ) {
       byte* out = allocMem(32);
+      __setSysMsg(out, 0, CAN_CMD_PING, False, 0, 0, 0, 0, 0, 0);
+      ThreadOp.post( data->writer, (obj)out );
+      out = allocMem(32);
       TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "System GO" );
       data->power = True;
       __setSysMsg(out, 0, CMD_SYSTEM, False, 5, 0, CMD_SYSSUB_GO, 0, 0, 0);
       ThreadOp.post( data->writer, (obj)out );
       __reportState(data);
-
-      out = allocMem(32);
-      __setSysMsg(out, 0, CMD_SYSTEM, False, 7, 0, CMD_SYSSUB_SWTIME, (data->swtime/10)/256, (data->swtime/10)%256, 0);
-      ThreadOp.post( data->writer, (obj)out );
-
-      out = allocMem(32);
-      __setSysMsg(out, 0, CAN_CMD_PING, False, 0, 0, 0, 0, 0, 0);
-      ThreadOp.post( data->writer, (obj)out );
       return rsp;
     }
     else if( StrOp.equals( cmd, wSysCmd.sod ) ) {
@@ -302,6 +311,7 @@ static iONode __translate( iOMGBOX inst, iONode node ) {
       data->sod_sensorbegin = 0;
       data->sod_sensorend = 0;
       __SoD(inst);
+
       return rsp;
     }
   }
@@ -573,7 +583,7 @@ static iONode __translate( iOMGBOX inst, iONode node ) {
 
 /**  */
 static iONode _cmd( obj inst ,const iONode cmd ) {
-  iOMGBOXData data = Data(inst);
+  iOMCS2Data data = Data(inst);
   iONode rsp = NULL;
   if( cmd != NULL ) {
     if( StrOp.equals( NodeOp.getName( cmd ), wLocList.name() ) ) {
@@ -581,7 +591,7 @@ static iONode _cmd( obj inst ,const iONode cmd ) {
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "locolist received" );
     }
     else {
-      rsp = __translate( (iOMGBOX)inst, cmd );
+      rsp = __translate( (iOMCS2)inst, cmd );
       /* Cleanup Node1 */
       cmd->base.del(cmd);
     }
@@ -591,9 +601,8 @@ static iONode _cmd( obj inst ,const iONode cmd ) {
 }
 
 
-/**  */
 static void _halt( obj inst, Boolean poweroff ) {
-  iOMGBOXData data = Data(inst);
+  iOMCS2Data data = Data(inst);
   if( poweroff ) {
     byte* out = allocMem(32);
     __setSysMsg(out, 0, CMD_SYSTEM, False, 5, 0, CMD_SYSSUB_STOP, 0, 0, 0);
@@ -615,9 +624,8 @@ static void _halt( obj inst, Boolean poweroff ) {
 }
 
 
-/**  */
 static Boolean _setListener( obj inst ,obj listenerObj ,const digint_listener listenerFun ) {
-  iOMGBOXData data = Data(inst);
+  iOMCS2Data data = Data(inst);
   data->listenerObj = listenerObj;
   data->listenerFun = listenerFun;
   return True;
@@ -628,9 +636,11 @@ static Boolean _setRawListener(obj inst, obj listenerObj, const digint_rawlisten
   return True;
 }
 
+
 static byte* _cmdRaw( obj inst, const byte* cmd ) {
   return NULL;
 }
+
 
 /** bit0=power, bit1=programming, bit2=connection */
 static int _state( obj inst ) {
@@ -640,7 +650,7 @@ static int _state( obj inst ) {
 
 /* external shortcut event */
 static void _shortcut(obj inst) {
-  iOMGBOXData data = Data( inst );
+  iOMCS2Data data = Data( inst );
 }
 
 
@@ -649,13 +659,21 @@ static Boolean _supportPT( obj inst ) {
   return False;
 }
 
+
+static void __genHash() {
+  rrHash = rand() % 0x8000 + 0x2000;
+  rrHash &= 0xFF7F;
+  rrHash |= 0x0300;
+}
+
+
 static void __feedbackMCS2Reader( void* threadinst ) {
   iOThread th = (iOThread)threadinst;
-  iOMGBOX mcs2 = (iOMGBOX)ThreadOp.getParm( th );
-  iOMGBOXData data = Data(mcs2);
+  iOMCS2 mcs2 = (iOMCS2)ThreadOp.getParm( th );
+  iOMCS2Data data = Data(mcs2);
 
   ThreadOp.sleep( 1000 );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "MGBOX feedbackpoll started, polling %d S88 units", data->fbmod );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "MCS2 feedbackpoll started, polling %d S88 units", data->fbmod );
   data->sensor = True;
   do {
     ThreadOp.sleep( 250 );
@@ -672,7 +690,8 @@ static void __feedbackMCS2Reader( void* threadinst ) {
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "feedbackpoll ended." );
 }
 
-static void __evaluateMCS2S88( iOMGBOXData mcs2, byte* in, unsigned char* prev ) {
+
+static void __evaluateMCS2S88( iOMCS2Data mcs2, byte* in, unsigned char* prev ) {
   int s88base = in[9] * 16;
   int n = 0;
   int addr = 0;
@@ -708,7 +727,7 @@ static void __evaluateMCS2S88( iOMGBOXData mcs2, byte* in, unsigned char* prev )
 
 
 /* 00 23 67 78 08 00 00 00 0B 00 01 00 00 */
-static void __evaluateSensorEvent( iOMGBOXData mcs2, byte* in ) {
+static void __evaluateSensorEvent( iOMCS2Data mcs2, byte* in ) {
   int bus    = in[5] * 256 + in[6];
   int addr   = in[7] * 256 + in[8];
   int state = in[10];
@@ -729,7 +748,7 @@ static void __evaluateSensorEvent( iOMGBOXData mcs2, byte* in ) {
 }
 
 
-static void __evaluateMCS2Loc( iOMGBOXData mcs2, byte* in ) {
+static void __evaluateMCS2Loc( iOMCS2Data mcs2, byte* in ) {
   int addr  = ( ( in[7] & 0x0F ) << 8 ) + in[8];
   /* mask left nibble of high byte because this is protocol dependent 0x0 for MM, 0x4 for MFX, 0xC for DCC */
   int speed = (in[9] << 8) + in[10];
@@ -745,7 +764,7 @@ static void __evaluateMCS2Loc( iOMGBOXData mcs2, byte* in ) {
     wLoc.setV_raw( nodeC, 0 );
     wLoc.setV_rawMax( nodeC, 1000 );
     wLoc.setdir( nodeC, dir==1 );
-    wLoc.setthrottleid( nodeC, "GBOX" );
+    wLoc.setthrottleid( nodeC, "CS2" );
     /* 1 means forwards, 2 means reverse in cs2 message, in Rocrail true=forward, false=reverse */
 //    wLoc.setcmd( nodeC, wLoc.velocity );
     wLoc.setcmd( nodeC, wLoc.direction );
@@ -755,12 +774,13 @@ static void __evaluateMCS2Loc( iOMGBOXData mcs2, byte* in ) {
     wLoc.setV_rawMax( nodeC, 1000 );
     /* all cs2 speeds are on a scale of 0-1000, regardless of actual locdecoder speedsteps */
     wLoc.setcmd( nodeC, wLoc.velocity );
-    wLoc.setthrottleid( nodeC, "GBOX" );
+    wLoc.setthrottleid( nodeC, "CS2" );
   }
   mcs2->listenerFun( mcs2->listenerObj, nodeC, TRCLEVEL_INFO );
 }
 
-static void __evaluateMCS2Function( iOMGBOXData mcs2, byte* in ) {
+
+static void __evaluateMCS2Function( iOMCS2Data mcs2, byte* in ) {
   int addr     = 0;
   int function = in[9];
   int state    = in[10];
@@ -811,7 +831,7 @@ static void __evaluateMCS2Function( iOMGBOXData mcs2, byte* in ) {
 }
 
 
-static void __reportState(iOMGBOXData data) {
+static void __reportState(iOMCS2Data data) {
   if( wDigInt.isreportstate(data->ini) && data->listenerFun != NULL && data->listenerObj != NULL ) {
     iONode node = NodeOp.inst( wState.name(), NULL, ELEMENT_NODE );
 
@@ -830,7 +850,16 @@ static void __reportState(iOMGBOXData data) {
 }
 
 
-static void __evaluateMCS2System( iOMGBOXData data, byte* in ) {
+static void __setSwitchtime( iOMCS2Data data ) {
+  byte* out = allocMem(32);
+  __setSysMsg(out, 0, CMD_SYSTEM, False, 7, 0, CMD_SYSSUB_SWTIME, (data->swtime/10)/256, (data->swtime/10)%256, 0);
+  ThreadOp.post( data->writer, (obj)out );
+  data->swtimeset = True;
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Switch command time set to: %dms", data->swtime );
+}
+
+
+static void __evaluateMCS2System( iOMCS2Data data, byte* in ) {
   int cmd = in[9];
   int addr4 = in[8];
   int addr3 = in[7];
@@ -839,16 +868,16 @@ static void __evaluateMCS2System( iOMGBOXData data, byte* in ) {
 
   if ( (addr1 == 0) && (addr2 == 0) && (addr3 == 0) && (addr4 == 0) ) {
     if (cmd == CMD_SYSSUB_STOP) {
-      TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "GBOX STOP" );
+      TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "CS2 STOP" );
       data->power = False;
     }
     else if (cmd == CMD_SYSSUB_GO) {
-      TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "GBOX GO" );
+      TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "CS2 GO" );
       data->power = True;
     }
     __reportState(data);
   }
-  if (cmd == CMD_SYSSUB_STATUS && data->gbUID != 0) {
+  if( cmd == CMD_SYSSUB_STATUS && data->gbUID != 0 ) {
     switch (in[10]){
     case 1:
       //Current in mA
@@ -870,45 +899,58 @@ static void __evaluateMCS2System( iOMGBOXData data, byte* in ) {
   }
 }
 
-static void __evaluatePing( iOMGBOXData data, byte* in ) {
-  const int sysgerken = 0xFF10;
-  int cstype = in[11] * 256 + in[12];
-  cstype &= 0xFFF0;
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Evaluate Ping for type: 0x%04X", cstype );
-  if( cstype == 0x0010 ) {
-    data->gbUID = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Gleisbox UID: 0x%04X stored", data->gbUID );
-  }
-  else if( cstype == 0x0000 ) {
-    data->mcs2gfpUID = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "CS2-GFP UID: 0x%04X stored", data->mcs2gfpUID );
-    if( data->gbUID != 0 ) {
-      /* error */
-      TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "ERROR: Gleisbox and CS2 found on CAN bus, Gleisbox 0x%04X cleared", data->gbUID );
-      data->gbUID = 0;
-    }
-  }
-  else if( cstype == 0xFFF0 ) {
-    data->mcs2guiUID = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "CS2-GUI UID: 0x%04X stored", data->mcs2guiUID );
-  }
-// despite the CAN documentation the "Geraetekennung" of a MS2 is 0x0032
-  else if( cstype == 0x0030 ) {
-    data->ms2UID = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "MS-2 UID: 0x%04X stored", data->ms2UID );
-  }
 
+static void __evaluateMCS2PingCmd( iOMCS2Data data, byte* in ) {
+  if( data->mcs2guiUID == 0 && data->ms2UID == 0 ) {
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "User interface detected, ping send to identify" );
+    byte  buffer[32];
+    buffer[0]  = 0;
+    ThreadOp.post( data->writer, (obj)__makeMsg(0, CAN_CMD_PING, False, 0, buffer) );
+  }
+}
+
+
+static void __evaluateMCS2Ping( iOMCS2Data data, byte* in ) {
+//  const int sysgerken = 0xFF10;
+  int cstype = in[11] * 256 + in[12];
+  if( in[1] == ( CAN_ID_PING | BIT_RESPONSE ) ) {
+    cstype &= 0xFFF0;
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Evaluate Ping for type: 0x%04X", cstype );
+    if( cstype == 0x0010 ) {
+      data->gbUID = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Gleisbox UID: 0x%04X stored", data->gbUID );
+    }
+    else if( cstype == 0x0000 ) {
+      data->mcs2gfpUID = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "CS2-GFP UID: 0x%04X stored", data->mcs2gfpUID );
+      if( data->gbUID != 0 ) {
+        /* error */
+        TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "ERROR: Gleisbox and CS2 found on CAN bus, Gleisbox 0x%04X cleared", data->gbUID );
+        data->gbUID = 0;
+      }
+    }
+    else if( cstype == 0xFFF0 ) {
+      data->mcs2guiUID = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "CS2-GUI UID: 0x%04X stored", data->mcs2guiUID );
+    }
+    /* despite the CAN documentation the "Geraetekennung" of a MS2 is 0x0032 */
+    else if( cstype == 0x0030 ) {
+      data->ms2UID = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "MS-2 UID: 0x%04X stored", data->ms2UID );
+    }
+
+    if( !data->swtimeset && data->mcs2gfpUID !=0 )
+        __setSwitchtime(data);
+  }
   int rcvHash = (in[2] << 8) + in[3];
 
   if( rcvHash == rrHash ) {
-    rrHash = rand() % 0x10000;
-    rrHash &= 0xFF7F;
-    rrHash |= 0x0300;
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Duplicate CANbus address detect, new hash generated: 0x%04X", rrHash );
+    __genHash();      
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Duplicate CANbus address detect for hash: 0x%04X, new hash generated: 0x%04X", rcvHash, rrHash );
   }
-
-  /*  if requested announce ourself as a CANbus member */
-  byte  buffer[32];
+return;
+  /*  if requested announce ourself as a CANbus member, nice but for now it only generates troubles */
+/*  byte  buffer[32];
   buffer[0]  = 'R';
   buffer[1]  = 'c';
   buffer[2]  = 'r';
@@ -916,11 +958,12 @@ static void __evaluatePing( iOMGBOXData data, byte* in ) {
   buffer[4]  = (revisionnr / 100) & 0xFF;
   buffer[5]  = (revisionnr % 100) & 0xFF;
   buffer[6]  = (sysgerken / 256) & 0xFF; /* GUI */
-  buffer[7]  = (sysgerken % 256) & 0xFF; /* an non reserved id :( */
-  ThreadOp.post( data->writer, (obj)__makeMsg(0, CAN_CMD_PING, True, 8, buffer) );
+/*  buffer[7]  = (sysgerken % 256) & 0xFF; /* an non reserved id :( */
+/*  ThreadOp.post( data->writer, (obj)__makeMsg(0, CAN_CMD_PING, True, 8, buffer) );
+*/
 }
 
-static void __evaluateMCS2Switch( iOMGBOXData mcs2, byte* in ) {
+static void __evaluateMCS2Switch( iOMCS2Data mcs2, byte* in ) {
   int addr1 = in[7] & 0x0F;
   /* mask left nibble of high byte, this is not part of the actual address (always 0x3 for accessory) */
   int addr2 = in[8];
@@ -943,31 +986,29 @@ static void __evaluateMCS2Switch( iOMGBOXData mcs2, byte* in ) {
   mcs2->listenerFun( mcs2->listenerObj, nodeC, TRCLEVEL_INFO );
 }
 
-static Boolean __findLocinList(iOMGBOXData data) {
 
+static Boolean __findLocinList(iOMCS2Data data) {
   if( data->locolist != NULL ) {
     iONode loProps = wLocList.getlc( data->locolist );
 
     while ( loProps != NULL ) {
       const char *loName = wLoc.getid( loProps );
 
-      int addr  = wLoc.getaddr(loProps);
       byte addrFormat = 0x00;
-
-      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "found in lclist: name %s, addr: %d", loName, addr);
-
+//      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "comparing %s in locolist name: %s, registered sid: %d, requested sid: %d", data->id, loName, wLoc.getaddr(loProps), data->sid);
+      
       if( StrOp.equals( wLoc.prot_F, wLoc.getprot( loProps ) )  || StrOp.equals( wLoc.prot_P, wLoc.getprot( loProps ) ) ) {
         /* mfx */
         addrFormat = 0x40;
-        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "loc: %s sid: %d protocol: %s", loName, data->sid, wLoc.getprot( loProps ));
       }
-      if( (addr == data->sid) && (addrFormat == 0x40) ) {
-        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "mfx discovered sid loc already in list, for sid: %d, name: %s, iid: %s", data->sid, loName, data->iid);
+      if( (wLoc.getaddr(loProps) == data->sid) && (addrFormat == 0x40) ) {
+        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "mfx discovered loc already in list, sid: %d, name: %s, iid: %s, preventing duplicate.", data->sid, loName, data->iid);
         return True;
       }
+      
       if( StrOp.equals( data->id, loName ) ) {
-        addr  = wLoc.getaddr(loProps);
-        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "loc Id already in list, for name: %s, registered sid: %d, requested sid: %d, iid: %s", loName, addr, data->sid, data->iid);
+        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "loc id already in list, for name: %s, registered sid: %d, requested sid: %d, iid: %s", loName, wLoc.getaddr(loProps), data->sid, data->iid);
+        data->sid = wLoc.getaddr(loProps);
         return True;
       }
       loProps = wLocList.nextlc(data->locolist, loProps);
@@ -976,12 +1017,47 @@ static Boolean __findLocinList(iOMGBOXData data) {
   return False;
 }
 
-static iONode __getUID(iOMGBOXData data, unsigned int uid) {
-  int sid;
+
+static Boolean __findSidinLocList(iOMCS2Data data) {
+int addr;
+  if( data->locolist != NULL ) {
+    iONode loProps = wLocList.getlc( data->locolist );
+
+    while ( loProps != NULL ) {
+      const char *loName = wLoc.getid( loProps );
+      if( wLoc.getaddr(loProps) == data->sid ) {
+        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "locolist requested sid: %d found, name: %s", wLoc.getaddr(loProps), loName);
+        return True;
+      }
+      loProps = wLocList.nextlc(data->locolist, loProps);
+    }
+  return False;
+  }
+}
+
+
+static Boolean __findSidinProductList(iOMCS2Data data) {
+  
   iONode loco = wMCS2.getproduct(data->mcs2ini);
 
   while( loco != NULL ) {
-    if( wProduct.getpid(loco) == uid ) {
+    if( wProduct.getsid(loco) == data->sid ) {
+      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "productlist requested sid: %d found, name: %s", wProduct.getsid(loco), wProduct.getdesc(loco));
+      return True;
+    }
+    loco = wMCS2.nextproduct(data->mcs2ini, loco);
+  }
+  return False;
+}
+
+
+static iONode __getUID(iOMCS2Data data) {
+  int sid;
+  
+  iONode loco = wMCS2.getproduct(data->mcs2ini);
+
+  while( loco != NULL ) {
+    if( wProduct.getpid(loco) == data->uid ) {
       return loco;
     }
     loco = wMCS2.nextproduct(data->mcs2ini, loco);
@@ -989,7 +1065,20 @@ static iONode __getUID(iOMGBOXData data, unsigned int uid) {
   return NULL;
 }
 
-static iONode __getSID(iOMGBOXData data, int sid) {
+
+static int __countUID(iOMCS2Data data) {
+  int cnt = 0;
+  iONode loco = wMCS2.getproduct(data->mcs2ini);
+
+  while( loco != NULL ) {
+    cnt++;
+    loco = wMCS2.nextproduct(data->mcs2ini, loco);
+  }
+  return cnt;
+}
+
+
+static iONode __getBySID(iOMCS2Data data, int sid) {
   iONode loco = wMCS2.getproduct(data->mcs2ini);
 
   while( loco != NULL ) {
@@ -1001,69 +1090,90 @@ static iONode __getSID(iOMGBOXData data, int sid) {
   return NULL;
 }
 
-static void __getnewSID(iOMGBOXData data) {
-  int sid = 200;
 
-  iONode loco = wMCS2.getproduct(data->mcs2ini);
-
-  while( loco != NULL ) {
-    if( wProduct.getsid(loco) > sid ) {
-      sid = wProduct.getsid(loco);
-      data->sid = sid+1;
-      }
-    }
+static byte __getnewSID(iOMCS2Data data) {
+  if( data->sid < 3 )
+    data->sid = 3;
+  while( __findSidinLocList(data) || __findSidinProductList(data) ) {
+    data->sid++;
   }
-
-static void __clearRegMfxVar(iOMGBOXData data) {
-  data->regloc = False;
-  data->id     = NULL;
-  data->sid    = 0;
-  data->reguid   = 0;
+  TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "new sid: %d", data->sid);
+  return data->sid;
 }
 
-static void __checkForValidName(iOMGBOXData data, char* idname) {
-  int i;
 
-  if( idname != NULL && StrOp.len(idname) > 0 ) {
+static void __clearRegMfxVar(iOMCS2Data data) {
+  int i;
+  data->sid = 0;
+  data->uid = 0;
+  data->xS2handling = 0;
+  data->mfxDetectInProgress = False;
+  for( i=0; i<17 ; i++ ) {
+    idname[i] = '\0';
+  }
+}
+
+
+static Boolean __checkForValidName(iOMCS2Data data) {
+  int i;
+  char adaptname[17];
+  TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "check for valid name: %s", idname);
+  if( StrOp.len(idname) > 0 ) {
     for( i=0 ; i < StrOp.len(idname) ; i++ ) {
       if( idname[i] < ' '  || idname[i] > '~' || i == 17) {
-        StrOp.fmt(idname, "mfx-%d", data->sid);
-        break;
-      }
+        StrOp.fmtb( adaptname, "mfx-%d", data->sid);
+        StrOp.copy( idname, adaptname );
+        TraceOp.trc(name, TRCLEVEL_ERROR, __LINE__, 9999, "Invalid name, adapting loconame to: %s", idname);
+        return False; 
+      } 
     }
   }
   else {
-    StrOp.fmt(idname, "mfx-%d", data->sid);
+    StrOp.fmtb( adaptname, "mfx-%d", data->sid);
+    StrOp.copy( idname, adaptname );
+    TraceOp.trc(name, TRCLEVEL_ERROR, __LINE__, 9999, "zero length, adapted loconame: %s", idname);
+    return False;
   }
-  data->id = idname;
+  return True;
 }
 
-static void __registerMCS2DetectedMfxLoco(iOMGBOXData data) {
+
+static void __reqFullName(iOMCS2Data data, byte* in) {
+  byte buffer[32];
+  buffer[0] = 0;
+  buffer[1] = 0;
+  buffer[2] = in[9] | 0x40; 
+  buffer[3] = in[10];
+  buffer[4] = 0x04; // index 1
+  buffer[5] = 0x03; //cv3
+  buffer[6] = 0x10;
+  ThreadOp.post(data->writer, (obj) __makeMsg(0, CMD_LOCO_READ_CONFIG, False, 7, buffer));
+  TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Requesting full name for UID=0x%08X, address %d", data->uid, in[10]);
+}
+
+static void __registerMCS2DetectedMfxLoco(iOMCS2Data data) {
   char identifier[32] = {'\0'};
-
+  iONode loco = __getUID(data);
   if( !__findLocinList(data) ) {
-    TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Registering request sid: %d, UID: 0x%08X, id: %s, controllerpath; %s", data->sid, data->reguid, data->id, data->iid);
+    StrOp.copy( idname, wProduct.getdesc(loco) );            
 
-    iONode loco = __getUID(data, data->reguid);
+    TraceOp.trc(name, TRCLEVEL_MONITOR, __LINE__, 9999, "Registering request id: %s, sid: %d, UID: 0x%08X,  controllerpath: %s", data->id, data->sid, data->uid, data->iid);
 
-    if( loco != NULL ) {
-      if ( wProduct.getsid(loco) != data->sid ) {
-        NodeOp.removeChild(data->ini, loco);
-        loco = NULL;
-      }
-    }
     if( loco == NULL ) {
       loco = NodeOp.inst(wProduct.name(), data->mcs2ini, ELEMENT_NODE);
       NodeOp.addChild(data->mcs2ini, loco);
-      wProduct.setpid(loco, data->reguid);
-      wProduct.setsid(loco, data->sid);
+      wProduct.setpid(loco, data->uid);
+      if( data->ms2UID == 0 && data->mcs2guiUID == 0 && data->sid == 1 ) {
+        wProduct.setsid(loco, __getnewSID( data));
+      }
       wProduct.setdesc(loco, data->id);
+      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "product added sid: %d, UID: 0x%08X, id: %s",  wProduct.getsid(loco), data->uid, data->id);
     }
+    wProduct.setcid(loco,1);
 
     iONode lc = NodeOp.inst(wLoc.name(), NULL, ELEMENT_NODE);
-
     wLoc.setaddr(lc, wProduct.getsid(loco));
-    StrOp.fmtb(identifier, "%u", data->reguid);
+    StrOp.fmtb(identifier, "%u", data->uid);
     wLoc.setidentifier(lc, identifier);
     wLoc.setid(lc, data->id);
     wLoc.setprot(lc, wLoc.prot_F); // MFX
@@ -1072,24 +1182,28 @@ static void __registerMCS2DetectedMfxLoco(iOMGBOXData data) {
       wLoc.setiid(lc, data->iid);
     data->listenerFun(data->listenerObj, lc, TRCLEVEL_INFO);
   }
+  else {
+    TraceOp.trc(name, TRCLEVEL_MONITOR, __LINE__, 9999, "ID: %s, sid: %d,  UID: %08X found in locolist, marked as registered", data->id, data->sid, data->uid);
+    wProduct.setcid(loco,1);
+  }
   __clearRegMfxVar(data);
-  data->regloc = False;
 }
 
-static void __evaluateMCS2ReadConfig(iOMGBOXData data, byte* in, char* idname) {
+
+static void __evaluateMCS2ReadConfig(iOMCS2Data data, byte* in) {
   int index =  (in[9] & 0xFC) >> 2;
   int cv    =  (in[9] & 0x03) * 256 + in[10];
   int addr  =  ((in[7] & 0x0F) << 8) + in[8];
   int value =  in[11];
   int i     =  0;
+  int dlc   =  in[4];
 
-  int dlc = in[4];
   if( dlc == 7 ) {
-    TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "index: %d, cv: %d, value: %d", index, cv, value);
+    TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "sid: %d, index: %d, cv: %d, value: 0x%02X", addr, index, cv, value);
     if( (index != 0) && (cv == 3) ) {
 
       if( index == 1 && idname != NULL && StrOp.len(idname) > 0 ) {
-        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "length idname: %d", StrOp.len(idname));
+        data->mfxDetectInProgress = True;
         for( i = 0; i < StrOp.len(idname) ; i++ ) {
           idname[i] = '\0';
         }
@@ -1097,32 +1211,38 @@ static void __evaluateMCS2ReadConfig(iOMGBOXData data, byte* in, char* idname) {
 
       idname[index - 1] = in[11];
       if( index == 0x10 ) {
-        __checkForValidName(data, idname);
-
-    /* in case of a xS2 controlled procedure, the sid adress changed from 1 to x in the end of the registering procedure */
-        iONode loco = __getUID(data, data->reguid);
-        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Stored name: %s", idname);
-        if( (loco == NULL) && (data->regloc == True) ) {
-          if( (data->ms2UID == 0) && (data->mcs2guiUID == 0) && (data->sid == 1) ) {
-            __getnewSID( data);
-            byte  buffer[32];
-
-            buffer[0]  = in[5];
-            buffer[1]  = in[6];
-            buffer[2]  = in[7];
-            buffer[3]  = in[8];
-            buffer[4]  = (data->sid / 256) & 0xFF;
-            buffer[5]  = (data->sid % 256) & 0xFF;
-            ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_LOCO_BIND, False, 6, buffer) );
-          }
-        }
-        if( (data->sid > 1) && (data->regloc == True) ) {
-          TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "sid: %d, UID: 0x%08X, loc %s, iid: %s", wProduct.getsid(loco), data->reguid, data->id, data->iid);
+        data->sid = addr;
+        __checkForValidName(data);
+  	/* in case of a xS2 controlled procedure, the sid adress changed from 1 to x in the end of the registering procedure */ 
+        iONode loco = __getBySID(data, addr);
+        wProduct.setdesc(loco, data->id);
+        
+        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "catched name sid: %d, UID: 0x%08X, loc %s, iid: %s", addr, wProduct.getpid(loco), data->id, data->iid);
+        if( addr > 1 ) {   
+          TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "register from readconfig name sid: %d, UID: 0x%08X, loc %s, iid: %s", addr, wProduct.getpid(loco), data->id, data->iid);
+          data->uid = wProduct.getpid(loco);
           __registerMCS2DetectedMfxLoco(data);
+        }
+        if( data->ms2UID == 0 && data->mcs2guiUID == 0 && (wProduct.getsid(loco) == 1 || data->sid == 1) ) {
+          if( __findLocinList(data)) {
+            wProduct.setsid(loco, data->sid);
+          } 
+          else {
+            wProduct.setsid(loco, __getnewSID( data));
+          }
+          byte  buffer[32];
+          buffer[0]  = (wProduct.getpid(loco) & 0xFF000000) >> 24;;
+          buffer[1]  = (wProduct.getpid(loco) & 0x00FF0000) >> 16;
+          buffer[2]  = (wProduct.getpid(loco) & 0x0000FF00) >> 8;
+          buffer[3]  = (wProduct.getpid(loco) & 0x000000FF);
+          buffer[4]  = (wProduct.getsid(loco) / 256) & 0xFF;
+          buffer[5]  = (wProduct.getsid(loco) % 256) & 0xFF;
+          ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_LOCO_BIND, False, 6, buffer) );
+          TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "bind posted for UID: 0x%08X, sid: %d", wProduct.getpid(loco), wProduct.getsid(loco) );
         }
       }
     }
-
+    
     iONode node = NodeOp.inst( wProgram.name(), NULL, ELEMENT_NODE );
 
     cv = in[9]*256 + in[10];
@@ -1139,123 +1259,190 @@ static void __evaluateMCS2ReadConfig(iOMGBOXData data, byte* in, char* idname) {
 }
 
 
-static void __evaluateMCS2WriteConfig( iOMGBOXData data, byte* in ) {
+static void __evaluateMCS2WriteConfig( iOMCS2Data data, byte* in ) {
   int dlc = in[4];
+  int index =  (in[9] & 0xFC) >> 2;
+  int cv    =  (in[9] & 0x03) * 256 + in[10];
+  int addr  =  ((in[7] & 0x0F) << 8) + in[8];
+  int value =  in[11];
+  int i     =  0;
   if( dlc == 8 ) {
-    iONode node = NodeOp.inst( wProgram.name(), NULL, ELEMENT_NODE );
-    int cv = in[9]*256 + in[10];
-    int value = in[11];
+    TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "index: %d, cv: %d, value: 0x%02X", index, cv, value);
+    if( (index != 0) && (cv == 3) ) {
 
-    wProgram.setcv( node, cv );
-    wProgram.setvalue( node, value );
-    wProgram.setcmd( node, wProgram.datarsp );
-    if( data->iid != NULL )
-      wProgram.setiid( node, data->iid );
-
-    if( data->listenerFun != NULL && data->listenerObj != NULL )
-      data->listenerFun( data->listenerObj, node, TRCLEVEL_INFO );
-
-  }
-}
-
-
-static void __evaluateMCS2Verify( iOMGBOXData mcs2, byte* in ) {
-/* 00064711 6 FF FA 8C 43 00 05 */
-  unsigned int uid = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
-  int sid = (in[9] << 8) + in[10];
-
-  if( wMCS2.isbind(mcs2->mcs2ini) ) {
-    if( sid > 0 ) {
-      mcs2->reguid = uid;
-      mcs2->sid  = sid;
-      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Bind verified succesfull for UID=0x%08X to address %d", uid, sid);
-      if( ((mcs2->ms2UID == 0) && (mcs2->mcs2guiUID == 0)) || ((mcs2->id == NULL) && (mcs2->sid > 1) && (mcs2->regloc == True)) ) {
-        byte buffer[32];
-        buffer[0] = 0;
-        buffer[1] = 0;
-        buffer[2] = in[9] | 0x40;
-        buffer[3] = in[10];
-        buffer[4] = 0x04; // index 1
-        buffer[5] = 0x03; //cv3
-        buffer[6] = 0x10;
-        ThreadOp.post(mcs2->writer, (obj) __makeMsg(0, CMD_LOCO_READ_CONFIG, False, 7, buffer));
-        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Requesting full name for UID=0x%08X, address %d", uid, sid);
-        mcs2->regloc = True;
-      }
-      else {
-      /* sid 1 is used during registering */
-        if( (sid > 1) ){
-            TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Registering by verify UID=0x%08X, address %d", uid, sid);
-            __registerMCS2DetectedMfxLoco(mcs2);
+      if( index == 1 && StrOp.len(idname) > 0 ) {
+        data->mfxDetectInProgress = True;
+        for( i = 0; i < StrOp.len(idname) ; i++ ) {
+          idname[i] = '\0';
         }
+      }
+
+      idname[index - 1] = in[11];
+      if( in[11] == 0 ) {
+  	/* in case of a xS2 controlled procedure, 0 means end of name */ 
+        iONode loco = __getBySID(data, addr);
+        data->uid = wProduct.getpid(loco);
+        data->sid = wProduct.getsid(loco);
+        wProduct.setdesc(loco, data->id);
+        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "sid: %d, UID: 0x%08X, loc %s, iid: %s", data->sid, data->uid, data->id, data->iid);
+        TraceOp.trc(name, TRCLEVEL_MONITOR, __LINE__, 9999, "Name changed: %s, address: %d, UID: 0x%08X, valid at restart", data->id, wProduct.getsid(loco), wProduct.getpid(loco));
+        if( __checkForValidName(data) )
+            __registerMCS2DetectedMfxLoco(data);
       }
     }
     else {
-      mcs2->regloc = False;
-      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Verify failed for UID=0x%08X", uid);
-      __clearRegMfxVar(mcs2);
+      iONode node = NodeOp.inst( wProgram.name(), NULL, ELEMENT_NODE );
+      cv = in[9]*256 + in[10];
+
+      wProgram.setcv( node, cv );
+      wProgram.setvalue( node, value );
+      wProgram.setcmd( node, wProgram.datarsp );
+      if( data->iid != NULL )
+          wProgram.setiid( node, data->iid );
+
+      if( data->listenerFun != NULL && data->listenerObj != NULL )
+          data->listenerFun( data->listenerObj, node, TRCLEVEL_INFO );
     }
   }
 }
 
+static void __evaluateMCS2Verify( iOMCS2Data mcs2, byte* in ) {
+/* 00064711 6 FF FA 8C 43 00 05 */
+  mcs2->sid  = (in[9] << 8) + in[10];
 
-static void __evaluateMCS2Bind( iOMGBOXData mcs2, byte* in ) {
-  unsigned int uid = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
-  int sid = (in[9] << 8) + in[10];
-//  char descname[17];
-  if ( wMCS2.isbind(mcs2->mcs2ini)) {
-    TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "mfx bind invoked for UID=0x%08X, for sid %d: ", uid, sid);
-    mcs2->regloc = True;
+  if( wMCS2.isbind(mcs2->mcs2ini) ) {
+    if( mcs2->sid > 0 ) {
+      mcs2->uid =  (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
+      iONode loco = __getUID(mcs2);
+      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Bind verified succesfull for UID=0x%08X to address %d", mcs2->uid, mcs2->sid);
+
+      if( mcs2->ms2UID == 0 && mcs2->mcs2guiUID == 0 && mcs2->sid == 1 && wProduct.getcid(loco) == 0 ) {
+        __reqFullName(mcs2, in);
+        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "full name requested for sid: %d", mcs2->sid);
+      }
+      /* sid 1 is used during registering */
+      if( (mcs2->sid > 1)  && wProduct.getcid(loco) == 0 ){
+        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Registering by verify UID=0x%08X, address %d", mcs2->uid, mcs2->sid);
+        StrOp.copy( idname, wProduct.getdesc(loco) );            
+        if( !__checkForValidName(mcs2)) {
+          __reqFullName(mcs2, in);
+        }
+        else { 
+          __registerMCS2DetectedMfxLoco(mcs2);
+        }
+      }
+      else {
+        if( wProduct.getcid(loco) == 1 ){
+          if( mcs2->sid > 1 ) {
+            TraceOp.trc(name, TRCLEVEL_MONITOR, __LINE__, 9999, "ID: %s, sid: %d,  UID: %08X already handled or created", wProduct.getdesc(loco), mcs2->sid, mcs2->uid);
+          }
+          else {
+            TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "ID: %s, sid: %d,  UID: %08X already handled or created", wProduct.getdesc(loco), mcs2->sid, mcs2->uid);
+          }
+        }
+        if( mcs2->sid > 1 )
+            __clearRegMfxVar(mcs2);
+      }
+    }
+    else {
+      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Verify failed for UID=0x%08X", mcs2->uid);
+      __clearRegMfxVar(mcs2);
+    }
+  }
+  else {
+    TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Verify for UID=0x%08X discarded (bind is not activated)", mcs2->uid);
+  }
+}
+
+
+static void __evaluateMCS2Bind( iOMCS2Data mcs2, byte* in ) {
+  mcs2->uid = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
+  mcs2->sid = (in[9] << 8) + in[10];
+  if ( wMCS2.isbind(mcs2->mcs2ini) ) {
+    TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "mfx bind invoked for UID=0x%08X, for sid: %d", mcs2->uid, mcs2->sid);
+    mcs2->mfxDetectInProgress = True;
+    iONode loco = __getUID(mcs2);
+    if( loco == NULL ) {
+      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Bind UID=0x%08X creating product registered to address %d", mcs2->uid, mcs2->sid);
+      loco = NodeOp.inst(wProduct.name(), mcs2->mcs2ini, ELEMENT_NODE);
+      NodeOp.addChild(mcs2->mcs2ini, loco);
+      wProduct.setpid(loco, mcs2->uid);
+      wProduct.setsid(loco, mcs2->sid);
+    }  
+    else {
+      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Bind UID=0x%08X (%s) already registered to address %d", mcs2->uid, wProduct.getdesc(loco), wProduct.getsid(loco));
+      if( wProduct.getdesc(loco) != NULL ) { 
+        StrOp.copy( idname, wProduct.getdesc(loco) );
+      }
+    }       
+
+    if( wProduct.getsid(loco) != mcs2->sid && mcs2->sid > 1 ) {
+      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Bind UID=0x%08X modifying sid %d to new sid %d", mcs2->uid, wProduct.getsid(loco), mcs2->sid);
+      wProduct.setsid(loco, mcs2->sid);
+    }
     if( (mcs2->ms2UID == 0) && (mcs2->mcs2guiUID == 0) ) {
-      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Bind acknowledged, requesting Verify UID=0x%08X on sid %d", uid, sid);
+      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Bind acknowledged, requesting Verify UID=0x%08X on sid: %d", mcs2->uid, mcs2->sid);
       byte  buffer[32];
       buffer[0]  = in[5];
       buffer[1]  = in[6];
       buffer[2]  = in[7];
       buffer[3]  = in[8];
-      buffer[4] = (sid / 256) & 0xFF;
-      buffer[5] = (sid % 256) & 0xFF;
+      buffer[4] = (mcs2->sid / 256) & 0xFF;
+      buffer[5] = (mcs2->sid % 256) & 0xFF;
       ThreadOp.post(mcs2->writer, (obj) __makeMsg(0, CMD_LOCO_VERIFY, False, 6, buffer));
     }
     else {
-      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Bind listening for CS2/MS2 controlled procedure for UID=0x%08X on sid %d", uid, sid);
+      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Bind listening (no action) for CS2/MS2 controlled procedure. UID: 0x%08X on sid: %d", mcs2->uid, mcs2->sid);
     }
-    }
+  }
   else {
-      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Discovery UID=0x%08X (bind is not activated)", uid);
+    TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Bind for UID=0x%08X discarded (bind is not activated)", mcs2->uid);
   }
 }
 
 
-static void __evaluateMCS2Discovery( iOMGBOXData mcs2, byte* in ) {
+static void __evaluateMCS2Discovery( iOMCS2Data mcs2, byte* in ) {
 /*
   T000303005FFE405E920<\r>
 */
   int dlc = in[4];
-  char descname[17];
-  if( dlc == 5 ) {
-    unsigned int uid = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
-    int protocoltype = in[9];
-    mcs2->reguid = uid;
-    iONode loco      = __getUID(mcs2, uid);
-    if( wMCS2.isbind(mcs2->mcs2ini) ) {
-      if ((mcs2->ms2UID == 0) && (mcs2->mcs2guiUID == 0)) {
-        if ( loco != NULL ) {
-          TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Discovery UID=0x%08X (%s) already registered to address %d", uid, wProduct.getdesc(loco), wProduct.getsid(loco));
-          mcs2->sid = wProduct.getsid(loco);
-          StrOp.fmt(descname, "%s", wProduct.getdesc(loco));
-          mcs2->id = descname;
-        }
-        else {
-          mcs2->sid = 1;
-          TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Discovery UID=0x%08X to temporary address %d", uid, mcs2->sid);
-        }
-      byte  buffer[32];
+  if( dlc == 0 ){
+    mcs2->mfxDetectInProgress = False;
+    TraceOp.trc(name, TRCLEVEL_MONITOR, __LINE__, 9999, "Discovery completed, ready for operation");
+  }
 
-      buffer[0]  = in[5];
-      buffer[1]  = in[6];
-      buffer[2]  = in[7];
-      buffer[3]  = in[8];
+  if( dlc == 6 && (in[5] & in[6] & in[7] & in[8] == 0xFF) && in[9] == 0x03 && wMCS2.isbind(mcs2->mcs2ini) ) {
+    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "Start mfx detect by gfp software detected" );
+    mcs2->mfxDetectInProgress = True;
+  }
+
+  if( dlc == 5 && mcs2->uid != (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8] ) {
+    mcs2->uid = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
+    int protocoltype = in[9];
+    TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Discovery requested for UID=0x%08X", mcs2->uid);
+    if( wMCS2.isbind(mcs2->mcs2ini) ) {
+      mcs2->mfxDetectInProgress = True;
+      iONode loco = __getUID(mcs2);
+      TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Registration status for UID=0x%08X (%s) %d", mcs2->uid, wProduct.getdesc(loco), wProduct.getcid(loco));
+      if ( loco != NULL ) {
+        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Discovery UID=0x%08X (%s) already registered to address %d", mcs2->uid, wProduct.getdesc(loco), wProduct.getsid(loco));
+        mcs2->sid = wProduct.getsid(loco);
+        if( wProduct.getdesc(loco) != NULL ) { 
+          StrOp.copy( idname, wProduct.getdesc(loco) );
+        }
+        TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Discovery UID=0x%08X name in structure: %s", wProduct.getpid(loco), mcs2->id);
+      }
+      if( mcs2->ms2UID == 0 && mcs2->mcs2guiUID == 0) {
+        if ( loco == NULL || StrOp.len(idname) == 0 ) {
+          mcs2->sid = 1;
+          TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Discovery UID=0x%08X to temporary address %d", mcs2->uid, mcs2->sid);
+          wProduct.setsid(loco, 1);
+        }
+        byte  buffer[32];
+        buffer[0]  = in[5];
+        buffer[1]  = in[6];
+        buffer[2]  = in[7];
+        buffer[3]  = in[8];
         buffer[4]  = (mcs2->sid / 256) & 0xFF;
         buffer[5]  = (mcs2->sid % 256) & 0xFF;
 
@@ -1263,18 +1450,58 @@ static void __evaluateMCS2Discovery( iOMGBOXData mcs2, byte* in ) {
         TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Bind requested by Rocrail for sid %d", mcs2->sid);
       }
       else {
-          TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Discovered UID=0x%08X handled by CS2/MS2", uid);
+            TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "Discovered UID=0x%08X handled by CS2/MS2", mcs2->uid);
       }
     }
     else {
-      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Discovery UID=0x%08X (bind is not activated)", uid );
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Discovery discarded for UID=0x%08X (bind is not activated)", mcs2->uid );
     }
-
   }
 }
 
+static void __evaluateMCS2CANBootBound( iOMCS2Data data, byte* in ) {
+  int cstype = in[11] * 256 + in[12];
+  int highword = 0;
+  int lowword =0;
+  int controlhash =0;
+  int rcvHash =0;
 
-static void __evaluateCCSwitch( iOMGBOXData mcs2, byte* in ) {
+  cstype &= 0xFFF0;
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Evaluate CAN boot bound for type: 0x%04X", cstype );
+  if( cstype == 0x0010 && data->ms2UID == 0 && data->mcs2gfpUID == 0 && data->gbUID == 0 ) {
+      rcvHash = (in[2] << 8) + in[3];
+      highword = (in[5] << 8) + in[6];
+      lowword = (in[7] << 8) + in[8];
+      controlhash = ( highword ^ lowword ) | 0x0300;   /* this is the way according to the documentation S.6 */
+      lowword ^= highword;                             /* this is the way it is implemented in Gleisbox V1.39 */
+      if( controlhash == rcvHash || lowword == rcvHash ) {
+        data->gbUID = (in[5] << 24) + (in[6] << 16) + (in[7] << 8) + in[8];
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Gleisbox found with UID: 0x%08X", data->gbUID );
+        byte  buffer[32];
+        buffer[0]  = 0;
+        buffer[1]  = 0;
+        buffer[2]  = 0;
+        buffer[3]  = 0;
+        buffer[4]  = 0x11;
+        buffer[5]  = 0;
+        buffer[6]  = 0;
+        buffer[7]  = 0;
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Sending boot with current version command to standalone Gleisbox" );
+        ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_CAN_BOOT_BOUND, False, 5, buffer) );
+        ThreadOp.sleep(2000);
+        buffer[4]  = 0;
+        ThreadOp.post( data->writer, (obj)__makeMsg(0, CAN_CMD_PING, False, 0, buffer) );
+      }
+      else {
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Invalid packet received on boot bound request" );
+      }
+  }
+  else {
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "CAN Boot not handled, unknown type: 0x%04X", cstype );
+  }
+}
+
+static void __evaluateCCSwitch( iOMCS2Data mcs2, byte* in ) {
   int addr1 = in[7] & 0x0F;
   /* mask left nibble of high byte, this is not part of the actual address (always 0x3 for accessory) */
   int addr2 = in[8];
@@ -1314,12 +1541,14 @@ static byte __HEXA2Byte( const char* s ) {
   return (unsigned char)(strtol( val, NULL, 16)&0xFF);
 }
 
+
 static void __Byte2HEXA( char* s, byte b ) {
   static char cHex[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
   int i = 0;
   s[0] = cHex[(b&0xF0)>>4 ];
   s[1] = cHex[ b&0x0F     ];
 }
+
 
 static Boolean __convertASCII2Bin( char* inASCII, byte* in) {
   MemOp.set(in, 0, 32);
@@ -1377,20 +1606,21 @@ static int __convertBin2ASCII( const byte* out, char* outASCII) {
 
 static void __reader( void* threadinst ) {
   iOThread th = (iOThread)threadinst;
-  iOMGBOX mcs2 = (iOMGBOX)ThreadOp.getParm( th );
-  iOMGBOXData data = Data(mcs2);
+  iOMCS2 mcs2 = (iOMCS2)ThreadOp.getParm( th );
+  iOMCS2Data data = Data(mcs2);
   byte in[32];
   int mod = 0;
   unsigned char store[1024];
   int retry = 0;
-  char ident[17] = { '\0' }; // mfx loc readable name
+
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "MCS2 reader started." );
 
   for( mod = 0; mod < 1024; mod++) {
     store[mod] = 0;
     /* storage container for feedback states to check on changes */
   }
 
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "MCS2 reader started." );
+  data->id = idname;
 
   do {
     MemOp.set(in, 0, 32);
@@ -1426,7 +1656,6 @@ static void __reader( void* threadinst ) {
             ok = SerialOp.write( data->serial, "V\r", 2 );
             ThreadOp.sleep(500); /* sleep baby sleep */
           }
-
 
           if( ok ) {
             byte*  cmd   = allocMem(32);
@@ -1516,13 +1745,6 @@ static void __reader( void* threadinst ) {
         else break;
       }
     }
-    if( (in[1] & BIT_RESPONSE) == BIT_RESPONSE && in[2] == 0x03 && in[3] == 0x00  ) {
-      data->mfxDetectInProgress = True;
-    }
-    else {
-      data->mfxDetectInProgress = False;
-    }
-
     if( in[1] != 0xFF )
       TraceOp.dump( NULL, TRCLEVEL_BYTE, (char*)in, 13 );
 
@@ -1544,8 +1766,11 @@ static void __reader( void* threadinst ) {
     else if( in[1] == 0x22 && in[4] == 8 ) { /* Without response bit set!? (CAN Digital Bahn) */
       __evaluateSensorEvent( data, in );
     }
-    else if( in[1] == ( CAN_ID_PING | BIT_RESPONSE) ) {
-      __evaluatePing( data, in );
+    else if( in[1] ==  CAN_ID_PING ) {
+      __evaluateMCS2PingCmd( data, in );
+    }
+     else if( in[1] == ( CAN_ID_PING | BIT_RESPONSE ) ) {
+      __evaluateMCS2Ping( data, in );
     }
     else if( in[1] == ID_LOCO_DIRECTION | in[1] == 0x08 ) {
       /* loc speed or direction comamnd, not from Rocrail. */
@@ -1570,13 +1795,17 @@ static void __reader( void* threadinst ) {
       __evaluateMCS2Verify( data, in );
     }
     else if( in[1] == (ID_LOCO_READ_CONFIG + BIT_RESPONSE) ) {
-      __evaluateMCS2ReadConfig( data, in, ident );
+      __evaluateMCS2ReadConfig( data, in );
     }
     else if( in[1] == (ID_LOCO_WRITE_CONFIG + BIT_RESPONSE) ) {
       __evaluateMCS2WriteConfig( data, in );
     }
     else if( in[1] == (ID_LOCO_BIND + BIT_RESPONSE) ) {
        __evaluateMCS2Bind( data, in );
+    }
+    else if( in[1] == (ID_CAN_BOOT_BOUND + BIT_RESPONSE) ) {
+       TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "packet : ID_CAN_BOOT_BOUND + BIT_RESPONSE");
+       __evaluateMCS2CANBootBound( data, in );
     }
     else if( in[1] != 0xFF ) {
       TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "Unhandled packet: CAN-ID=0x%02X len=%d", in[1]&0xFF, in[4]&0x0F );
@@ -1590,121 +1819,191 @@ static void __reader( void* threadinst ) {
 }
 
 
-static void __binder( void* threadinst ) {
-  iOThread th = (iOThread)threadinst;
-  iOMGBOX mcs2 = (iOMGBOX)ThreadOp.getParm( th );
-  iOMGBOXData data = Data(mcs2);
-  char descname[17];
-  int i = 0;
+static void __binder( iOMCS2Data data) {
+  byte  buffer[32];
 
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "binder started." );
-/* Wait until at least one CANbus member is detected */
-  while( (data->ms2UID == 0 && data->mcs2guiUID == 0 && data->gbUID == 0) || !data->power ) {
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "binder sleeping." );
-    i++;
-    if( i == 5 && (data->ms2UID == 0 || data->mcs2guiUID == 0 || data->gbUID == 0) ) {
-      byte  buffer[32];
-      buffer[0]  = 0;
-      buffer[1]  = 0;
-      buffer[2]  = 0;
-      buffer[3]  = 0;
-      buffer[4]  = 0x11;
-      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "No CAN devices detected, sending magic to awake standalone Gleisbox" );
-      ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_CAN_BOOT_BOUND, False, 5, buffer) );
-      ThreadOp.sleep(100);
-      buffer[4]  = 0;
-      ThreadOp.post( data->writer, (obj)__makeMsg(0, CAN_CMD_PING, False, 0, buffer) );
-      ThreadOp.sleep(100);
-      buffer[4]  = CMD_SYSSUB_GO;
-      ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_SYSTEM, False, 5, buffer) );
-    }
-    if( i == 6 ) {
-      TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999, "CANbus device error, no CS detected on controllerpath: %s", data->iid );
-      break;
-    }
-    ThreadOp.sleep(1000);
+  TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "Bind option started." );
+  
+  iONode loco = wMCS2.getproduct(data->mcs2ini);
+  while( loco != NULL ) {
+    wProduct.setcid(loco, 0);
+    loco = wMCS2.nextproduct(data->mcs2ini, loco);
   }
-  if( data->ms2UID != 0 || data->mcs2guiUID != 0 || data->gbUID != 0 ) {
-    /* wait for mechanical switched boosters and maybe other CAN member answers*/
-    ThreadOp.sleep(2000);
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "binder recognized devices:");
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "mcs2gfpUID: 0x%08X  mcs2guiUID: 0x%08X ms2UID: 0x%08X gbUID: 0x%08X", data->mcs2gfpUID, data->mcs2guiUID, data->ms2UID, data->gbUID );
 
-    /* in case of a Gleisbox or a xS2 is connected, check if the registered loco's are in the loclist, if not probe if they are on the track */
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Bind for registrated not listed loco's started." );
-
-    iONode loco = wMCS2.getproduct(data->mcs2ini);
-
+  if( data->ms2UID != 0 || data->mcs2gfpUID != 0 || data->gbUID != 0 ) {
+    
+    loco = wMCS2.getproduct(data->mcs2ini);
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Number of locos in product table: %d", __countUID(data) );
     while( data->run && loco != NULL ) {
       while( data->run && (!data->power || data->mfxDetectInProgress) ) {
-        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Waiting for power of mfx detection in progress" );
-        ThreadOp.sleep(1000);
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Waiting for power (%s) or mfx detection in progress (%s)", data->power?"on":"off", data->mfxDetectInProgress?"yes":"no" );
+        ThreadOp.sleep(1150);
       }
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "product waiting: %s, UID: %08X, handling UID: %08X", wProduct.getdesc(loco), wProduct.getpid(loco), data->uid );
+      if( data->run && data->uid == 0 && wProduct.getpid(loco) != 0 ) {
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Fetching product UID: %08X", wProduct.getpid(loco) );
+        if( wProduct.getcid(loco) == 0 ) {
+          data->uid = wProduct.getpid(loco);
+          data->sid = wProduct.getsid(loco);
+          StrOp.copy( idname, wProduct.getdesc(loco) );
+          if( idname[0] == 0) {
+            TraceOp.trc( name, TRCLEVEL_ERROR, __LINE__, 9999, "No id in rocrail.ini for sid: %d", wProduct.getsid(loco) );
+          }
+          TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Binder: registered status for loco %s is: %d", wProduct.getdesc(loco), wProduct.getcid(loco) );
+          if( (data->mcs2gfpUID == 0 || data->gbUID != 0) && wProduct.getcid(loco) == 0 ) {
+            if( __findLocinList(data) && __checkForValidName(data) ) {
+              wProduct.setcid(loco, 1);
+            }
+            byte  buffer[32];
+            buffer[0]  = (wProduct.getpid(loco) & 0xFF000000) >> 24;
+            buffer[1]  = (wProduct.getpid(loco) & 0x00FF0000) >> 16;
+            buffer[2]  = (wProduct.getpid(loco) & 0x0000FF00) >> 8;
+            buffer[3]  = (wProduct.getpid(loco) & 0x000000FF);
 
-      if( data->run ) {
-        data->sid = wProduct.getsid(loco);
-        StrOp.copy( descname, wProduct.getdesc(loco) );
-        data->id = descname;
-        data->reguid = wProduct.getpid(loco);
-        /* bind when not listed or a gleisbox only is detected */
-        if( !__findLocinList(data) || ( data->ms2UID == 0 && data->mcs2guiUID == 0 && data->gbUID != 0 )) {
-
-          byte  buffer[32];
-
-          buffer[0]  = (wProduct.getpid(loco) & 0xFF000000) >> 24;
-          buffer[1]  = (wProduct.getpid(loco) & 0x00FF0000) >> 16;
-          buffer[2]  = (wProduct.getpid(loco) & 0x0000FF00) >> 8;
-          buffer[3]  = (wProduct.getpid(loco) & 0x000000FF);
-          buffer[4]  = (wProduct.getsid(loco) / 256) & 0xFF;
-          buffer[5]  = (wProduct.getsid(loco) % 256) & 0xFF;
-
-          ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_LOCO_BIND, False, 6, buffer) );
-          TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "binding requested for %s, pid 0x%08X, sid %d", data->id, data->reguid, data->sid);
+            if( data->ms2UID == 0 && data->mcs2guiUID == 0 ) {
+              buffer[4]  = (wProduct.getsid(loco) / 256) & 0xFF;
+              buffer[5]  = (wProduct.getsid(loco) % 256) & 0xFF;
+              TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "bind requested for %s, pid 0x%08X, sid %d", data->id, wProduct.getpid(loco), wProduct.getsid(loco));
+              ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_LOCO_BIND, False, 6, buffer) );
+            }
+            else {
+              TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "discover requested for %s, pid 0x%08X, sid %d", data->id, wProduct.getpid(loco), wProduct.getsid(loco));
+              buffer[4]  = 0x20;
+              buffer[5]  = 0;
+              ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_LOCO_DISCOVERY, True, 5, buffer) );
+            }
+          }
         }
-        ThreadOp.sleep(3000);
-
+        else {
+          TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Product UID: %08X already registered %s SID %d", wProduct.getpid(loco), wProduct.getdesc(loco), wProduct.getsid(loco));
+        }
         loco = wMCS2.nextproduct(data->mcs2ini, loco);
+      }
+      if( loco != NULL && wProduct.getpid(loco) == 0 ) {
+          loco = wMCS2.nextproduct(data->mcs2ini, loco);
+          TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999, "Check your rocrail.ini it contains a corrupt row with a product UID: 0 under the controller section.");
+      } 
+      if( loco != NULL ) {
+        ThreadOp.sleep(125);
       }
     }
   }
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Binder ended." );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Binder completed." );
 }
 
 
-static void __discovery( void* threadinst ) {
+static void __GleisboxSvc( void* threadinst ) {
   iOThread th = (iOThread)threadinst;
-  iOMGBOX mcs2 = (iOMGBOX)ThreadOp.getParm( th );
-  iOMGBOXData data = Data(mcs2);
-  Boolean testResponse = False;
+  iOMCS2 mcs2 = (iOMCS2)ThreadOp.getParm( th );
+  iOMCS2Data data = Data(mcs2);
+  int i = 0;
+  byte buffer[32];
 
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "MCS2 discovery started." );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Boot helper and Gleisbox Channel Reporter started on interface: %s.", data->iid );
 
-  do {
-    byte buffer[32];
-    buffer[0] = 0x60;
-    ThreadOp.sleep(30000);
-    ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_LOCO_DISCOVERY, False, 1, buffer) );
+  ThreadOp.sleep(50); /* give time to ping to determine the CAN bus config */
+/* Wait until at least one CANbus member is detected */
+  if( data->ms2UID == 0 && data->mcs2guiUID == 0 && data->gbUID == 0 ) {
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "No CS2/MS2 CAN devices detected on iid: %s, sending boot to standalone Gleisbox", data->iid );
+    ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_CAN_BOOT_BOUND, False, 0, buffer) );
+    ThreadOp.sleep(2040);
+  }
+  ThreadOp.sleep(150);
+  if( wMCS2.isdiscovery(data->mcs2ini) && data->ms2UID == 0 && data->mcs2gfpUID == 0 && data->gbUID != 0 ) {
+//1f 00 0300 5 47 43 71 09 80 00 00 00
+    buffer[0]  = (data->gbUID & 0xFF000000) >> 24;
+    buffer[1]  = (data->gbUID & 0x00FF0000) >> 16;
+    buffer[2]  = (data->gbUID & 0x0000FF00) >> 8;
+    buffer[3]  = (data->gbUID & 0x000000FF);
+    buffer[4] = CMD_SYSSUB_RESET;
+    buffer[5] = 0;
+    ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_SYSTEM, False, 6, buffer) );
+    TraceOp.trc(name, TRCLEVEL_MONITOR, __LINE__, 9999, "Reset Gleisbox for discovery.");
+    ThreadOp.sleep(1900);
+  }
+  __setSwitchtime(data);
 
-    if( testResponse ) {
-      byte buffer[32];
-      buffer[0]  = 0x11;
-      buffer[1]  = 0x22;
-      buffer[2]  = 0x33;
-      buffer[3]  = 0x44;
-      buffer[4]  = 0x20;
-      ThreadOp.sleep(500);
-      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "send dummy discover response..." );
-      ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_LOCO_DISCOVERY, True, 5, buffer) );
+   while( data->run && i < 8 && data->ms2UID == 0 && data->mcs2gfpUID == 0){
+    if( data->gbUID != 0 ) {
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Start configuring Gleisbox");
+      buffer[4]  = CMD_SYSSUB_NEWREGNR;
+      if( wMCS2.isdiscovery(data->mcs2ini) ) {
+        buffer[6]  = rand() % 22;
+      }
+      else {
+        buffer[6] = __getnewSID(data);
+      }
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Set mfx sid counter to %d.", buffer[6] );
+      ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_SYSTEM, False, 7, buffer) );
+      buffer[4]  = CMD_SYSSUB_ENAPROT;
+      buffer[5]  = PROT_MM2 | PROT_MFX | PROT_DCC;
+      buffer[6]  = 0;
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Enabling protocols: MM2, MFX & DCC");
+      ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_SYSTEM, False, 6, buffer) );
+      if( data->power) {
+        buffer[4]  = CMD_SYSSUB_GO;
+        buffer[5]  = 0;
+        ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_SYSTEM, False, 5, buffer) );
+      }      
+      ThreadOp.sleep(2500);
+      break;
     }
+    if( i == 7 ) {
+      TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999, "CANbus device error, no MS2 / Gleisbox detected on iid: %s", data->iid );
+      break;
+    }
+    ThreadOp.sleep(100);
+    i++;
+  }
 
-  } while( data->run );
 
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "MCS2 discovery stopped." );
+  ThreadOp.sleep(2050);
+  if( wMCS2.isbind(data->mcs2ini) ) {
+    __binder(data);
+  }
+  while( data->uid != 0 || data->mfxDetectInProgress ) {
+    ThreadOp.sleep(250);
+  }
+            
+  if( wMCS2.isdiscovery(data->mcs2ini) ) {
+    buffer[0] = 0;
+    buffer[4] = 0;
+    TraceOp.trc(name, TRCLEVEL_INFO, __LINE__, 9999, "mfx full discovery requested.");
+    ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_LOCO_DISCOVERY, False, 1, buffer) );
+  }
+ 
+  if( wDigInt.isreportstate(data->ini) ) {
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "reportGleisboxChannel started on interface: %s.", data->iid );
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "mgbsvc: data->mcs2gfpUID: 0x%08X data->gbUID: 0x%08X", data->run, data->mcs2gfpUID, data->gbUID );
+    while( data->run && data->gbUID != 0 && wDigInt.isreportstate(data->ini) ) {
+      byte buffer[32];
+      buffer[0]  = (data->gbUID & 0xFF000000) >> 24;
+      buffer[1]  = (data->gbUID & 0x00FF0000) >> 16;
+      buffer[2]  = (data->gbUID & 0x0000FF00) >> 8;
+      buffer[3]  = (data->gbUID & 0x000000FF);
+      buffer[4] = CMD_SYSSUB_STATUS;
+      data->lstChn++;
+      switch (data->lstChn) {
+        case 2:
+          data->lstChn++;
+          break;
+        case 5:
+          data->lstChn = 1;
+      }
+      buffer[5] = data->lstChn; /* 1= current 3= voltage 4= temp */
+      ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_SYSTEM, False, 6, buffer) );
+      ThreadOp.sleep(1300);
+    }
+  }
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Boot helper and Gleisbox Channel Reporter ended." );
 }
-
 
 static void __writer( void* threadinst ) {
   iOThread th = (iOThread)threadinst;
-  iOMGBOX mcs2 = (iOMGBOX)ThreadOp.getParm( th );
-  iOMGBOXData data = Data(mcs2);
+  iOMCS2 mcs2 = (iOMCS2)ThreadOp.getParm( th );
+  iOMCS2Data data = Data(mcs2);
 
   if(wDigInt.isasciiprotocol( data->ini )) {
     while( !data->initASCII && data->run ) {
@@ -1749,7 +2048,7 @@ static int vmajor = 2;
 static int vminor = 0;
 static int patch  = 0;
 static int _version( obj inst ) {
-  iOMGBOXData data = Data(inst);
+  iOMCS2Data data = Data(inst);
   return vmajor*10000 + vminor*100 + patch;
 }
 
@@ -1760,15 +2059,20 @@ static int _version( obj inst ) {
  * UDP recv port 15731 (fix)
  *
  * */
-static struct OMGBOX* _inst( const iONode ini ,const iOTrace trc ) {
-  iOMGBOX __MGBOX = allocMem( sizeof( struct OMGBOX ) );
-  iOMGBOXData data = allocMem( sizeof( struct OMGBOXData ) );
-  MemOp.basecpy( __MGBOX, &MGBOXOp, 0, sizeof( struct OMGBOX ), data );
+static struct OMCS2* _inst( const iONode ini ,const iOTrace trc ) {
+  iOMCS2 __MCS2 = allocMem( sizeof( struct OMCS2 ) );
+  iOMCS2Data data = allocMem( sizeof( struct OMCS2Data ) );
+  MemOp.basecpy( __MCS2, &MCS2Op, 0, sizeof( struct OMCS2 ), data );
   int portTX = 15731;
   int portRX = 15730;
+  char procnr[2];
+  char procname[17];
 
   /* Initialize data->xxx members... */
   TraceOp.set( trc );
+  
+  /* initialize random seed: */
+  srand (time(NULL));
 
   data->ini = ini;
   data->mcs2ini = wDigInt.getmcs2(ini);
@@ -1788,6 +2092,10 @@ static struct OMGBOX* _inst( const iONode ini ,const iOTrace trc ) {
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  sensor device ID [%d]", wMCS2.getfbdevid(data->mcs2ini) );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  command pause [%d]ms", data->cmdpause );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  sensor range [%d-%d]", data->sensorbegin, data->sensorend );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  hash [0x%04X]", rrHash );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  discovery [%s]", wMCS2.isdiscovery(data->mcs2ini)?"yes":"no" );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  bind [%s]", wMCS2.isbind(data->mcs2ini)?"yes":"no" );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  report state   [%s]", wDigInt.isreportstate(data->ini)?"yes":"no" );
 
   data->udp = !StrOp.equals( wDigInt.sublib_serial, wDigInt.getsublib(data->ini));
 
@@ -1811,8 +2119,6 @@ static struct OMGBOX* _inst( const iONode ini ,const iOTrace trc ) {
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  device         [%s]", wDigInt.getdevice(data->ini) );
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  bps            [%d]", wDigInt.isasciiprotocol( data->ini )?115200:500000 );
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  SLCAN          [%s]", wDigInt.isasciiprotocol( data->ini )?"yes":"no" );
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  discovery&bind [%s]", wMCS2.isdiscovery(data->mcs2ini)?"yes":"no" );
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  report state   [%s]", wDigInt.isreportstate(data->ini)?"yes":"no" );
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
 
     data->serial = SerialOp.inst( wDigInt.getdevice(data->ini) );
@@ -1829,28 +2135,25 @@ static struct OMGBOX* _inst( const iONode ini ,const iOTrace trc ) {
   data->ms2UID = 0;
   data->gbUID  = 0;
   data->mcs2guiUID = 0;
+  data->swtimeset = False;
+  data->mcs2gfpUID = 0;
 
   __clearRegMfxVar(data);
-
-  data->reader = ThreadOp.inst( "mcs2reader", &__reader, __MGBOX );
+  
+  data->reader = ThreadOp.inst( "mcs2reader", &__reader, __MCS2 );
   ThreadOp.start( data->reader );
 
-  data->writer = ThreadOp.inst( "mcs2writer", &__writer, __MGBOX );
+  data->writer = ThreadOp.inst( "mcs2writer", &__writer, __MCS2 );
   ThreadOp.start( data->writer );
 
-  data->feedbackReader = ThreadOp.inst( "fbreader", &__feedbackMCS2Reader, __MGBOX );
+  data->feedbackReader = ThreadOp.inst( "fbreader", &__feedbackMCS2Reader, __MCS2 );
   ThreadOp.start( data->feedbackReader );
 
-  data->mfxbinder = ThreadOp.inst( "mcs2bind", &__binder, __MGBOX );
-  ThreadOp.start( data->mfxbinder );
-
-  if( wMCS2.isdiscovery(data->mcs2ini) ) {
-    data->discovery = ThreadOp.inst( "discovery", &__discovery, __MGBOX );
-    ThreadOp.start( data->discovery );
-  }
+  data->mgboxsvc = ThreadOp.inst( "mgboxsvc", &__GleisboxSvc, __MCS2 );
+  ThreadOp.start( data->mgboxsvc );
 
   instCnt++;
-  return __MGBOX;
+  return __MCS2;
 }
 
 
@@ -1862,5 +2165,5 @@ iIDigInt rocGetDigInt( const iONode ini ,const iOTrace trc )
 
 
 /* ----- DO NOT REMOVE OR EDIT THIS INCLUDE LINE! -----*/
-#include "rocdigs/impl/mgbox.fm"
+#include "rocdigs/impl/mcs2.fm"
 /* ----- DO NOT REMOVE OR EDIT THIS INCLUDE LINE! -----*/
