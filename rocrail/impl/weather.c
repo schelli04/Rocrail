@@ -104,8 +104,9 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
   iOModel model = AppOp.getModel();
   iOList list = ListOp.inst();
   iOList nightList = ListOp.inst();
+  int minutes   = hour * 60 + min;
 
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "do daylight at %02d:%02d on %s", hour, min, wWeather.getoutputs(data->props) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "do daylight at %02d:%02d (%d) on %s", hour, min, minutes, wWeather.getoutputs(data->props) );
 
   iOStrTok tok = StrTokOp.inst( wWeather.getoutputs(data->props), ',' );
   while( StrTokOp.hasMoreTokens(tok) ) {
@@ -169,7 +170,6 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
     float blue  = 0.0;
 
     int daylight  = sunset - sunrise;
-    int minutes   = hour * 60 + min;
 
     Boolean adjustBri = False;
 
@@ -251,8 +251,9 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       adjustBri = False;
     }
 
-    if( minutes+30 > sunset || minutes < sunrise-30 || shutdown ) {
+    if( minutes+30 > sunset || minutes-30 < sunrise || shutdown ) {
       /* Night. */
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "do nightlight at %02d:%02d (%d) on %s", hour, min, minutes, wNight.getoutputs(nightProps) );
       if( ListOp.size(nightList) > 0 ) {
         int LAMPS = ListOp.size(nightList);
         int bri = wNight.getbri(nightProps);
