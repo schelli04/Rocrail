@@ -173,7 +173,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
 
     Boolean adjustBri = False;
 
-    // AM
+    /* AM */
     if( minutes <= noon && minutes >= sunrise) {
       float range = noon - sunrise;
       percent = (100.0 / range) * (float)(minutes - sunrise);
@@ -189,7 +189,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       blue = sunriseBlue + blueDif * percent;
     }
 
-    // PM
+    /* PM */
     if( minutes > noon && minutes <= sunset) {
       float range = sunset - noon;
       percent = 100.0 - ((100.0 / range) * (float)(minutes - noon));
