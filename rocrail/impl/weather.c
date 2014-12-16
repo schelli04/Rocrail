@@ -165,9 +165,9 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
     float maxbri     = wWeather.getmaxbri(data->props);
     float percent    = 0.0;
     float brightness = 0.0;
-    float red   = 0.0;
-    float green = 0.0;
-    float blue  = 0.0;
+    float red   = 255.0;
+    float green = 255.0;
+    float blue  = 255.0;
 
     int daylight  = sunset - sunrise;
 
@@ -181,12 +181,17 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       brightness = l_brightness;
       adjustBri = True;
 
-      float redDif = (255.0 - sunriseRed) / 100.0;
-      red = sunriseRed + redDif * percent;
-      float greenDif = (255.0 - sunriseGreen) / 100.0;
-      green = sunriseGreen + greenDif * percent;
-      float blueDif = (255.0 - sunriseBlue) / 100.0;
-      blue = sunriseBlue + blueDif * percent;
+      if( minutes <= sunrise + 30 ) {
+        float pMinutes = minutes - sunrise;
+        float redDif = (255.0 - sunriseRed) / 30.0;
+        red = sunriseRed + redDif * pMinutes;
+        float greenDif = (255.0 - sunriseGreen) / 30.0;
+        green = sunriseGreen + greenDif * pMinutes;
+        float blueDif = (255.0 - sunriseBlue) / 30.0;
+        blue = sunriseBlue + blueDif * pMinutes;
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "pMinutes=%d sunrise=%d minutes=%d redDif=%d greenDif=%d blueDif=%d",
+            (int)pMinutes, sunrise, minutes, (int)redDif, (int)greenDif, (int)blueDif);
+      }
     }
 
     /* PM */
@@ -197,12 +202,17 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       brightness = l_brightness;
       adjustBri = True;
 
-      float redDif = (255.0 - sunsetRed) / 100.0;
-      red = sunsetRed + redDif * percent;
-      float greenDif = (255.0 - sunsetGreen) / 100.0;
-      green = sunsetGreen + greenDif * percent;
-      float blueDif = (255.0 - sunsetBlue) / 100.0;
-      blue = sunsetBlue + blueDif * percent;
+      if( minutes >= sunset - 30 ) {
+        float pMinutes = sunset - minutes;
+        float redDif = (255.0 - sunsetRed) / 30.0;
+        red = sunsetRed + redDif * pMinutes;
+        float greenDif = (255.0 - sunsetGreen) / 30.0;
+        green = sunsetGreen + greenDif * pMinutes;
+        float blueDif = (255.0 - sunsetBlue) / 30.0;
+        blue = sunsetBlue + blueDif * pMinutes;
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "pMinutes=%d sunset=%d minutes=%d redDif=%d greenDif=%d blueDif=%d",
+            (int)pMinutes, sunset, minutes, (int)redDif, (int)greenDif, (int)blueDif);
+      }
     }
 
     if(adjustBri || shutdown) {
