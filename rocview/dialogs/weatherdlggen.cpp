@@ -43,9 +43,23 @@ WeatherDlgGen::WeatherDlgGen( wxWindow* parent, wxWindowID id, const wxString& t
 	m_MaxBri = new wxSpinCtrl( m_DayPanel, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize( 80,-1 ), wxSP_ARROW_KEYS, 0, 255, 0 );
 	fgSizer1->Add( m_MaxBri, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 	
+	m_labMinBri = new wxStaticText( m_DayPanel, wxID_ANY, wxT("Min brightness"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_labMinBri->Wrap( -1 );
+	fgSizer1->Add( m_labMinBri, 0, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	m_MinBri = new wxSpinCtrl( m_DayPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), wxSP_ARROW_KEYS, 0, 255, 0 );
+	fgSizer1->Add( m_MinBri, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
+	m_labColorSliding = new wxStaticText( m_DayPanel, wxID_ANY, wxT("Color sliding"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_labColorSliding->Wrap( -1 );
+	fgSizer1->Add( m_labColorSliding, 0, wxALL|wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT, 5 );
+	
+	m_ColorSliding = new wxSpinCtrl( m_DayPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), wxSP_ARROW_KEYS, 0, 120, 0 );
+	fgSizer1->Add( m_ColorSliding, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
 	bSizer2->Add( fgSizer1, 0, wxEXPAND, 5 );
 	
-	m_SlidingDaylight = new wxCheckBox( m_DayPanel, wxID_ANY, wxT("SLiding daylight"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_SlidingDaylight = new wxCheckBox( m_DayPanel, wxID_ANY, wxT("Sliding daylight"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer2->Add( m_SlidingDaylight, 0, wxALL, 5 );
 	
 	m_SunriseBox = new wxStaticBoxSizer( new wxStaticBox( m_DayPanel, wxID_ANY, wxT("Sunrise") ), wxVERTICAL );

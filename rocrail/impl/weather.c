@@ -163,11 +163,13 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
     int sunsetBlue  = wSunset.getblue(sunsetProps);
 
     float maxbri     = wWeather.getmaxbri(data->props);
+    int   minbri     = wWeather.getminbri(data->props);
     float percent    = 0.0;
     float brightness = 0.0;
     float red   = 255.0;
     float green = 255.0;
     float blue  = 255.0;
+    float colorsliding = wWeather.getcolorsliding(data->props);
 
     int daylight  = sunset - sunrise;
 
@@ -181,13 +183,13 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       brightness = l_brightness;
       adjustBri = True;
 
-      if( minutes <= sunrise + 30 ) {
+      if( minutes <= sunrise + colorsliding ) {
         float pMinutes = minutes - sunrise;
-        float redDif = (255.0 - sunriseRed) / 30.0;
+        float redDif = (255.0 - sunriseRed) / colorsliding;
         red = sunriseRed + redDif * pMinutes;
-        float greenDif = (255.0 - sunriseGreen) / 30.0;
+        float greenDif = (255.0 - sunriseGreen) / colorsliding;
         green = sunriseGreen + greenDif * pMinutes;
-        float blueDif = (255.0 - sunriseBlue) / 30.0;
+        float blueDif = (255.0 - sunriseBlue) / colorsliding;
         blue = sunriseBlue + blueDif * pMinutes;
         TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "pMinutes=%d sunrise=%d minutes=%d redDif=%d greenDif=%d blueDif=%d",
             (int)pMinutes, sunrise, minutes, (int)redDif, (int)greenDif, (int)blueDif);
@@ -202,13 +204,13 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       brightness = l_brightness;
       adjustBri = True;
 
-      if( minutes >= sunset - 30 ) {
+      if( minutes >= sunset - colorsliding ) {
         float pMinutes = sunset - minutes;
-        float redDif = (255.0 - sunsetRed) / 30.0;
+        float redDif = (255.0 - sunsetRed) / colorsliding;
         red = sunsetRed + redDif * pMinutes;
-        float greenDif = (255.0 - sunsetGreen) / 30.0;
+        float greenDif = (255.0 - sunsetGreen) / colorsliding;
         green = sunsetGreen + greenDif * pMinutes;
-        float blueDif = (255.0 - sunsetBlue) / 30.0;
+        float blueDif = (255.0 - sunsetBlue) / colorsliding;
         blue = sunsetBlue + blueDif * pMinutes;
         TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "pMinutes=%d sunset=%d minutes=%d redDif=%d greenDif=%d blueDif=%d",
             (int)pMinutes, sunset, minutes, (int)redDif, (int)greenDif, (int)blueDif);
@@ -241,6 +243,8 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
 
         if( !wWeather.isslidingdaylight(data->props) ) {
           lampBri = brightness;
+          if( lampBri < minbri )
+            lampBri = minbri;
         }
 
         iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);

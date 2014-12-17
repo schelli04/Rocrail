@@ -29288,4 +29288,7 @@
   <Msg id="slidingdaylight">
     <en txt="Sliding daylight"/>
   </Msg>
+  <Msg id="colorsliding">
+    <en txt="Color sliding"/>
+  </Msg>
 </Messages>
