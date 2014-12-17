@@ -178,6 +178,11 @@ static Boolean __doCmd( struct OOutput* inst ,iONode nodeA ,Boolean update ) {
   const char* iid = wOutput.getiid( o->props );
   int value = wOutput.getvalue( nodeA );
   Boolean inv = wOutput.isinv(o->props);
+  iONode color = wOutput.getcolor(nodeA);
+
+  if( color != NULL ) {
+    color = (iONode)NodeOp.base.clone(color);
+  }
 
   if( StrOp.equals( wOutput.flip, state ) ) {
     if( wOutput.istristate(o->props) ) {
@@ -273,7 +278,14 @@ static Boolean __doCmd( struct OOutput* inst ,iONode nodeA ,Boolean update ) {
     wOutput.setvalue( nodeF, wOutput.getvalue( o->props ) );
     if( wOutput.getiid( o->props ) != NULL )
       wOutput.setiid( nodeF, wOutput.getiid( o->props ) );
+    if( color != NULL )
+      NodeOp.addChild(nodeF, color);
     AppOp.broadcastEvent( nodeF );
+  }
+  else {
+    /* clean up unused clone */
+    if( color != NULL )
+      NodeOp.base.del(color);
   }
 
   __checkActions(inst, state );

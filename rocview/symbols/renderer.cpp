@@ -47,6 +47,7 @@
 #include "rocrail/wrapper/public/SelTabPos.h"
 #include "rocrail/wrapper/public/DataReq.h"
 #include "rocrail/wrapper/public/Program.h"
+#include "rocrail/wrapper/public/Color.h"
 
 #include "rocs/public/system.h"
 
@@ -1909,7 +1910,12 @@ void SymbolRenderer::drawOutput( wxPaintDC& dc, bool occupied, bool actroute, co
       setBrush( wxBrush(wxColour(bri, bri, bri)) );
       m_GC->DrawEllipse(6, 6, 20, 20);
       setPen( wxPen(wxColour(255, 255, 0)));
-      setBrush( wxBrush(wxColour(255, 255, 0)) );
+      if( wOutput.getcolor(m_Props) != NULL ) {
+        iONode color = wOutput.getcolor(m_Props);
+        setBrush( wxBrush(wxColour(wColor.getred(color), wColor.getgreen(color), wColor.getblue(color))) );
+      }
+      else
+        setBrush( wxBrush(wxColour(255, 255, 0)) );
       m_GC->DrawEllipse(6 + (10.0 - 10.0 * factor), 6 + (10.0 - 10.0 * factor), 18.0 * factor, 18.0 * factor);
     }
   }
