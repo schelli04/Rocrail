@@ -1905,17 +1905,21 @@ void SymbolRenderer::drawOutput( wxPaintDC& dc, bool occupied, bool actroute, co
     if( m_UseGC ) {
       int bri = wOutput.getvalue(m_Props);
       float factor = (1.0 / 255.0) * (float)bri;
-      TraceOp.trc( "render", TRCLEVEL_INFO, __LINE__, 9999, "setting output %s to brightness %d, factor=%.2f", wOutput.getid( m_Props ), bri, factor );
       setPen( *pen );
       setBrush( wxBrush(wxColour(bri, bri, bri)) );
       m_GC->DrawEllipse(6, 6, 20, 20);
-      setPen( wxPen(wxColour(255, 255, 0)));
       if( wOutput.getcolor(m_Props) != NULL ) {
         iONode color = wOutput.getcolor(m_Props);
+        TraceOp.trc( "render", TRCLEVEL_DEBUG, __LINE__, 9999, "setting output %s to brightness %d, factor=%.2f RGB=%d,%d,%d",
+            wOutput.getid( m_Props ), bri, factor, wColor.getred(color), wColor.getgreen(color), wColor.getblue(color) );
+        setPen( wxPen(wxColour(wColor.getred(color), wColor.getgreen(color), wColor.getblue(color))));
         setBrush( wxBrush(wxColour(wColor.getred(color), wColor.getgreen(color), wColor.getblue(color))) );
       }
-      else
+      else {
+        TraceOp.trc( "render", TRCLEVEL_DEBUG, __LINE__, 9999, "setting output %s to brightness %d, factor=%.2f", wOutput.getid( m_Props ), bri, factor );
+        setPen( wxPen(wxColour(255, 255, 0)));
         setBrush( wxBrush(wxColour(255, 255, 0)) );
+      }
       m_GC->DrawEllipse(6 + (10.0 - 10.0 * factor), 6 + (10.0 - 10.0 * factor), 18.0 * factor, 18.0 * factor);
     }
   }

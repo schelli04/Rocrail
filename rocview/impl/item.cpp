@@ -2959,6 +2959,7 @@ void Symbol::modelEvent( iONode node, bool oncreate ) {
   }
   else if( StrOp.equals( wOutput.name(), NodeOp.getName( m_Props ) ) ) {
     const char* state = wOutput.getstate( node );
+    iONode color = wOutput.getcolor(node);
     int value = wOutput.getvalue( node );
     if( state != NULL ) {
       wOutput.setstate( m_Props, state );
@@ -2966,6 +2967,14 @@ void Symbol::modelEvent( iONode node, bool oncreate ) {
     }
     if( wOutput.getvalue(m_Props) != value ) {
       wOutput.setvalue(m_Props, value);
+      refresh = true;
+    }
+    if( color != NULL ) {
+      iONode oldColor = wOutput.getcolor(m_Props);
+      if( oldColor != NULL ) {
+        NodeOp.removeChild( m_Props, oldColor);
+      }
+      NodeOp.addChild( m_Props, (iONode)NodeOp.base.clone(color));
       refresh = true;
     }
   }
