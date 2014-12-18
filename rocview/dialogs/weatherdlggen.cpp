@@ -107,6 +107,30 @@ WeatherDlgGen::WeatherDlgGen( wxWindow* parent, wxWindowID id, const wxString& t
 	
 	bSizer2->Add( m_SunriseBox, 1, wxEXPAND|wxALL, 5 );
 	
+	m_NoonBox = new wxStaticBoxSizer( new wxStaticBox( m_DayPanel, wxID_ANY, wxT("Noon") ), wxVERTICAL );
+	
+	wxFlexGridSizer* fgSizer811;
+	fgSizer811 = new wxFlexGridSizer( 0, 4, 0, 0 );
+	fgSizer811->SetFlexibleDirection( wxBOTH );
+	fgSizer811->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	
+	m_labRGBNoon = new wxStaticText( m_DayPanel, wxID_ANY, wxT("RGB"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_labRGBNoon->Wrap( -1 );
+	fgSizer811->Add( m_labRGBNoon, 0, wxALL|wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT, 5 );
+	
+	m_NoonRed = new wxSpinCtrl( m_DayPanel, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize( 80,-1 ), wxSP_ARROW_KEYS, 0, 255, 0 );
+	fgSizer811->Add( m_NoonRed, 0, wxALL, 5 );
+	
+	m_NoonGreen = new wxSpinCtrl( m_DayPanel, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize( 80,-1 ), wxSP_ARROW_KEYS, 0, 255, 0 );
+	fgSizer811->Add( m_NoonGreen, 0, wxALL, 5 );
+	
+	m_NoonBlue = new wxSpinCtrl( m_DayPanel, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize( 80,-1 ), wxSP_ARROW_KEYS, 0, 255, 0 );
+	fgSizer811->Add( m_NoonBlue, 0, wxALL, 5 );
+	
+	m_NoonBox->Add( fgSizer811, 1, wxEXPAND, 5 );
+	
+	bSizer2->Add( m_NoonBox, 0, wxEXPAND|wxALL, 5 );
+	
 	m_SunsetBox = new wxStaticBoxSizer( new wxStaticBox( m_DayPanel, wxID_ANY, wxT("Sunset") ), wxVERTICAL );
 	
 	wxFlexGridSizer* fgSizer21;

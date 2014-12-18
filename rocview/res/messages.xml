@@ -29291,4 +29291,7 @@
   <Msg id="colorsliding">
     <en txt="Color sliding"/>
   </Msg>
+  <Msg id="noon">
+    <en txt="Noon"/>
+  </Msg>
 </Messages>

@@ -7637,3 +7637,9 @@ msgstr ""
 msgid "Color sliding"
 msgstr ""
 
+#. 
+# id="noon"
+#, c-format
+msgid "Noon"
+msgstr ""
+

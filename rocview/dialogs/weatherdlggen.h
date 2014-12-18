@@ -58,6 +58,11 @@ class WeatherDlgGen : public wxDialog
 		wxSpinCtrl* m_SunriseRed;
 		wxSpinCtrl* m_SunriseGreen;
 		wxSpinCtrl* m_SunriseBlue;
+		wxStaticBoxSizer* m_NoonBox;
+		wxStaticText* m_labRGBNoon;
+		wxSpinCtrl* m_NoonRed;
+		wxSpinCtrl* m_NoonGreen;
+		wxSpinCtrl* m_NoonBlue;
 		wxStaticBoxSizer* m_SunsetBox;
 		wxStaticText* m_labSunsetTime;
 		wxSpinCtrl* m_SunsetHour;

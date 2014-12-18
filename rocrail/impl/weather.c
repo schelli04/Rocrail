@@ -37,6 +37,7 @@
 
 #include "rocrail/wrapper/public/Weather.h"
 #include "rocrail/wrapper/public/Sunrise.h"
+#include "rocrail/wrapper/public/Noon.h"
 #include "rocrail/wrapper/public/Sunset.h"
 #include "rocrail/wrapper/public/Night.h"
 #include "rocrail/wrapper/public/Output.h"
@@ -99,6 +100,45 @@ static void* __event( void* inst, const void* evt ) {
 }
 
 /** ----- OWeather ----- */
+static void __doInitialize(iOWeather weather) {
+  iOWeatherData data = Data(weather);
+  iOModel model = AppOp.getModel();
+  iONode nightProps = wWeather.getnight(data->props);
+
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "initialize all lamps" );
+
+  iOStrTok tok = StrTokOp.inst( wWeather.getoutputs(data->props), ',' );
+  while( StrTokOp.hasMoreTokens(tok) ) {
+    const char* id = StrTokOp.nextToken(tok);
+    iOOutput output = ModelOp.getOutput(model, id);
+    if( output != NULL ) {
+      iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+      wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+      wOutput.setvalue(cmd, 0);
+      wOutput.setcmd(cmd, wOutput.off);
+      OutputOp.cmd(output, cmd, True);
+    }
+  };
+  StrTokOp.base.del(tok);
+
+  if( nightProps != NULL ) {
+    iOStrTok tok = StrTokOp.inst( wNight.getoutputs(nightProps), ',' );
+    while( StrTokOp.hasMoreTokens(tok) ) {
+      const char* id = StrTokOp.nextToken(tok);
+      iOOutput output = ModelOp.getOutput(model, id);
+      if( output != NULL ) {
+        iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+        wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+        wOutput.setvalue(cmd, 0);
+        wOutput.setcmd(cmd, wOutput.off);
+        OutputOp.cmd(output, cmd, True);
+      }
+    };
+    StrTokOp.base.del(tok);
+  }
+}
+
+
 static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown ) {
   iOWeatherData data = Data(weather);
   iOModel model = AppOp.getModel();
@@ -120,6 +160,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
 
   if( ListOp.size(list) > 0 ) {
     iONode sunriseProps = wWeather.getsunrise(data->props);
+    iONode noonProps    = wWeather.getnoon(data->props);
     iONode sunsetProps  = wWeather.getsunset(data->props);
     iONode nightProps   = wWeather.getnight(data->props);
 
@@ -127,6 +168,10 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       sunriseProps = NodeOp.inst(wSunrise.name(), data->props, ELEMENT_NODE );
       NodeOp.addChild(data->props, sunriseProps);
       wSunrise.sethour(sunriseProps, 6) ;
+    }
+    if( noonProps == NULL ) {
+      noonProps = NodeOp.inst(wNoon.name(), data->props, ELEMENT_NODE );
+      NodeOp.addChild(data->props, noonProps);
     }
     if( sunsetProps == NULL ) {
       sunsetProps = NodeOp.inst(wSunset.name(), data->props, ELEMENT_NODE );
@@ -162,13 +207,16 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
     int sunsetGreen = wSunset.getgreen(sunsetProps);
     int sunsetBlue  = wSunset.getblue(sunsetProps);
 
-    float maxbri     = wWeather.getmaxbri(data->props);
-    int   minbri     = wWeather.getminbri(data->props);
-    float percent    = 0.0;
-    float brightness = 0.0;
-    float red   = 255.0;
-    float green = 255.0;
-    float blue  = 255.0;
+    float maxbri       = wWeather.getmaxbri(data->props);
+    int   minbri       = wWeather.getminbri(data->props);
+    float percent      = 0.0;
+    float brightness   = 0.0;
+    float red          = wNoon.getred(noonProps);
+    float green        = wNoon.getgreen(noonProps);
+    float blue         = wNoon.getblue(noonProps);
+    float noonRed      = wNoon.getred(noonProps);
+    float noonGreen    = wNoon.getgreen(noonProps);
+    float noonBlue     = wNoon.getblue(noonProps);
     float colorsliding = wWeather.getcolorsliding(data->props);
 
     int daylight  = sunset - sunrise;
@@ -185,11 +233,11 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
 
       if( minutes <= sunrise + colorsliding ) {
         float pMinutes = minutes - sunrise;
-        float redDif = (255.0 - sunriseRed) / colorsliding;
+        float redDif = (noonRed - sunriseRed) / colorsliding;
         red = sunriseRed + redDif * pMinutes;
-        float greenDif = (255.0 - sunriseGreen) / colorsliding;
+        float greenDif = (noonGreen - sunriseGreen) / colorsliding;
         green = sunriseGreen + greenDif * pMinutes;
-        float blueDif = (255.0 - sunriseBlue) / colorsliding;
+        float blueDif = (noonBlue - sunriseBlue) / colorsliding;
         blue = sunriseBlue + blueDif * pMinutes;
         TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "pMinutes=%d sunrise=%d minutes=%d redDif=%d greenDif=%d blueDif=%d",
             (int)pMinutes, sunrise, minutes, (int)redDif, (int)greenDif, (int)blueDif);
@@ -206,11 +254,11 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
 
       if( minutes >= sunset - colorsliding ) {
         float pMinutes = sunset - minutes;
-        float redDif = (255.0 - sunsetRed) / colorsliding;
+        float redDif = (noonRed - sunsetRed) / colorsliding;
         red = sunsetRed + redDif * pMinutes;
-        float greenDif = (255.0 - sunsetGreen) / colorsliding;
+        float greenDif = (noonGreen - sunsetGreen) / colorsliding;
         green = sunsetGreen + greenDif * pMinutes;
-        float blueDif = (255.0 - sunsetBlue) / colorsliding;
+        float blueDif = (noonBlue - sunsetBlue) / colorsliding;
         blue = sunsetBlue + blueDif * pMinutes;
         TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "pMinutes=%d sunset=%d minutes=%d redDif=%d greenDif=%d blueDif=%d",
             (int)pMinutes, sunset, minutes, (int)redDif, (int)greenDif, (int)blueDif);
@@ -331,6 +379,8 @@ static void __makeWeather( void* threadinst ) {
   int loopCnt = 10;
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "make weather started..." );
+  ThreadOp.sleep(1000);
+  __doInitialize(weather );
 
   while( data->run ) {
     if( loopCnt >= 10 ) {
