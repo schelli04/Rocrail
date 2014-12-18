@@ -1920,7 +1920,7 @@ void SymbolRenderer::drawOutput( wxPaintDC& dc, bool occupied, bool actroute, co
         setPen( wxPen(wxColour(255, 255, 0)));
         setBrush( wxBrush(wxColour(255, 255, 0)) );
       }
-      m_GC->DrawEllipse(6 + (10.0 - 10.0 * factor), 6 + (10.0 - 10.0 * factor), 18.0 * factor, 18.0 * factor);
+      m_GC->DrawEllipse(6.0 + (10.0 - 10.0 * factor), 6.0 + (10.0 - 10.0 * factor), 20.0 * factor, 20.0 * factor);
     }
   }
   // SVG Symbol:
