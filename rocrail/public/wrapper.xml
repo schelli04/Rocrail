@@ -1567,8 +1567,8 @@
         <var name="blue" vt="int" defval="255" range="0-255"/>
       </sunrise>
       <noon cardinality="1" remark="Noon definition" wrappername="Noon">
-        <var name="red" vt="int" defval="0" range="0-255"/>
-        <var name="green" vt="int" defval="0" range="0-255"/>
+        <var name="red" vt="int" defval="255" range="0-255"/>
+        <var name="green" vt="int" defval="255" range="0-255"/>
         <var name="blue" vt="int" defval="255" range="0-255"/>
       </noon>
       <sunset cardinality="1" remark="Sunset definition" wrappername="Sunset">
