@@ -253,6 +253,7 @@ static iONode __translate( iOVirtual virtual, iONode node ) {
     int port  = wOutput.getport( node );
     int gate  = wOutput.getgate( node );
     int value = wOutput.getvalue( node );
+    int type  = wOutput.getporttype( node );
     int fada  = 0;
     int pada  = 0;
 
@@ -270,8 +271,8 @@ static iONode __translate( iOVirtual virtual, iONode node ) {
     if( pada == 0 )
       pada = AddrOp.toPADA( addr, port );
 
-    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output %d %d %d %s fada=%d pada=%d value=%d",
-        addr, port, gate, wOutput.getcmd(node)!=NULL?wOutput.getcmd(node):"-", fada, pada, value );
+    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output %d %d %d %s fada=%d pada=%d value=%d type=%d",
+        addr, port, gate, wOutput.getcmd(node)!=NULL?wOutput.getcmd(node):"-", fada, pada, value, type );
 
     {
       iONode nodeC = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE );
@@ -285,6 +286,7 @@ static iONode __translate( iOVirtual virtual, iONode node ) {
       wOutput.setport( nodeC, wOutput.getport( node ) );
       wOutput.setgate( nodeC, wOutput.getgate( node ) );
       wOutput.setvalue( nodeC, value );
+      wOutput.setporttype( nodeC, type);
 
       if( wOutput.getiid(node) != NULL )
         wOutput.setiid( nodeC, wOutput.getiid(node) );
