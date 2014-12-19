@@ -375,14 +375,24 @@ static struct OInfracar* _inst( const iONode ini ,const iOTrace trc ) {
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Infracar %d.%d.%d", vmajor, vminor, patch );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "iid    = %s", data->iid );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "device = %s", wDigInt.getdevice( ini ) );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "iid     = %s", data->iid );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "device  = %s", wDigInt.getdevice( ini ) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "version = %d", wDigInt.getprotver( ini ) );
 
   data->serial = SerialOp.inst( wDigInt.getdevice( ini ) );
   SerialOp.setFlow( data->serial, StrOp.equals( wDigInt.cts, wDigInt.getflow( ini ) ) ? cts:0 );
-  SerialOp.setLine( data->serial, 2400, 8, 1, none, wDigInt.isrtsdisabled( ini ) );
+
+  if( wDigInt.getprotver(ini) == 1 ) {
+    // Einstellung der seriellen Schnittstelle 9600 Bps, 8 Bit, ODD Parity, 2 Stoppbit
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "line    = 9600-8-2-O (DCCar)" );
+    SerialOp.setLine( data->serial, 9600, 8, 2, odd, wDigInt.isrtsdisabled( ini ) );
+  }
+  else {
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "line    = 2400-8-1-N (Infracar)" );
+    SerialOp.setLine( data->serial, 2400, 8, 1, none, wDigInt.isrtsdisabled( ini ) );
+  }
   SerialOp.setTimeout( data->serial, wDigInt.gettimeout( ini ), wDigInt.gettimeout( ini ) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
 
   data->serialOK = SerialOp.open( data->serial );
 
