@@ -202,6 +202,8 @@ static Boolean __doCmd( struct OOutput* inst ,iONode nodeA ,Boolean update ) {
 
 
   /* remember state */
+  wOutput.setvalue( o->props, value );
+
   if( StrOp.equals(wOutput.active, state ) )
     wOutput.setstate( o->props, wOutput.active );
   else if( StrOp.equals(wOutput.off, state ) )
@@ -209,7 +211,6 @@ static Boolean __doCmd( struct OOutput* inst ,iONode nodeA ,Boolean update ) {
   else if( StrOp.equals(wOutput.on, state ) )
     wOutput.setstate( o->props, wOutput.on );
   else if( StrOp.equals(wOutput.value, state ) ) {
-    wOutput.setvalue( o->props, value );
     if( value > 0 ) {
       wOutput.setstate( o->props, wOutput.on );
       state = wOutput.on;

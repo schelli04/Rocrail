@@ -100,28 +100,31 @@ static void* __event( void* inst, const void* evt ) {
 }
 
 /** ----- OWeather ----- */
-static void __doInitialize(iOWeather weather) {
+static void __doInitialize(iOWeather weather, Boolean day, Boolean night) {
   iOWeatherData data = Data(weather);
   iOModel model = AppOp.getModel();
   iONode nightProps = wWeather.getnight(data->props);
 
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "initialize all lamps" );
 
-  iOStrTok tok = StrTokOp.inst( wWeather.getoutputs(data->props), ',' );
-  while( StrTokOp.hasMoreTokens(tok) ) {
-    const char* id = StrTokOp.nextToken(tok);
-    iOOutput output = ModelOp.getOutput(model, id);
-    if( output != NULL ) {
-      iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
-      wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
-      wOutput.setvalue(cmd, 0);
-      wOutput.setcmd(cmd, wOutput.off);
-      OutputOp.cmd(output, cmd, True);
-    }
-  };
-  StrTokOp.base.del(tok);
+  if( day ) {
+    TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "initialize all day lamps" );
+    iOStrTok tok = StrTokOp.inst( wWeather.getoutputs(data->props), ',' );
+    while( StrTokOp.hasMoreTokens(tok) ) {
+      const char* id = StrTokOp.nextToken(tok);
+      iOOutput output = ModelOp.getOutput(model, id);
+      if( output != NULL ) {
+        iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+        wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+        wOutput.setvalue(cmd, 0);
+        wOutput.setcmd(cmd, wOutput.off);
+        OutputOp.cmd(output, cmd, True);
+      }
+    };
+    StrTokOp.base.del(tok);
+  }
 
-  if( nightProps != NULL ) {
+  if( night && nightProps != NULL ) {
+    TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "initialize all night lamps" );
     iOStrTok tok = StrTokOp.inst( wNight.getoutputs(nightProps), ',' );
     while( StrTokOp.hasMoreTokens(tok) ) {
       const char* id = StrTokOp.nextToken(tok);
@@ -312,6 +315,9 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
       }
       adjustBri = False;
     }
+    else {
+      __doInitialize(weather, True, False );
+    }
 
     if( minutes+30 > sunset || minutes-30 < sunrise || shutdown ) {
       /* Night. */
@@ -354,6 +360,9 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
         }
       }
     }
+    else {
+      __doInitialize(weather, False, True );
+    }
 
   }
   ListOp.base.del(list);
@@ -380,7 +389,7 @@ static void __makeWeather( void* threadinst ) {
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "make weather started..." );
   ThreadOp.sleep(1000);
-  __doInitialize(weather );
+  __doInitialize(weather, True, True );
 
   while( data->run ) {
     if( loopCnt >= 10 ) {
