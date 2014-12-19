@@ -145,6 +145,11 @@ For the Analyzer to work the Plan has to fullfill:
 #include "rocrail/wrapper/public/SelTabList.h"
 #include "rocrail/wrapper/public/FunDef.h"
 #include "rocrail/wrapper/public/TrackList.h"
+#include "rocrail/wrapper/public/Sunrise.h"
+#include "rocrail/wrapper/public/Noon.h"
+#include "rocrail/wrapper/public/Sunset.h"
+#include "rocrail/wrapper/public/Night.h"
+#include "rocrail/wrapper/public/WeatherTheme.h"
 
 #include "rocrail/public/app.h"
 #include "rocrail/public/model.h"
@@ -3125,6 +3130,11 @@ static Boolean zlevelCheck( iOAnalyse inst, Boolean repair ) {
           StrOp.equals( itemName, wTour.name() ) ||
           StrOp.equals( itemName, wLink.name() ) ||
           StrOp.equals( itemName, wBooster.name() ) ||
+          StrOp.equals( wSunrise.name(), NodeOp.getName(item) ) ||
+          StrOp.equals( wNoon.name(), NodeOp.getName(item) ) ||
+          StrOp.equals( wSunset.name(), NodeOp.getName(item) ) ||
+          StrOp.equals( wNight.name(), NodeOp.getName(item) ) ||
+          StrOp.equals( wWeatherTheme.name(), NodeOp.getName(item) ) ||
           StrOp.equals( itemName, wMVTrack.name() )
         ) {
         /* Ignore */
@@ -7919,6 +7929,11 @@ static Boolean _checkPlanHealth(iOAnalyse inst) {
 
       if( StrOp.equals( wActionCtrl.name(), NodeOp.getName(item) ) ||
           StrOp.equals( wAction.name(), NodeOp.getName(item) ) ||
+          StrOp.equals( wSunrise.name(), NodeOp.getName(item) ) ||
+          StrOp.equals( wNoon.name(), NodeOp.getName(item) ) ||
+          StrOp.equals( wSunset.name(), NodeOp.getName(item) ) ||
+          StrOp.equals( wNight.name(), NodeOp.getName(item) ) ||
+          StrOp.equals( wWeatherTheme.name(), NodeOp.getName(item) ) ||
           StrOp.equals( wLocation.name(), NodeOp.getName(item) ))
       {
         /* Ignore */
