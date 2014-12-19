@@ -509,7 +509,7 @@ static iONode __translate(iOZ21 inst, iONode node) {
         packet[7] = 0x80 + 0x20 + (active?0x08:0x00) + (turnout?0x00:0x01); /* 0x20 is a patch for DCC */
         packet[8] = packet[4] ^ packet[5] ^ packet[6] ^ packet[7]; /*xor*/
       }
-      TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "%s gate(%d) switch %d: %s", single?"single":"dual", gate, addr, wSwitch.getcmd(node) );
+      TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "%s gate(%d) switch %d: %s port=%s", single?"single":"dual", gate, addr, wSwitch.getcmd(node), active?"ON":"OFF" );
       ThreadOp.post(data->writer, (obj)packet);
 
       if( wSwitch.isactdelay(node) ) {
@@ -1146,7 +1146,7 @@ static void __evaluatePacket(iOZ21 inst, byte* packet, int packetSize) {
           if( data->iid != NULL )
             wSwitch.setiid( nodeC, data->iid );
           wSwitch.setstate( nodeC, zz==0x02?"straight":"turnout" );
-          wSwitch.setgatevalue( nodeC, zz==0x02?0:1 );
+          /*wSwitch.setgatevalue( nodeC, zz==0x02?0:1 );*/
           data->listenerFun( data->listenerObj, nodeC, TRCLEVEL_INFO );
         }
       }
