@@ -1755,7 +1755,7 @@ static void __pwm( void* threadinst ) {
                 msg[RN_PACKET_LEN] = 4;
                 msg[RN_PACKET_DATA + 0] = 0; /* off */
                 msg[RN_PACKET_DATA + 1] = data->channels[i]->porttype; /*wProgram.porttype_servo;*/
-                msg[RN_PACKET_DATA + 2] = 0;
+                msg[RN_PACKET_DATA + 2] = data->channels[i]->onpos / 16;
                 msg[RN_PACKET_DATA + 3] = data->channels[i]->channel;
                 __sendRN(rocnetnode, msg);
                 data->channels[i]->ready = True;
@@ -1783,7 +1783,7 @@ static void __pwm( void* threadinst ) {
                 msg[RN_PACKET_LEN] = 4;
                 msg[RN_PACKET_DATA + 0] = 1; /* off */
                 msg[RN_PACKET_DATA + 1] = data->channels[i]->porttype; /*wProgram.porttype_servo;*/
-                msg[RN_PACKET_DATA + 2] = 0;
+                msg[RN_PACKET_DATA + 2] = data->channels[i]->onpos / 16;
                 msg[RN_PACKET_DATA + 3] = data->channels[i]->channel;
                 __sendRN(rocnetnode, msg);
                 data->channels[i]->ready = True;
@@ -1814,7 +1814,7 @@ static void __pwm( void* threadinst ) {
           msg[RN_PACKET_LEN] = 4;
           msg[RN_PACKET_DATA + 0] = onoff;
           msg[RN_PACKET_DATA + 1] = data->channels[i]->porttype; /*wProgram.porttype_servo;*/
-          msg[RN_PACKET_DATA + 2] = 0;
+          msg[RN_PACKET_DATA + 2] = data->channels[i]->onpos / 16;
           msg[RN_PACKET_DATA + 3] = data->channels[i]->channel;
           __sendRN(rocnetnode, msg);
           data->channels[i]->ready = True;
