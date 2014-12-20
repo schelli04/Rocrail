@@ -107,6 +107,7 @@ RocProDlgGen( parent )
   m_Save = wCVconf.issave(m_CVconf) ? true:false;
   m_UseDecSpec4All = wCVconf.isusedecspec4all(m_CVconf) ? true:false;
   m_SaveCV->SetValue(m_Save);
+  m_POM->SetValue(wCVconf.ispom(m_CVconf) ? true:false);
 
   const char* nrs = wCVconf.getnrs( m_CVconf );
   iOStrTok tok = StrTokOp.inst( nrs, ',' );
@@ -441,11 +442,13 @@ bool RocProDlg::parseDecFile() {
 
 void RocProDlg::onOK( wxCommandEvent& event ) {
   wCVconf.setsave(m_CVconf, m_Save?True:False);
+  wCVconf.setpom(m_CVconf, m_POM->IsChecked()?True:False);
   EndModal( wxID_OK );
 }
 
 void RocProDlg::onClose( wxCloseEvent& event ) {
   wCVconf.setsave(m_CVconf, m_Save?True:False);
+  wCVconf.setpom(m_CVconf, m_POM->IsChecked()?True:False);
   EndModal(0);
 }
 

@@ -116,7 +116,7 @@ void CV::CVconf() {
   };
   StrTokOp.base.del( tok );
   m_CVcountAll = nridx;
-
+  m_POM->SetValue(wCVconf.ispom(m_CVconf) ? true:false);
 }
 
 
@@ -487,6 +487,9 @@ void CV::update4POM(void) {
   m_setAddress->Enable(!m_bPOM);
 
   m_PTonoff->Enable(!m_bPOM);
+
+  wCVconf.setpom(m_CVconf, m_POM->IsChecked() ? True:False);
+
 }
 
 
