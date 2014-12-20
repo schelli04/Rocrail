@@ -29297,4 +29297,7 @@
   <Msg id="blue">
     <en txt="blue"/>
   </Msg>
+  <Msg id="dim">
+    <en txt="Dim"/>
+  </Msg>
 </Messages>

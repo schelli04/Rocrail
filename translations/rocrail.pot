@@ -7649,3 +7649,9 @@ msgstr ""
 msgid "blue"
 msgstr ""
 
+#. 
+# id="dim"
+#, c-format
+msgid "Dim"
+msgstr ""
+
