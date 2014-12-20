@@ -18,7 +18,16 @@
 	  <product vid="13" pid="115" desc="BiDiBOne OneDMX DMX Controller" url="http://www.opendcc.de/elektronik/bidibone/onedmx.html"/> 
     <product vid="13" pid="116" desc="BiDiBOne OneOC" url="http://wiki.fichtelbahn.de/doku.php?id=oneoc"/> 
 	  <product vid="13" pid="117" desc="BiDiBOne OneControl" url="http://wiki.fichtelbahn.de/doku.php?id=onecontrol"/> 
+    <product vid="13" pid="118" desc="BiDiBOne  OneIO" url="http://wiki.fichtelbahn.de/doku.php?id=onecontrol"/> 
+    <product vid="13" pid="120" desc="StepControl"/> 
+    <product vid="13" pid="121" desc="BiDiBOne OneST" url="http://wiki.fichtelbahn.de/doku.php?id=onecontrol"/> 
+    <product vid="13" pid="122" desc="BiDiBOne OneDriveTurn" url="http://wiki.fichtelbahn.de/doku.php?id=onecontrol"/> 
+    <product vid="13" pid="204" desc="BiDiBOne OneOC" url="http://wiki.fichtelbahn.de/doku.php?id=onecontrol"/> 
     <product vid="13" pid="220" desc="Switch-64" url="http://www.bidib.org/support/product_id.html"/> 
 	  <product vid="13" pid="221" desc="LED-Optics" url="http://www.bidib.org/support/product_id.html"/> 
-	</productlist>
+    <product vid="62" pid="144" desc="Tams BiDiB-Interface" url="http://www.tams-online.de"/> 
+    <product vid="62" pid="145" desc="Tams S88 Adapter" url="http://www.tams-online.de"/> 
+    <product vid="62" pid="146" desc="Tams Booster" url="http://www.tams-online.de"/> 
+    <product vid="62" pid="151" desc="Tams Multi-Dekoder" url="http://www.tams-online.de"/> 
+  </productlist>
 </bidib>
