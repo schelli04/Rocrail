@@ -957,9 +957,9 @@ return;
   buffer[3]  = 'l';
   buffer[4]  = (revisionnr / 100) & 0xFF;
   buffer[5]  = (revisionnr % 100) & 0xFF;
-  buffer[6]  = (sysgerken / 256) & 0xFF; /* GUI */
-/*  buffer[7]  = (sysgerken % 256) & 0xFF; /* an non reserved id :( */
-/*  ThreadOp.post( data->writer, (obj)__makeMsg(0, CAN_CMD_PING, True, 8, buffer) );
+  buffer[6]  = (sysgerken / 256) & 0xFF; // GUI
+  buffer[7]  = (sysgerken % 256) & 0xFF; // an non reserved id :(
+  ThreadOp.post( data->writer, (obj)__makeMsg(0, CAN_CMD_PING, True, 8, buffer) );
 */
 }
 
@@ -1031,8 +1031,8 @@ int addr;
       }
       loProps = wLocList.nextlc(data->locolist, loProps);
     }
-  return False;
   }
+  return False;
 }
 
 

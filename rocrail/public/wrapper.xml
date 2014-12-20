@@ -474,6 +474,7 @@
       <const name="spl" vt="string" val="spl"/>
       <const name="inter10" vt="string" val="inter10"/>
       <const name="hue" vt="string" val="hue"/>
+      <const name="dccar" vt="string" val="dccar"/>
       <var name="lib" vt="string" defval="virtual"/>
 
       <var name="libpath" vt="string" defval="."/>
@@ -1535,7 +1536,7 @@
     <var name="red" vt="int" defval="0" range="0-255" remark="Red value"/>
 		<var name="green" vt="int" defval="0" range="0-255" remark="Green value"/>
 		<var name="blue" vt="int" defval="0" range="0-255" remark="Blue value"/>
-		<var name="brightness" vt="int" defval="0" range="0-255" remark="Brightness"/>
+    <var name="brightness" vt="int" defval="0" range="0-255" remark="Brightness"/>
   </color>
 
   <plan structname="RRP" wrappername="Plan" remark="Root node of the planfile.">
@@ -1589,6 +1590,10 @@
         <var name="id" vt="string" defval="" range="*"/>
         <var name="dim" vt="int" defval="0" range="0-100"/>
         <var name="outputs" vt="string" defval="" range="*" remark="Comma separated list of outputs from lightning."/>
+        <var name="random" vt="bool" defval="false"/>
+        <var name="hour" vt="int" defval="18" range="0-23"/>
+        <var name="minute" vt="int" defval="0" range="0-59"/>
+        <var name="duration" vt="int" defval="0" range="0-*"/>
       </weathertheme>
     </weather>
     <zlevel cardinality="n" remark="Z-Level description" wrappername="ZLevel">
@@ -1917,11 +1922,10 @@
         <var name="inv" vt="bool" defval="false" remark="Output as switch inverted. (Software wiring correction)"/>
         <var name="blink" vt="bool" defval="false" remark="Blink output."/>
         <var name="asswitch" vt="bool" defval="false" remark="send a switch command"/>
-        <var name="red" vt="int" defval="0" range="0-255"/>
-        <var name="green" vt="int" defval="0" range="0-255"/>
-        <var name="blue" vt="int" defval="0" range="0-255"/>
-        <var name="brightness" vt="int" defval="0" range="0-*"/>
-
+        <var name="redChannel" vt="int" defval="0" range="0-*" remark="Red channel address"/>
+        <var name="greenChannel" vt="int" defval="0" range="0-*" remark="Green channel address"/>
+        <var name="blueChannel" vt="int" defval="0" range="0-*" remark="Blue channel address"/>
+        
         <var name="colortype" vt="bool" defval="false" remark="The output supports RGB color settings."/>
         <var name="tristate" vt="bool" defval="false" remark="Tri-state flag."/>
         <var name="toggleswitch" vt="bool" defval="true" remark="Toggle switch or push button."/>

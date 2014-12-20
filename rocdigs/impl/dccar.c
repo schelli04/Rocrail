@@ -3,9 +3,6 @@
 
  Copyright (C) 2002-2014 Rob Versluis, Rocrail.net
 
- 
-
-
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
@@ -21,86 +18,63 @@
  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
-
 /*
-Baudrate 2400 8N1
+    Code für DC-Car-Modus
+    Eigenes PC-Programm für den DC-Car Modus:
+    In die CV21 des DC-Car Decoders wird der Wert 24 programmiert.
+    Einstellung der seriellen Schnittstelle 9600 Bps, 8 Bit, ODD Parity, 2 Stoppbit
+    Es werden immer 3 Bytes als Block gesendet:
+    1. Byte = Niedere Addresse mit der Bitfolge 00AAAAAA
+    2. Byte = Hohe Addresse mit der Bitfolge 01AAAAAA
+    3. Byte = Kommando Licht mit der Bitfolge 10CCCCCC oder Kommando Motor mit der Bitfolge 11MM1MMM
 
-Der gesamte Befehl setzt sich normal aus 3 Bytes zusammen.
-1.Byte:Adresse LSB
-2.Byte:Adresse MSB
-3.Byte:Steuerbyte
+    Mit Byte 1 und 2 können bis zu 1023 Autos addressiert werden.
 
-Die Bytes sind durch die beiden höchstwertigen Bits gekennzeichnet.
-Die Reihenfolge der Übertragung ist jedoch nicht beliebig, sondern
-zwingend. Dadurch ergibt sich ein Stück Übertragungssicherheit.
-
-Adresse LSB:
-00aaaaaa
-Kennung ist "00" danach folgt die Adresse (0..63)
-
-Adresse MSB:
-01bbbbbb
-
-Kennung ist "01" danach folgt der MSB Teil der Adresse (0..63)
-Diese Adresse ist derzeit generell 0, muss aber übertragen werden !
-
-Steuerbyte:
-Hier wird zwischen zwei Arten unterschieden.
-
-Schaltfunktionen:
-10cccccc
-Kennung ist "10" danach kommen die Zustände der Schaltfunktionen.
-Das niederwertigste Bit entspricht Kanal 1
-
-Motorsteuerung und mehr:
-11dddddd
-Die Kennung für die Motorsteuerdaten ist "11",
-die folgenden 6 Bit sind noch weiter unterteilt.
-
-Motor direkt:
-11ee1eee
-"eeeee" gibt die PWM Rate in 32 Schritten an. Die "1" mittendrin ist kein
-Tippfehler sondern muss entsprechen "zwischengefummelt" werden.
-
-Motor Beschleunigung / bremsen
-11000ppp
-"ppp" ist der Fahrbefehl. 0....7
-Dabei bedeuten:
-0: Stop PWM sofort auf null
-1: Keine Änderung
-2: Stark bremsen
-3: Bremsen
-4: Beschleunigen
-5: Stark beschleunigen
-6: reserviert
-7: reserviert
-Beschleunigen und Bremsen wird durchgeführt bis PWM 0% oder 100% oder
-der Befehl "keine Änderung" eintrifft.
-Diese Befehlsart entspricht den Tasten des Handsenders.
-
-Not Aus
-Abweichend vom Standardprotokoll gibt es den Befehl "Not Halt",
-der für alle Fahrzeuge gilt:
-11110000
-Dieser Befehl muss 2 mal unmittelbar hintereinader gesendet werden.
-Auf diesen Befehl reagieren alle Empfänger sofort. Adressunabhängig.
+    Kommandos für Licht:
+    10CCCCC1 Blinker links
+    10CCCC1C Blinker recht
+    10CCCC11 Warnblinker
+    10CCC1CC Fahrlicht
+    10CC1CCC Licht 2
+    10C1CCCC Blaulicht
+    101CCCCC Frontblitzer
+    Kommandos für den Motor:
+    11001000 Stop
+    11001001 Fahrstufe 1
+    11001010 Fahrstufe 2
+    11001011 Fahrstufe 3
+    11001100 Fahrstufe 4
+    11001101 Fahrstufe 5
+    11001110 Fahrstufe 6
+    11001111 Fahrstufe 7
+    11011000 Fahrstufe 8
+    11011001 Fahrstufe 9
+    11011010 Fahrstufe 10
+    11011011 Fahrstufe 11
+    11011100 Fahrstufe 12
+    11011101 Fahrstufe 13
+    11011110 Fahrstufe 14
+    11011111 Fahrstufe 15
+    11101000 Fahrstufe 16
+    11101001 Fahrstufe 17
+    11101010 Fahrstufe 18
+    11101011 Fahrstufe 19
+    11101100 Fahrstufe 20
+    11101101 Fahrstufe 21
+    11101110 Fahrstufe 22
+    11101111 Fahrstufe 23
+    11111000 Fahrstufe 24
+    11111001 Fahrstufe 25
+    11111010 Fahrstufe 26
+    11111011 Fahrstufe 27
+    11111100 Fahrstufe 28
+    11111101 Fahrstufe 28
+    11111110 Fahrstufe 28
+    11111111 Fahrstufe 28
+*/
 
 
-
-der Befehl "Motor direkt " kann eigenständig genutzt werden.
-Er gibt eine neue Sollgeschwindigkeit vor, die dann langsam angefahren wird.
-Zum sofortigen Anhalten den Stopp Befehl benutzen.
-Diese Befehle vorzugsweise für automatisierte Steuerungen verwenden.
-
-Die Befehle Beschleunigen / Bremsen  bewirken, dass das Fahrzueg schneller oder langsamer wird bis der Befehl
-"keine Änderung" gesendet wird (oder natürlich Maximum oder Null erreicht wird).
-Diese Befehle werden im Handsender genutzt: Drücken der Beschleunigungstaste sendet den Befehl "Beschleuningen".
-Beim Loslassen der Taste wird der befehl "keine Änderung" gesendet.
-Der Handsender sende also nicht ständig sondern nur bei Zustandsänderung..
-  */
-
-#include "rocdigs/impl/infracar_impl.h"
+#include "rocdigs/impl/dccar_impl.h"
 
 #include "rocs/public/trace.h"
 #include "rocs/public/node.h"
@@ -120,9 +94,9 @@ static int instCnt = 0;
 /** ----- OBase ----- */
 static void __del( void* inst ) {
   if( inst != NULL ) {
-    iOInfracarData data = Data(inst);
+    iODCCarData data = Data(inst);
     /* Cleanup data->xxx members...*/
-    
+
     freeMem( data );
     freeMem( inst );
     instCnt--;
@@ -170,23 +144,16 @@ static void* __event( void* inst, const void* evt ) {
   return NULL;
 }
 
-/** ----- OInfracar ----- */
+/** ----- ODCCar ----- */
 
-static void __translate( iOInfracar inst, iONode node ) {
-  iOInfracarData data = Data(inst);
+static void __translate( iODCCar inst, iONode node ) {
+  iODCCarData data = Data(inst);
 
 
   /* System command. */
   if( StrOp.equals( NodeOp.getName( node ), wSysCmd.name() ) ) {
     const char* cmdstr = wSysCmd.getcmd( node );
     if( StrOp.equals( cmdstr, wSysCmd.ebreak ) ) {
-      /* CS ebreak */
-      TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "request emergency break" );
-      byte* cmd = allocMem(32);
-      cmd[ 0] = 2;
-      cmd[ 1] = 0xF0;
-      cmd[ 2] = 0xF0;
-      ThreadOp.post(data->writer, (obj)cmd);
     }
   }
 
@@ -199,10 +166,9 @@ static void __translate( iOInfracar inst, iONode node ) {
     byte msb = 0x40 + (addr >> 6) & 0x3F;
     byte V   = 0xC8;
     /*
-      Motor direkt:
-      11ee1eee
-      "eeeee" gibt die PWM Rate in 32 Schritten an. Die "1" mittendrin ist kein
-      Tippfehler sondern muss entsprechen "zwischengefummelt" werden.
+    1. Byte = Niedere Addresse mit der Bitfolge 00AAAAAA
+    2. Byte = Hohe Addresse mit der Bitfolge 01AAAAAA
+    3. Byte = Kommando Licht mit der Bitfolge 10CCCCCC oder Kommando Motor mit der Bitfolge 11MM1MMM
     */
     if( wLoc.getV( node ) != -1 ) {
       if( StrOp.equals( wLoc.getV_mode( node ), wLoc.V_mode_percent ) )
@@ -218,7 +184,7 @@ static void __translate( iOInfracar inst, iONode node ) {
     cmd[ 1] = lsb;
     cmd[ 2] = msb;
     cmd[ 3] = V;
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Infracar %d speed %d", addr, speed );
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "dccar %d speed %d", addr, speed );
     ThreadOp.post(data->writer, (obj)cmd);
   }
 
@@ -241,7 +207,7 @@ static void __translate( iOInfracar inst, iONode node ) {
     cmd[ 1] = lsb;
     cmd[ 2] = msb;
     cmd[ 3] = fx;
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Infracar %d fx 0x%02X", addr, fx );
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "dccar %d fx 0x%02X", addr, fx );
     ThreadOp.post(data->writer, (obj)cmd);
   }
 
@@ -250,11 +216,11 @@ static void __translate( iOInfracar inst, iONode node ) {
 
 /**  */
 static iONode _cmd( obj inst ,const iONode cmd ) {
-  iOInfracarData data = Data(inst);
+  iODCCarData data = Data(inst);
 
   if( cmd != NULL ) {
     int bus = 0;
-    __translate( (iOInfracar)inst, cmd );
+    __translate( (iODCCar)inst, cmd );
     cmd->base.del(cmd);
   }
   return NULL;
@@ -269,14 +235,9 @@ static byte* _cmdRaw( obj inst ,const byte* cmd ) {
 
 /**  */
 static void _halt( obj inst ,Boolean poweroff ) {
-  iOInfracarData data = Data(inst);
+  iODCCarData data = Data(inst);
   data->run = False;
   if( poweroff ) {
-    byte* cmd = allocMem(32);
-    cmd[ 0] = 2;
-    cmd[ 1] = 0xF0;
-    cmd[ 2] = 0xF0;
-    ThreadOp.post(data->writer, (obj)cmd);
   }
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Shutting down <%s>...", data->iid );
   ThreadOp.sleep(500);
@@ -285,7 +246,7 @@ static void _halt( obj inst ,Boolean poweroff ) {
 
 /**  */
 static Boolean _setListener( obj inst ,obj listenerObj ,const digint_listener listenerFun ) {
-  iOInfracarData data = Data(inst);
+  iODCCarData data = Data(inst);
   data->listenerObj = listenerObj;
   data->listenerFun = listenerFun;
   return True;
@@ -320,15 +281,15 @@ static int vmajor = 2;
 static int vminor = 0;
 static int patch  = 99;
 static int _version( obj inst ) {
-  iOInfracarData data = Data(inst);
+  iODCCarData data = Data(inst);
   return vmajor*10000 + vminor*100 + patch;
 }
 
 
 static void __writer( void* threadinst ) {
   iOThread th = (iOThread)threadinst;
-  iOInfracar irc = (iOInfracar)ThreadOp.getParm( th );
-  iOInfracarData data = Data(irc);
+  iODCCar irc = (iODCCar)ThreadOp.getParm( th );
+  iODCCarData data = Data(irc);
   byte* cmd = NULL;
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "writer started." );
@@ -359,10 +320,10 @@ static void __writer( void* threadinst ) {
 
 
 /**  */
-static struct OInfracar* _inst( const iONode ini ,const iOTrace trc ) {
-  iOInfracar __Infracar = allocMem( sizeof( struct OInfracar ) );
-  iOInfracarData data = allocMem( sizeof( struct OInfracarData ) );
-  MemOp.basecpy( __Infracar, &InfracarOp, 0, sizeof( struct OInfracar ), data );
+static struct ODCCar* _inst( const iONode ini ,const iOTrace trc ) {
+  iODCCar __DCCar = allocMem( sizeof( struct ODCCar ) );
+  iODCCarData data = allocMem( sizeof( struct ODCCarData ) );
+  MemOp.basecpy( __DCCar, &DCCarOp, 0, sizeof( struct ODCCar ), data );
 
   TraceOp.set( trc );
   SystemOp.inst();
@@ -373,14 +334,15 @@ static struct OInfracar* _inst( const iONode ini ,const iOTrace trc ) {
   data->run  = True;
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Infracar %d.%d.%d", vmajor, vminor, patch );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "DCCar %d.%d.%d", vmajor, vminor, patch );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "iid     = %s", data->iid );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "device  = %s", wDigInt.getdevice( ini ) );
   data->serial = SerialOp.inst( wDigInt.getdevice( ini ) );
   SerialOp.setFlow( data->serial, StrOp.equals( wDigInt.cts, wDigInt.getflow( ini ) ) ? cts:0 );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "line    = 2400-8-1-N (Infracar)" );
-  SerialOp.setLine( data->serial, 2400, 8, 1, none, wDigInt.isrtsdisabled( ini ) );
+  // Einstellung der seriellen Schnittstelle 9600 Bps, 8 Bit, ODD Parity, 2 Stoppbit
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "line    = 9600-8-2-O (DCCar)" );
+  SerialOp.setLine( data->serial, 9600, 8, 2, odd, wDigInt.isrtsdisabled( ini ) );
   SerialOp.setTimeout( data->serial, wDigInt.gettimeout( ini ), wDigInt.gettimeout( ini ) );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
 
@@ -388,17 +350,17 @@ static struct OInfracar* _inst( const iONode ini ,const iOTrace trc ) {
 
   if( data->serialOK ) {
 
-    data->writer = ThreadOp.inst( "ircarwriter", &__writer, __Infracar );
+    data->writer = ThreadOp.inst( "dccarwriter", &__writer, __DCCar );
     ThreadOp.start( data->writer );
 
   }
   else {
-    TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999, "Could not init Infracar port!" );
+    TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999, "Could not init DCCcar port!" );
   }
 
 
   instCnt++;
-  return __Infracar;
+  return __DCCar;
 }
 
 iIDigInt rocGetDigInt( const iONode ini ,const iOTrace trc )
@@ -408,5 +370,5 @@ iIDigInt rocGetDigInt( const iONode ini ,const iOTrace trc )
 
 
 /* ----- DO NOT REMOVE OR EDIT THIS INCLUDE LINE! -----*/
-#include "rocdigs/impl/infracar.fm"
+#include "rocdigs/impl/dccar.fm"
 /* ----- DO NOT REMOVE OR EDIT THIS INCLUDE LINE! -----*/
