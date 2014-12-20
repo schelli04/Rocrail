@@ -234,6 +234,11 @@ static Boolean __doCmd( struct OOutput* inst ,iONode nodeA ,Boolean update ) {
   wOutput.setblink( nodeA, wOutput.isblink( o->props ) );
   wOutput.setcolortype( nodeA, wOutput.iscolortype( o->props ) );
   wOutput.setparam( nodeA, wOutput.getparam( o->props ) );
+
+  wOutput.setredChannel( nodeA, wOutput.getredChannel( o->props ) );
+  wOutput.setgreenChannel( nodeA, wOutput.getgreenChannel( o->props ) );
+  wOutput.setblueChannel( nodeA, wOutput.getblueChannel( o->props ) );
+
   if( inv )
     wOutput.setvalue( nodeA, StrOp.equals(wOutput.off, state ) ? wOutput.getvalue( o->props ):0 );
   else
@@ -313,6 +318,12 @@ static void _event( iOOutput inst, iONode nodeC ) {
     wOutput.setstate( nodeD, wOutput.getstate( data->props) );
     wOutput.setaddr( nodeD, wOutput.getaddr( data->props ) );
     wOutput.setport( nodeD, wOutput.getport( data->props ) );
+    if( wOutput.iscolortype(data->props) && wOutput.getredChannel(data->props) > 0 && wOutput.getgreenChannel(data->props) > 0 && wOutput.getblueChannel(data->props) > 0  )
+      wOutput.setvalue( nodeD, wOutput.getvalue( data->props ) );
+    else if( NodeOp.findAttr(nodeC, "value" ) != NULL )
+      wOutput.setvalue( nodeD, wOutput.getvalue( nodeC ) );
+    else
+      wOutput.setvalue( nodeD, wOutput.getvalue( data->props ) );
     AppOp.broadcastEvent( nodeD );
   }
 

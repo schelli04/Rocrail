@@ -1908,7 +1908,7 @@ void SymbolRenderer::drawOutput( wxPaintDC& dc, bool occupied, bool actroute, co
       setPen( *pen );
       setBrush( wxBrush(wxColour(bri, bri, bri)) );
       m_GC->DrawEllipse(6, 6, 20, 20);
-      if( wOutput.getcolor(m_Props) != NULL ) {
+      if( wOutput.getcolor(m_Props) != NULL && wOutput.iscolortype(m_Props) ) {
         iONode color = wOutput.getcolor(m_Props);
         TraceOp.trc( "render", TRCLEVEL_DEBUG, __LINE__, 9999, "setting output %s to brightness %d, factor=%.2f RGB=%d,%d,%d",
             wOutput.getid( m_Props ), bri, factor, wColor.getred(color), wColor.getgreen(color), wColor.getblue(color) );

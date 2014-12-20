@@ -52,6 +52,7 @@
 #include "rocrail/wrapper/public/Action.h"
 #include "rocrail/wrapper/public/Item.h"
 #include "rocrail/wrapper/public/Text.h"
+#include "rocrail/wrapper/public/Color.h"
 
 #include "rocutils/public/addr.h"
 
@@ -398,6 +399,7 @@ static iONode __translate( iOrocNet inst, iONode node ) {
     int bus  = wOutput.getbus( node );
     int addr = wOutput.getaddr( node );
     byte cmd   = RN_OUTPUT_ON;
+    Boolean useWD = True;
 
     if( StrOp.equals( wOutput.getcmd( node ), wOutput.off ) ) {
       cmd = RN_OUTPUT_OFF;
@@ -409,16 +411,68 @@ static iONode __translate( iOrocNet inst, iONode node ) {
     }
 
     if( StrOp.equals( wSwitch.prot_DEF, wSwitch.getprot(node) ) ) {
-      TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output bus=%d addr=%d cmd=%d type=%d", bus, addr, cmd, wOutput.getporttype(node) );
-      rn[RN_PACKET_GROUP] |= RN_GROUP_OUTPUT;
-      rnReceipientAddresToPacket( bus, rn, data->seven );
-      rn[RN_PACKET_ACTION] = RN_STATIONARY_SINGLE_PORT;
-      rn[RN_PACKET_LEN] = 5;
-      rn[RN_PACKET_DATA + 0] = cmd;
-      rn[RN_PACKET_DATA + 1] = wOutput.getporttype(node);
-      rn[RN_PACKET_DATA + 2] = wOutput.getvalue(node);
-      rn[RN_PACKET_DATA + 3] = addr;
-      rn[RN_PACKET_DATA + 4] = 0;
+      TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "output redChannel=%d greenChannel=%d blueChannel=%d color=%X colortype=%d",
+          wOutput.getredChannel(node), wOutput.getgreenChannel(node), wOutput.getblueChannel(node), wOutput.getcolor(node), wOutput.iscolortype(node) );
+      if( wOutput.iscolortype(node) && wOutput.getredChannel(node) > 0 && wOutput.getgreenChannel(node) > 0 && wOutput.getblueChannel(node) > 0 && wOutput.getcolor(node) != NULL ) {
+        iONode color = wOutput.getcolor(node);
+        float rgb = 0;
+        float bri = wOutput.getvalue(node);
+        useWD = False;
+        TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "RGB output bus=%d addr=%d cmd=%d type=%d red=%d green=%d blue=%d brightness=%d",
+            bus, addr, cmd, wOutput.getporttype(node), wColor.getred(color), wColor.getgreen(color), wColor.getblue(color), wOutput.getvalue(node) );
+
+        rn[RN_PACKET_GROUP] |= RN_GROUP_OUTPUT;
+        rnReceipientAddresToPacket( bus, rn, data->seven );
+        rn[RN_PACKET_ACTION] = RN_STATIONARY_SINGLE_PORT;
+        rn[RN_PACKET_LEN] = 5;
+        rn[RN_PACKET_DATA + 0] = cmd;
+        rn[RN_PACKET_DATA + 1] = wOutput.getporttype(node);
+        rgb = wColor.getred(color);
+        rgb = (rgb * bri) / 255.0;
+        rn[RN_PACKET_DATA + 2] = (int)rgb;
+        rn[RN_PACKET_DATA + 3] = wOutput.getredChannel(node);
+        rn[RN_PACKET_DATA + 4] = 0;
+        ThreadOp.post( data->writer, (obj)rn );
+
+        rn  = allocMem(32);
+        rn[RN_PACKET_GROUP] |= RN_GROUP_OUTPUT;
+        rnReceipientAddresToPacket( bus, rn, data->seven );
+        rn[RN_PACKET_ACTION] = RN_STATIONARY_SINGLE_PORT;
+        rn[RN_PACKET_LEN] = 5;
+        rn[RN_PACKET_DATA + 0] = cmd;
+        rn[RN_PACKET_DATA + 1] = wOutput.getporttype(node);
+        rgb = wColor.getgreen(color);
+        rgb = (rgb * bri) / 255.0;
+        rn[RN_PACKET_DATA + 2] = (int)rgb;
+        rn[RN_PACKET_DATA + 3] = wOutput.getgreenChannel(node);
+        rn[RN_PACKET_DATA + 4] = 0;
+        ThreadOp.post( data->writer, (obj)rn );
+
+        rn  = allocMem(32);
+        rn[RN_PACKET_GROUP] |= RN_GROUP_OUTPUT;
+        rnReceipientAddresToPacket( bus, rn, data->seven );
+        rn[RN_PACKET_ACTION] = RN_STATIONARY_SINGLE_PORT;
+        rn[RN_PACKET_LEN] = 5;
+        rn[RN_PACKET_DATA + 0] = cmd;
+        rn[RN_PACKET_DATA + 1] = wOutput.getporttype(node);
+        rgb = wColor.getblue(color);
+        rgb = (rgb * bri) / 255.0;
+        rn[RN_PACKET_DATA + 2] = (int)rgb;
+        rn[RN_PACKET_DATA + 3] = wOutput.getblueChannel(node);
+        rn[RN_PACKET_DATA + 4] = 0;
+      }
+      else {
+        TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output bus=%d addr=%d cmd=%d type=%d", bus, addr, cmd, wOutput.getporttype(node) );
+        rn[RN_PACKET_GROUP] |= RN_GROUP_OUTPUT;
+        rnReceipientAddresToPacket( bus, rn, data->seven );
+        rn[RN_PACKET_ACTION] = RN_STATIONARY_SINGLE_PORT;
+        rn[RN_PACKET_LEN] = 5;
+        rn[RN_PACKET_DATA + 0] = cmd;
+        rn[RN_PACKET_DATA + 1] = wOutput.getporttype(node);
+        rn[RN_PACKET_DATA + 2] = wOutput.getvalue(node);
+        rn[RN_PACKET_DATA + 3] = addr;
+        rn[RN_PACKET_DATA + 4] = 0;
+      }
     }
     else {
       TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output CS addr=%d cmd=%d type=%d", addr, cmd, wOutput.getporttype(node) );
@@ -432,7 +486,7 @@ static iONode __translate( iOrocNet inst, iONode node ) {
       rn[RN_PACKET_DATA + 3] = addr;
     }
 
-    if( data->watchdog != NULL ) {
+    if( useWD && data->watchdog != NULL ) {
       byte*  rnwd  = allocMem(32);
       MemOp.copy(rnwd, rn, 32);
       ThreadOp.post( data->watchdog, (obj)rnwd );
@@ -1627,6 +1681,7 @@ static void __evaluateRN( iOrocNet rocnet, byte* rn ) {
       if( actionType == RN_ACTIONTYPE_EVENT) {
         char key[32] = {'\0'};
         int state = rn[RN_PACKET_DATA + 0] & 0xFF;
+        int value = rn[RN_PACKET_DATA + 2] & 0xFF;
         iONode rnnode = NULL;
         iONode nodeC = NodeOp.inst( wSwitch.name(), NULL, ELEMENT_NODE );
         StrOp.fmtb( key, "%d-%d", rn[RN_PACKET_NETID], sndr);
@@ -1639,7 +1694,8 @@ static void __evaluateRN( iOrocNet rocnet, byte* rn ) {
         wSwitch.setaddr1( nodeC, port );
         wSwitch.setstate( nodeC, state == 0 ?"straight":"turnout" );
         wSwitch.setgatevalue( nodeC, state );
-        TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "bus=%d port=%d state=%d -> %s", sndr, port, state, wSwitch.getstate(nodeC) );
+        wOutput.setvalue( nodeC, value );
+        TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "bus=%d port=%d state=%d value=%d -> %s", sndr, port, state, value, wSwitch.getstate(nodeC) );
         wSwitch.setporttype( nodeC, rn[RN_PACKET_DATA + 1] & 0x0F );
         if( data->iid != NULL )
           wSwitch.setiid( nodeC, data->iid );

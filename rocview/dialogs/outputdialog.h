@@ -83,6 +83,9 @@ class wxSpinCtrl;
 #define ID_OUTPUT_SWITCH 10199
 #define ID_CO_ACCESSORY 10452
 #define ID_CO_PORT_TYPE 10414
+#define ID_PANEL_CO_COLOR 10006
+#define ID_CO_COLOR_CHANNEL_BOX 10453
+#define ID_CO_COLOR_RGB_BOX 0
 #define ID_PANEL_CO_LOCATION 10013
 #define wxID_STATIC_CO_X 10014
 #define ID_TEXTCTRL_CO_X 10000
@@ -240,6 +243,20 @@ public:
     wxCheckBox* m_ColorType;
     wxCheckBox* m_Accessory;
     wxRadioBox* m_PortType;
+    wxStaticBox* m_ColorChannelBox;
+    wxStaticText* m_labRedChannel;
+    wxSpinCtrl* m_RedChannel;
+    wxStaticText* m_labGreenChannel;
+    wxSpinCtrl* m_GreenChannel;
+    wxStaticText* m_labBlueChannel;
+    wxSpinCtrl* m_BlueChannel;
+    wxStaticBox* m_ColorRGBBox;
+    wxStaticText* m_labRedColor;
+    wxSpinCtrl* m_RedColor;
+    wxStaticText* m_labGreenColor;
+    wxSpinCtrl* m_GreenColor;
+    wxStaticText* m_labBlueColor;
+    wxSpinCtrl* m_BlueColor;
     wxPanel* m_LocationPanel;
     wxStaticText* m_LabelX;
     wxTextCtrl* m_x;

@@ -29294,4 +29294,7 @@
   <Msg id="noon">
     <en txt="Noon"/>
   </Msg>
+  <Msg id="blue">
+    <en txt="blue"/>
+  </Msg>
 </Messages>

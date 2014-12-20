@@ -51,6 +51,7 @@
 #include "rocrail/wrapper/public/Item.h"
 #include "rocrail/wrapper/public/Block.h"
 #include "rocrail/wrapper/public/Feedback.h"
+#include "rocrail/wrapper/public/Color.h"
 #include "rocview/public/guiapp.h"
 
 /*!
@@ -140,7 +141,8 @@ void OutputDialog::initLabels() {
   m_Notebook->SetPageText( 0, wxGetApp().getMsg( "index" ) );
   m_Notebook->SetPageText( 1, wxGetApp().getMsg( "general" ) );
   m_Notebook->SetPageText( 2, wxGetApp().getMsg( "interface" ) );
-  m_Notebook->SetPageText( 3, wxGetApp().getMsg( "position" ) );
+  m_Notebook->SetPageText( 3, wxGetApp().getMsg( "color" ) );
+  m_Notebook->SetPageText( 4, wxGetApp().getMsg( "position" ) );
 
   // Index
   initList(m_List2, this);
@@ -200,6 +202,15 @@ void OutputDialog::initLabels() {
   m_PortType->SetString( 6, wxGetApp().getMsg( "macro" ) );
   m_PortType->SetString( 7, wxGetApp().getMsg( "backlight" ) );
 
+  // Color
+  m_ColorChannelBox->SetLabel(wxGetApp().getMsg( "channel"));
+  m_labRedChannel->SetLabel(wxGetApp().getMsg( "red"));
+  m_labGreenChannel->SetLabel(wxGetApp().getMsg( "green"));
+  m_labBlueChannel->SetLabel(wxGetApp().getMsg( "blue"));
+  m_ColorRGBBox->SetLabel(wxGetApp().getMsg( "rgb"));
+  m_labRedColor->SetLabel(wxGetApp().getMsg( "red"));
+  m_labGreenColor->SetLabel(wxGetApp().getMsg( "green"));
+  m_labBlueColor->SetLabel(wxGetApp().getMsg( "blue"));
 
   // Location
   m_LabelX->SetLabel( wxGetApp().getMsg( "x" ) );
@@ -342,6 +353,18 @@ void OutputDialog::initValues() {
 
   m_PortType->SetSelection(wOutput.getporttype(m_Props));
 
+  // Color
+  m_RedChannel->SetValue(wOutput.getredChannel(m_Props));
+  m_GreenChannel->SetValue(wOutput.getgreenChannel(m_Props));
+  m_BlueChannel->SetValue(wOutput.getblueChannel(m_Props));
+  iONode color = wOutput.getcolor(m_Props);
+  if( color == NULL ) {
+    color = NodeOp.inst(wColor.name(), m_Props, ELEMENT_NODE);
+    NodeOp.addChild( m_Props, color);
+  }
+  m_RedColor->SetValue(wColor.getred(color));
+  m_GreenColor->SetValue(wColor.getgreen(color));
+  m_BlueColor->SetValue(wColor.getblue(color));
 
   // Location
   char* val = StrOp.fmt( "%d", wOutput.getx( m_Props ) );
@@ -418,6 +441,15 @@ bool OutputDialog::evaluate() {
 
   wOutput.setporttype(m_Props, m_PortType->GetSelection());
 
+  // Color
+  wOutput.setredChannel(m_Props, m_RedChannel->GetValue());
+  wOutput.setgreenChannel(m_Props, m_GreenChannel->GetValue());
+  wOutput.setblueChannel(m_Props, m_BlueChannel->GetValue());
+  iONode color = wOutput.getcolor(m_Props);
+  wColor.setred(color, m_RedColor->GetValue());
+  wColor.setgreen(color, m_GreenColor->GetValue());
+  wColor.setblue(color, m_BlueColor->GetValue());
+
   // Location
   wOutput.setx( m_Props, atoi( m_x->GetValue().mb_str(wxConvUTF8) ) );
   wOutput.sety( m_Props, atoi( m_y->GetValue().mb_str(wxConvUTF8) ) );
@@ -493,6 +525,20 @@ bool OutputDialog::Create( wxWindow* parent, wxWindowID id, const wxString& capt
     m_ColorType = NULL;
     m_Accessory = NULL;
     m_PortType = NULL;
+    m_ColorChannelBox = NULL;
+    m_labRedChannel = NULL;
+    m_RedChannel = NULL;
+    m_labGreenChannel = NULL;
+    m_GreenChannel = NULL;
+    m_labBlueChannel = NULL;
+    m_BlueChannel = NULL;
+    m_ColorRGBBox = NULL;
+    m_labRedColor = NULL;
+    m_RedColor = NULL;
+    m_labGreenColor = NULL;
+    m_GreenColor = NULL;
+    m_labBlueColor = NULL;
+    m_BlueColor = NULL;
     m_LocationPanel = NULL;
     m_LabelX = NULL;
     m_x = NULL;
@@ -726,29 +772,85 @@ void OutputDialog::CreateControls()
 
     m_Notebook->AddPage(m_InterfacePanel, _("Interface"));
 
-    m_LocationPanel = new wxPanel( m_Notebook, ID_PANEL_CO_LOCATION, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
-    wxBoxSizer* itemBoxSizer58 = new wxBoxSizer(wxHORIZONTAL);
-    m_LocationPanel->SetSizer(itemBoxSizer58);
+    wxPanel* itemPanel57 = new wxPanel( m_Notebook, ID_PANEL_CO_COLOR, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+    wxBoxSizer* itemBoxSizer58 = new wxBoxSizer(wxVERTICAL);
+    itemPanel57->SetSizer(itemBoxSizer58);
 
-    wxFlexGridSizer* itemFlexGridSizer59 = new wxFlexGridSizer(0, 2, 0, 0);
-    itemBoxSizer58->Add(itemFlexGridSizer59, 0, wxALIGN_TOP|wxALL, 5);
+    m_ColorChannelBox = new wxStaticBox(itemPanel57, ID_CO_COLOR_CHANNEL_BOX, _("Channel"));
+    wxStaticBoxSizer* itemStaticBoxSizer59 = new wxStaticBoxSizer(m_ColorChannelBox, wxVERTICAL);
+    itemBoxSizer58->Add(itemStaticBoxSizer59, 0, wxALIGN_LEFT|wxALL, 5);
+    wxFlexGridSizer* itemFlexGridSizer60 = new wxFlexGridSizer(0, 2, 0, 0);
+    itemStaticBoxSizer59->Add(itemFlexGridSizer60, 0, wxALIGN_LEFT, 5);
+    m_labRedChannel = new wxStaticText( itemPanel57, wxID_ANY, _("Red"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemFlexGridSizer60->Add(m_labRedChannel, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_RedChannel = new wxSpinCtrl( itemPanel57, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(120, -1), wxSP_ARROW_KEYS, 0, 10000, 0 );
+    itemFlexGridSizer60->Add(m_RedChannel, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_labGreenChannel = new wxStaticText( itemPanel57, wxID_ANY, _("Green"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemFlexGridSizer60->Add(m_labGreenChannel, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_GreenChannel = new wxSpinCtrl( itemPanel57, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(120, -1), wxSP_ARROW_KEYS, 0, 10000, 0 );
+    itemFlexGridSizer60->Add(m_GreenChannel, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_labBlueChannel = new wxStaticText( itemPanel57, wxID_ANY, _("Blue"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemFlexGridSizer60->Add(m_labBlueChannel, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_BlueChannel = new wxSpinCtrl( itemPanel57, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(120, -1), wxSP_ARROW_KEYS, 0, 10000, 0 );
+    itemFlexGridSizer60->Add(m_BlueChannel, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    itemFlexGridSizer60->AddGrowableCol(1);
+
+    m_ColorRGBBox = new wxStaticBox(itemPanel57, ID_CO_COLOR_RGB_BOX, _("RGB"));
+    wxStaticBoxSizer* itemStaticBoxSizer67 = new wxStaticBoxSizer(m_ColorRGBBox, wxVERTICAL);
+    itemBoxSizer58->Add(itemStaticBoxSizer67, 0, wxALIGN_LEFT|wxALL, 5);
+    wxFlexGridSizer* itemFlexGridSizer68 = new wxFlexGridSizer(0, 2, 0, 0);
+    itemStaticBoxSizer67->Add(itemFlexGridSizer68, 0, wxALIGN_LEFT, 5);
+    m_labRedColor = new wxStaticText( itemPanel57, wxID_ANY, _("Red"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemFlexGridSizer68->Add(m_labRedColor, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_RedColor = new wxSpinCtrl( itemPanel57, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 255, 0 );
+    itemFlexGridSizer68->Add(m_RedColor, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_labGreenColor = new wxStaticText( itemPanel57, wxID_ANY, _("Green"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemFlexGridSizer68->Add(m_labGreenColor, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_GreenColor = new wxSpinCtrl( itemPanel57, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 255, 0 );
+    itemFlexGridSizer68->Add(m_GreenColor, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_labBlueColor = new wxStaticText( itemPanel57, wxID_ANY, _("Blue"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemFlexGridSizer68->Add(m_labBlueColor, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_BlueColor = new wxSpinCtrl( itemPanel57, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 255, 0 );
+    itemFlexGridSizer68->Add(m_BlueColor, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    itemFlexGridSizer68->AddGrowableCol(1);
+
+    m_Notebook->AddPage(itemPanel57, _("Color"));
+
+    m_LocationPanel = new wxPanel( m_Notebook, ID_PANEL_CO_LOCATION, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
+    wxBoxSizer* itemBoxSizer76 = new wxBoxSizer(wxHORIZONTAL);
+    m_LocationPanel->SetSizer(itemBoxSizer76);
+
+    wxFlexGridSizer* itemFlexGridSizer77 = new wxFlexGridSizer(0, 2, 0, 0);
+    itemBoxSizer76->Add(itemFlexGridSizer77, 0, wxALIGN_TOP|wxALL, 5);
     m_LabelX = new wxStaticText( m_LocationPanel, wxID_STATIC_CO_X, _("x"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer59->Add(m_LabelX, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
+    itemFlexGridSizer77->Add(m_LabelX, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
     m_x = new wxTextCtrl( m_LocationPanel, ID_TEXTCTRL_CO_X, _("0"), wxDefaultPosition, wxDefaultSize, wxTE_CENTRE );
-    itemFlexGridSizer59->Add(m_x, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer77->Add(m_x, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_LabelY = new wxStaticText( m_LocationPanel, wxID_STATIC_CO_Y, _("y"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer59->Add(m_LabelY, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
+    itemFlexGridSizer77->Add(m_LabelY, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
     m_y = new wxTextCtrl( m_LocationPanel, ID_TEXTCTRL_CO_Y, _("0"), wxDefaultPosition, wxDefaultSize, wxTE_CENTRE );
-    itemFlexGridSizer59->Add(m_y, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer77->Add(m_y, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_LabelZ = new wxStaticText( m_LocationPanel, wxID_STATIC_CO_Z, _("z"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer59->Add(m_LabelZ, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
+    itemFlexGridSizer77->Add(m_LabelZ, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
     m_z = new wxTextCtrl( m_LocationPanel, ID_TEXTCTRL_CO_Z, _("0"), wxDefaultPosition, wxDefaultSize, wxTE_CENTRE );
-    itemFlexGridSizer59->Add(m_z, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer77->Add(m_z, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxArrayString m_oriStrings;
     m_oriStrings.Add(_("&north"));
@@ -757,29 +859,29 @@ void OutputDialog::CreateControls()
     m_oriStrings.Add(_("&west"));
     m_ori = new wxRadioBox( m_LocationPanel, ID_RADIOBOX_CO_ORI, _("Orientation"), wxDefaultPosition, wxDefaultSize, m_oriStrings, 1, wxRA_SPECIFY_COLS );
     m_ori->SetSelection(0);
-    itemBoxSizer58->Add(m_ori, 0, wxALIGN_TOP|wxALL, 5);
+    itemBoxSizer76->Add(m_ori, 0, wxALIGN_TOP|wxALL, 5);
 
     m_Notebook->AddPage(m_LocationPanel, _("Location"));
 
     itemBoxSizer2->Add(m_Notebook, 1, wxGROW|wxALL, 5);
 
-    wxStdDialogButtonSizer* itemStdDialogButtonSizer67 = new wxStdDialogButtonSizer;
+    wxStdDialogButtonSizer* itemStdDialogButtonSizer85 = new wxStdDialogButtonSizer;
 
-    itemBoxSizer2->Add(itemStdDialogButtonSizer67, 0, wxGROW|wxALL, 5);
+    itemBoxSizer2->Add(itemStdDialogButtonSizer85, 0, wxGROW|wxALL, 5);
     m_Cancel = new wxButton( itemDialog1, wxID_CANCEL, _("&Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemStdDialogButtonSizer67->AddButton(m_Cancel);
+    itemStdDialogButtonSizer85->AddButton(m_Cancel);
 
     m_OK = new wxButton( itemDialog1, wxID_OK, _("&OK"), wxDefaultPosition, wxDefaultSize, 0 );
     m_OK->SetDefault();
-    itemStdDialogButtonSizer67->AddButton(m_OK);
+    itemStdDialogButtonSizer85->AddButton(m_OK);
 
     m_Apply = new wxButton( itemDialog1, wxID_APPLY, _("&Apply"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemStdDialogButtonSizer67->AddButton(m_Apply);
+    itemStdDialogButtonSizer85->AddButton(m_Apply);
 
-    wxButton* itemButton71 = new wxButton( itemDialog1, wxID_HELP, _("&Help"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemStdDialogButtonSizer67->AddButton(itemButton71);
+    wxButton* itemButton89 = new wxButton( itemDialog1, wxID_HELP, _("&Help"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemStdDialogButtonSizer85->AddButton(itemButton89);
 
-    itemStdDialogButtonSizer67->Realize();
+    itemStdDialogButtonSizer85->Realize();
 
 ////@end OutputDialog content construction
 }
