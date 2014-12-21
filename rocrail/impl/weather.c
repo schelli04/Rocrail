@@ -388,7 +388,7 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
   TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "check weather themes at %02d:%02d", hour, min );
 
   if( data->theme == NULL ) {
-    // select a theme...
+    /* select a theme... */
     iONode theme = wWeather.getweathertheme(data->props);
     while( theme != NULL ) {
       if( (hour == wWeatherTheme.gethour(theme) && min == wWeatherTheme.getminute(theme)) ||
@@ -417,7 +417,7 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
 
   if( data->theme != NULL ) {
     if( data->themetimer1 <= 0 ) {
-      // play it...
+      /* play it... */
       iOStrTok tok = StrTokOp.inst( wWeatherTheme.getoutputs(data->theme), ',' );
       while( StrTokOp.hasMoreTokens(tok) ) {
         const char* id = StrTokOp.nextToken(tok);
