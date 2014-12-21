@@ -154,6 +154,13 @@ static void __translate( iODCCar inst, iONode node ) {
   if( StrOp.equals( NodeOp.getName( node ), wSysCmd.name() ) ) {
     const char* cmdstr = wSysCmd.getcmd( node );
     if( StrOp.equals( cmdstr, wSysCmd.ebreak ) ) {
+      /* CS ebreak */
+      TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "request emergency break" );
+      byte* cmd = allocMem(32);
+      cmd[ 0] = 2;
+      cmd[ 1] = 0xF0;
+      cmd[ 2] = 0xF0;
+      ThreadOp.post(data->writer, (obj)cmd);
     }
   }
 
@@ -163,11 +170,11 @@ static void __translate( iODCCar inst, iONode node ) {
     int  speed = 0;
 
     byte lsb = addr & 0x3F;
-    byte msb = 0x40 + (addr >> 6) & 0x3F;
+    byte msb = 0x40 + (addr >> 6) & 0x1F;
     byte V   = 0xC8;
     /*
     1. Byte = Niedere Addresse mit der Bitfolge 00AAAAAA
-    2. Byte = Hohe Addresse mit der Bitfolge 01AAAAAA
+    2. Byte = Hohe Addresse mit der Bitfolge 010AAAAA
     3. Byte = Kommando Licht mit der Bitfolge 10CCCCCC oder Kommando Motor mit der Bitfolge 11MM1MMM
     */
     if( wLoc.getV( node ) != -1 ) {
@@ -193,7 +200,7 @@ static void __translate( iODCCar inst, iONode node ) {
     int   addr = wFunCmd.getaddr( node );
 
     byte lsb = addr & 0x3F;
-    byte msb = 0x40 + (addr >> 6) & 0x3F;
+    byte msb = 0x40 + (addr >> 6) & 0x1F;
     byte fx  = 0x80;
     fx |= (wFunCmd.isf1(node)?0x01:0x00);
     fx |= (wFunCmd.isf2(node)?0x02:0x00);
