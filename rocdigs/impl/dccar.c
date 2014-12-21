@@ -313,6 +313,7 @@ static void __writer( void* threadinst ) {
       if( !SerialOp.write( data->serial, (char*)out, len ) ) {
         /* sleep and send it again? */
       }
+      ThreadOp.sleep(data->writepause);
     }
   }
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "writer ended." );
@@ -332,19 +333,21 @@ static struct ODCCar* _inst( const iONode ini ,const iOTrace trc ) {
   data->ini  = ini;
   data->iid  = StrOp.dup( wDigInt.getiid( ini ) );
   data->run  = True;
+  data->writepause = wDigInt.getswtime( ini );
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "DCCar %d.%d.%d", vmajor, vminor, patch );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "iid     = %s", data->iid );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "device  = %s", wDigInt.getdevice( ini ) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "iid           = %s", data->iid );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "device        = %s", wDigInt.getdevice( ini ) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "write pause   = %dms", data->writepause );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "line settings = 9600-8-2-O" );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
+
   data->serial = SerialOp.inst( wDigInt.getdevice( ini ) );
   SerialOp.setFlow( data->serial, StrOp.equals( wDigInt.cts, wDigInt.getflow( ini ) ) ? cts:0 );
-  // Einstellung der seriellen Schnittstelle 9600 Bps, 8 Bit, ODD Parity, 2 Stoppbit
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "line    = 9600-8-2-O (DCCar)" );
   SerialOp.setLine( data->serial, 9600, 8, 2, odd, wDigInt.isrtsdisabled( ini ) );
   SerialOp.setTimeout( data->serial, wDigInt.gettimeout( ini ), wDigInt.gettimeout( ini ) );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
 
   data->serialOK = SerialOp.open( data->serial );
 
