@@ -1588,12 +1588,12 @@
       </night>
       <weathertheme cardinality="n" wrappername="WeatherTheme">
         <var name="id" vt="string" defval="" range="*"/>
-        <var name="dim" vt="int" defval="0" range="0-100"/>
+        <var name="dim" vt="int" defval="0" unit="%" range="0-100"/>
         <var name="outputs" vt="string" defval="" range="*" remark="Comma separated list of outputs from lightning."/>
         <var name="random" vt="bool" defval="false"/>
-        <var name="hour" vt="int" defval="18" range="0-23"/>
+        <var name="hour" vt="int" defval="0" range="0-23"/>
         <var name="minute" vt="int" defval="0" range="0-59"/>
-        <var name="duration" vt="int" defval="0" range="0-*"/>
+        <var name="duration" vt="int" defval="0" range="0-1440"/>
       </weathertheme>
     </weather>
     <zlevel cardinality="n" remark="Z-Level description" wrappername="ZLevel">
