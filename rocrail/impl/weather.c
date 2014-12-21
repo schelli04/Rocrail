@@ -22,6 +22,8 @@
 #include "rocrail/impl/weather_impl.h"
 
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "rocs/public/mem.h"
 #include "rocs/public/trace.h"
@@ -42,6 +44,7 @@
 #include "rocrail/wrapper/public/Night.h"
 #include "rocrail/wrapper/public/Output.h"
 #include "rocrail/wrapper/public/Color.h"
+#include "rocrail/wrapper/public/WeatherTheme.h"
 
 
 static int instCnt = 0;
@@ -142,7 +145,7 @@ static void __doInitialize(iOWeather weather, Boolean day, Boolean night) {
 }
 
 
-static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown ) {
+static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown, Boolean clearTheme ) {
   iOWeatherData data = Data(weather);
   iOModel model = AppOp.getModel();
   iOList list = ListOp.inst();
@@ -224,7 +227,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
 
     int daylight  = sunset - sunrise;
 
-    Boolean adjustBri = False;
+    Boolean adjustBri = (data->themedim > 0 || clearTheme) ? True:False;
 
     /* AM */
     if( minutes <= noon && minutes >= sunrise) {
@@ -266,6 +269,13 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
         TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "pMinutes=%d sunset=%d minutes=%d redDif=%d greenDif=%d blueDif=%d",
             (int)pMinutes, sunset, minutes, (int)redDif, (int)greenDif, (int)blueDif);
       }
+    }
+
+    if( data->themedim > 0 ) {
+      float l_brightness = brightness;
+      float l_percentDim = data->themedim;
+      float l_briPercent = l_brightness / 100.0;
+      brightness = l_brightness - (l_briPercent * l_percentDim);
     }
 
     if(adjustBri || shutdown) {
@@ -373,8 +383,84 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown 
 
 static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
   iOWeatherData data = Data(weather);
+  iOModel model = AppOp.getModel();
 
   TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "check weather themes at %02d:%02d", hour, min );
+
+  if( data->theme == NULL ) {
+    // select a theme...
+    iONode theme = wWeather.getweathertheme(data->props);
+    while( theme != NULL ) {
+      if( (hour == wWeatherTheme.gethour(theme) && min == wWeatherTheme.getminute(theme)) ||
+          (data->themetimerrand <= 0 && wWeatherTheme.israndom(theme)) ) {
+        data->theme = theme;
+        data->themeduration = 0;
+        data->themetimer1 = 0;
+        data->themedim = wWeatherTheme.getdim(theme);
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "activating themes [%s]", wWeatherTheme.getid(theme) );
+        __doDaylight(weather, hour, min, False, False);
+        break;
+      }
+      theme = wWeather.nextweathertheme(data->props, theme);
+    }
+  }
+  else {
+    data->themeduration++;
+  }
+
+  if( data->theme != NULL &&  data->themeduration > (wWeatherTheme.getduration(data->theme)*10) ) {
+    data->theme = NULL;
+    data->themedim = 0;
+    data->themetimer1 = 0;
+    __doDaylight(weather, hour, min, False, True);
+  }
+
+  if( data->theme != NULL ) {
+    if( data->themetimer1 <= 0 ) {
+      // play it...
+      iOStrTok tok = StrTokOp.inst( wWeatherTheme.getoutputs(data->theme), ',' );
+      while( StrTokOp.hasMoreTokens(tok) ) {
+        const char* id = StrTokOp.nextToken(tok);
+        iOOutput output = ModelOp.getOutput(model, id);
+        if( output != NULL ) {
+          iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+          wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+          wOutput.setvalue(cmd, 255);
+          wOutput.setcmd(cmd, wOutput.value);
+          OutputOp.cmd(output, cmd, False);
+          cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+          wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+          wOutput.setvalue(cmd, 0);
+          wOutput.setcmd(cmd, wOutput.value);
+          OutputOp.cmd(output, cmd, False);
+          cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+          wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+          wOutput.setvalue(cmd, 255);
+          wOutput.setcmd(cmd, wOutput.value);
+          OutputOp.cmd(output, cmd, False);
+          ThreadOp.sleep(100);
+          cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+          wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+          wOutput.setvalue(cmd, 0);
+          wOutput.setcmd(cmd, wOutput.value);
+          OutputOp.cmd(output, cmd, False);
+        }
+      };
+      StrTokOp.base.del(tok);
+
+      data->themetimer1 = rand()%wWeatherTheme.getduration(data->theme);
+    }
+    else {
+      data->themetimer1--;
+    }
+
+  }
+
+  if( data->themetimerrand <= 0 )
+    data->themetimerrand = rand()%600;
+  else
+    data->themetimerrand--;
+
 }
 
 
@@ -392,27 +478,27 @@ static void __makeWeather( void* threadinst ) {
   __doInitialize(weather, True, True );
 
   while( data->run ) {
+    long t = ControlOp.getTime(control);
+    struct tm* ltm = localtime( &t );
+    int hour = ltm->tm_hour;
+    int min  = ltm->tm_min;
+
     if( loopCnt >= 10 ) {
       loopCnt = 0;
-      long t = ControlOp.getTime(control);
-      struct tm* ltm = localtime( &t );
-      int hour = ltm->tm_hour;
-      int min  = ltm->tm_min;
 
       if( lastMin != ltm->tm_min ) {
         TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "weather time is %02d:%02d", hour, min );
-        __doDaylight(weather, hour, min, False );
-        __checkWeatherThemes(weather, hour, min );
+        __doDaylight(weather, hour, min, False, False );
         lastMin = min;
       }
     }
     else {
       loopCnt++;
     }
-
+    __checkWeatherThemes(weather, hour, min );
     ThreadOp.sleep(100);
   }
-  __doDaylight(weather, 0, 0, True );
+  __doDaylight(weather, 0, 0, True, False );
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "make weather ended..." );
 

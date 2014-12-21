@@ -2758,6 +2758,11 @@
       <var name="props" vt="iONode"/>
       <var name="run" vt="Boolean"/>
       <var name="makeWeather" vt="iOThread"/>
+      <var name="theme" vt="iONode"/>
+      <var name="themeduration" vt="int"/>
+      <var name="themedim" vt="int"/>
+      <var name="themetimer1" vt="int"/>
+      <var name="themetimerrand" vt="int"/>
     </data>
   </object>
   
