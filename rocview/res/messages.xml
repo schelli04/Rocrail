@@ -29197,6 +29197,7 @@
     <nl txt="Melder monitor in automaat mode"/>
     <pt_BR txt="Monitor de sensor em modo automático"/>
     <sr_latin txt="Nadgledanje senzora u automatskom modu"/>
+    <sl txt="Spremljanje senzorjev v avtomatskem načinu"/>
   </Msg>
   <Msg id="userid">
     <en txt="User ID"/>
@@ -29206,6 +29207,8 @@
     <nl txt="Gebruikers-ID"/>
     <pt_BR txt="Identificador de usuário"/>
     <sr_latin txt="ID korisnika"/>
+    <ru txt="ID пользователя"/>
+    <sl txt="ID uporabnika"/>
   </Msg>
   <Msg id="weather" dialog="true">
     <en txt="Weather" tip="Weather setup"/>
@@ -29214,6 +29217,8 @@
     <it txt="Meteo" tip="Impostare meteo"/>
     <nl txt="Weer" tip="Weer instellingen"/>
     <sr_latin txt="Vremenske prilike" tip="Podešavanje vremenskih prilika"/>
+    <ru txt="Погода"/>
+    <sl txt="Vreme" tip="Nastavitev vremena"/>
   </Msg>
   <Msg id="outputs">
     <en txt="Outputs"/>
@@ -29222,6 +29227,8 @@
     <it txt="Uscite"/>
     <nl txt="Uitgangen"/>
     <sr_latin txt="Izlazi"/>
+    <ru txt="Выходы"/>
+    <sl txt="Izhodi"/>
   </Msg>
   <Msg id="minbri">
     <en txt="Min. brightness"/>
@@ -29230,6 +29237,8 @@
     <it txt="Luminosità minima"/>
     <nl txt="Min. helderheid"/>
     <sr_latin txt="Min. osvetljenost"/>
+    <ru txt="Мин.яркость"/>
+    <sl txt="Min. svetlost"/>
   </Msg>
   <Msg id="maxbri">
     <en txt="Max. brightness"/>
@@ -29238,6 +29247,8 @@
     <it txt="Luminosità massima"/>
     <nl txt="Max. helderheid"/>
     <sr_latin txt="Maks. osvetljenost"/>
+    <ru txt="Макс.яркость"/>
+    <sl txt="Maks. svetlost"/>
   </Msg>
   <Msg id="sunrise">
     <en txt="Sunrise"/>
@@ -29246,6 +29257,8 @@
     <it txt="Alba"/>
     <nl txt="Zonsopgang"/>
     <sr_latin txt="Izlazak sunca"/>
+    <ru txt="Восход"/>
+    <sl txt="Sončni vzhod"/>
   </Msg>
   <Msg id="sunset">
     <en txt="Sunset"/>
@@ -29254,6 +29267,8 @@
     <it txt="Tramonto"/>
     <nl txt="Zonsondergang"/>
     <sr_latin txt="Zalazak sunca"/>
+    <ru txt="Закат"/>
+    <sl txt="Sončni zahod"/>
   </Msg>
   <Msg id="watchnodes">
     <en txt="Watch nodes"/>
@@ -29262,6 +29277,7 @@
     <it txt="Controllare nodi"/>
     <nl txt="Bewaak beschikbaarheid"/>
     <sr_latin txt="Nadzor čvorova"/>
+    <sl txt="Nadzor vozlišč"/>
   </Msg>
   <Msg id="night">
     <en txt="Night"/>
@@ -29270,6 +29286,8 @@
     <it txt="Notte"/>
     <nl txt="Nacht"/>
     <sr_latin txt="Noć"/>
+    <ru txt="Ночь"/>
+    <sl txt="Noč"/>
   </Msg>
   <Msg id="brightness">
     <en txt="Brightness"/>
@@ -29278,26 +29296,51 @@
     <it txt="Luminosità"/>
     <nl txt="Helderheid"/>
     <sr_latin txt="Sjajnost"/>
+    <ru txt="Яркость"/>
+    <sl txt="Svetlost"/>
   </Msg>
   <Msg id="rgb">
     <en txt="RGB"/>
     <de txt="RGB"/>
     <en_GB txt="RGB"/>
     <nl txt="RGB"/>
+    <it txt="RGB"/>
+    <sl txt="RGB"/>
+    <sr_latin txt="RGB"/>
   </Msg>
   <Msg id="slidingdaylight">
     <en txt="Sliding daylight"/>
+    <de txt="Gleitendes Tageslicht"/>
+    <en_GB txt="Sliding daylight"/>
+    <it txt="Scorrimento luce del giorno"/>
+    <nl txt="Bewegend daglicht"/>
+    <sl txt="Prehodi svetlobe"/>
   </Msg>
   <Msg id="colorsliding">
     <en txt="Color sliding"/>
+    <de txt="Gleitende Farbe"/>
+    <en_GB txt="Colour sliding"/>
+    <it txt="Scorrimento colore"/>
+    <nl txt="Kleur overgang"/>
+    <sl txt="Barvni prehod"/>
   </Msg>
   <Msg id="noon">
     <en txt="Noon"/>
+    <de txt="Mittag"/>
+    <en_GB txt="Noon"/>
+    <nl txt="12 uur 's middags"/>
+    <sl txt="Opoldne"/>
   </Msg>
   <Msg id="blue">
     <en txt="blue"/>
+    <de txt="blau"/>
+    <nl txt="blauw"/>
+    <sl txt="modra"/>
   </Msg>
   <Msg id="dim">
     <en txt="Dim"/>
+    <de txt="Dimmen"/>
+    <nl txt="Dimmen"/>
+    <sl txt="Zatemnitev"/>
   </Msg>
 </Messages>
