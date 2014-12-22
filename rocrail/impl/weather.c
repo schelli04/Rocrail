@@ -31,12 +31,14 @@
 #include "rocs/public/thread.h"
 #include "rocs/public/strtok.h"
 #include "rocs/public/list.h"
+#include "rocs/public/system.h"
 
 #include "rocrail/public/app.h"
 #include "rocrail/public/control.h"
 #include "rocrail/public/output.h"
 #include "rocrail/public/model.h"
 
+#include "rocrail/wrapper/public/RocRail.h"
 #include "rocrail/wrapper/public/Weather.h"
 #include "rocrail/wrapper/public/Sunrise.h"
 #include "rocrail/wrapper/public/Noon.h"
@@ -385,7 +387,7 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
   iOWeatherData data = Data(weather);
   iOModel model = AppOp.getModel();
 
-  TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "check weather themes at %02d:%02d", hour, min );
+  TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "check weather themes at %02d:%02d theme=%X %d", hour, min, data->theme, data->themetimerrand );
 
   if( data->theme == NULL ) {
     /* select a theme... */
@@ -396,9 +398,10 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
         data->theme = theme;
         data->themeduration = 0;
         data->themetimer1 = 0;
-        data->themedim = wWeatherTheme.getdim(theme);
-        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "activating themes [%s]", wWeatherTheme.getid(theme) );
-        __doDaylight(weather, hour, min, False, False);
+        data->themedim = 0;
+        data->themestartup = True;
+        data->themeshutdown = False;
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "activating theme [%s]", wWeatherTheme.getid(theme) );
         break;
       }
       theme = wWeather.nextweathertheme(data->props, theme);
@@ -409,36 +412,85 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
   }
 
   if( data->theme != NULL &&  data->themeduration > (wWeatherTheme.getduration(data->theme)*10) ) {
-    data->theme = NULL;
-    data->themedim = 0;
+    /*data->theme = NULL;
+    data->themedim = 0;*/
     data->themetimer1 = 0;
-    __doDaylight(weather, hour, min, False, True);
+    data->themeshutdown = True;
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "deactivate theme [%s]", wWeatherTheme.getid(data->theme) );
   }
 
   if( data->theme != NULL ) {
-    if( data->themetimer1 <= 0 ) {
+    if( data->themestartup && data->themedim < wWeatherTheme.getdim(data->theme) ) {
+      float dim = wWeatherTheme.getdim(data->theme);
+      dim /= 25.0;
+      if( dim < 1 )
+        dim = 1;
+      data->themedim += (int)dim;
+      TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "***** themedim=%d", data->themedim );
+      __doDaylight(weather, hour, min, False, False);
+    }
+    else if( data->themestartup ) {
+      data->themestartup = False;
+    }
+
+    if( data->themeshutdown && data->themedim > 0 ) {
+      float dim = wWeatherTheme.getdim(data->theme);
+      dim /= 25.0;
+      if( dim < 1 )
+        dim = 1;
+      data->themedim -= (int)dim;
+      if( data->themedim <= 0) {
+        data->themedim = 0;
+        data->themeshutdown = False;
+        data->theme = NULL;
+      }
+      TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "***** themedim=%d", data->themedim );
+      __doDaylight(weather, hour, min, False, False);
+    }
+    else if( data->themeshutdown ) {
+      data->themeshutdown = False;
+      data->theme = NULL;
+    }
+
+    if( data->theme != NULL && !data->themestartup && !data->themeshutdown && data->themetimer1 <= 0 ) {
       /* play it... */
       iOStrTok tok = StrTokOp.inst( wWeatherTheme.getoutputs(data->theme), ',' );
       while( StrTokOp.hasMoreTokens(tok) ) {
         const char* id = StrTokOp.nextToken(tok);
         iOOutput output = ModelOp.getOutput(model, id);
         if( output != NULL ) {
+          int i = 0;
+          int cnt = rand() % 10;
+          for( i = 0; i < cnt; i++ ) {
+            iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+            wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+            wOutput.setvalue(cmd, 255);
+            wOutput.setcmd(cmd, wOutput.value);
+            OutputOp.cmd(output, cmd, False);
+            ThreadOp.sleep(rand()%100);
+
+            cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+            wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+            wOutput.setvalue(cmd, 0);
+            wOutput.setcmd(cmd, wOutput.value);
+            OutputOp.cmd(output, cmd, False);
+            ThreadOp.sleep(rand()%100);
+          }
+
           iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
           wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
           wOutput.setvalue(cmd, 255);
           wOutput.setcmd(cmd, wOutput.value);
           OutputOp.cmd(output, cmd, False);
-          cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
-          wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
-          wOutput.setvalue(cmd, 0);
-          wOutput.setcmd(cmd, wOutput.value);
-          OutputOp.cmd(output, cmd, False);
-          cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
-          wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
-          wOutput.setvalue(cmd, 255);
-          wOutput.setcmd(cmd, wOutput.value);
-          OutputOp.cmd(output, cmd, False);
-          ThreadOp.sleep(100);
+
+          if( cnt % 1 == 0 && StrOp.len(wWeatherTheme.getsound(data->theme)) > 0 ) {
+            char* s = StrOp.fmt("%s \"%s%c%s\"", wRocRail.getsoundplayer(AppOp.getIni()),
+                wRocRail.getsoundpath(AppOp.getIni()), SystemOp.getFileSeparator(), wWeatherTheme.getsound(data->theme) );
+            SystemOp.system( s, True, False );
+            StrOp.free(s);
+          }
+
+
           cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
           wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
           wOutput.setvalue(cmd, 0);
@@ -476,6 +528,8 @@ static void __makeWeather( void* threadinst ) {
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "make weather started..." );
   ThreadOp.sleep(1000);
   __doInitialize(weather, True, True );
+
+  data->themetimerrand = rand()%600;
 
   while( data->run ) {
     long t = ControlOp.getTime(control);

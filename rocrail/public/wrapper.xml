@@ -1594,7 +1594,8 @@
         <var name="hour" vt="int" defval="0" range="0-23"/>
         <var name="minute" vt="int" defval="0" range="0-59"/>
         <var name="duration" vt="int" defval="0" range="0-1440"/>
-      </weathertheme>
+        <var name="sound" vt="string" defval="" range="*" remark="Comma separated list of sounds."/>
+        </weathertheme>
     </weather>
     <zlevel cardinality="n" remark="Z-Level description" wrappername="ZLevel">
       <var name="title" vt="string" defval="" range="*"/>

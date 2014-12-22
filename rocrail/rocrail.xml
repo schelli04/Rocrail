@@ -2763,6 +2763,8 @@
       <var name="themedim" vt="int"/>
       <var name="themetimer1" vt="int"/>
       <var name="themetimerrand" vt="int"/>
+      <var name="themestartup" vt="Boolean"/>
+      <var name="themeshutdown" vt="Boolean"/>
     </data>
   </object>
   
