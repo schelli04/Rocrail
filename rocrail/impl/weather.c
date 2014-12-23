@@ -405,13 +405,17 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
     iONode theme = wWeather.getweathertheme(data->props);
     while( theme != NULL ) {
       if( (hour == wWeatherTheme.gethour(theme) && min == wWeatherTheme.getminute(theme)) ||
-          (data->themetimerrand <= 0 && wWeatherTheme.israndom(theme)) ) {
+          (data->themetimerrand <= 0 && wWeatherTheme.israndom(theme)) || (data->requestedTheme != NULL && StrOp.equals(data->requestedTheme, wWeatherTheme.getid(theme) )) ) {
         data->theme = theme;
         data->themeduration = 0;
         data->themetimer1 = 0;
         data->themedim = 0;
         data->themestartup = True;
         data->themeshutdown = False;
+        if( data->requestedTheme != NULL && StrOp.equals(data->requestedTheme, wWeatherTheme.getid(theme) ) ) {
+          StrOp.free(data->requestedTheme);
+          data->requestedTheme = NULL;
+        }
         TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "activating theme [%s]", wWeatherTheme.getid(theme) );
         break;
       }
@@ -593,6 +597,10 @@ static void _setWeather( iOWeather inst, const char* id ) {
 
 static void _setTheme( iOWeather inst, const char* id ) {
   iOWeatherData data = Data(inst);
+  if( data->requestedTheme != NULL )
+    StrOp.free(data->requestedTheme);
+  data->requestedTheme = StrOp.dup(id);
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "use weather theme [%s]", id );
 }
 
 

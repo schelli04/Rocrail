@@ -2783,6 +2783,7 @@
       <var name="themetimerrand" vt="int"/>
       <var name="themestartup" vt="Boolean"/>
       <var name="themeshutdown" vt="Boolean"/>
+      <var name="requestedTheme" vt="char*"/>
     </data>
   </object>
   
