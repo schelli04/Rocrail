@@ -108,41 +108,44 @@ static void* __event( void* inst, const void* evt ) {
 static void __doInitialize(iOWeather weather, Boolean day, Boolean night) {
   iOWeatherData data = Data(weather);
   iOModel model = AppOp.getModel();
-  iONode nightProps = wWeather.getnight(data->props);
+
+  if( data->props != NULL ) {
+    iONode nightProps = wWeather.getnight(data->props);
 
 
-  if( day ) {
-    TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "initialize all day lamps" );
-    iOStrTok tok = StrTokOp.inst( wWeather.getoutputs(data->props), ',' );
-    while( StrTokOp.hasMoreTokens(tok) ) {
-      const char* id = StrTokOp.nextToken(tok);
-      iOOutput output = ModelOp.getOutput(model, id);
-      if( output != NULL ) {
-        iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
-        wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
-        wOutput.setvalue(cmd, 0);
-        wOutput.setcmd(cmd, wOutput.off);
-        OutputOp.cmd(output, cmd, True);
-      }
-    };
-    StrTokOp.base.del(tok);
-  }
+    if( day ) {
+      TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "initialize all day lamps" );
+      iOStrTok tok = StrTokOp.inst( wWeather.getoutputs(data->props), ',' );
+      while( StrTokOp.hasMoreTokens(tok) ) {
+        const char* id = StrTokOp.nextToken(tok);
+        iOOutput output = ModelOp.getOutput(model, id);
+        if( output != NULL ) {
+          iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+          wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+          wOutput.setvalue(cmd, 0);
+          wOutput.setcmd(cmd, wOutput.off);
+          OutputOp.cmd(output, cmd, True);
+        }
+      };
+      StrTokOp.base.del(tok);
+    }
 
-  if( night && nightProps != NULL ) {
-    TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "initialize all night lamps" );
-    iOStrTok tok = StrTokOp.inst( wNight.getoutputs(nightProps), ',' );
-    while( StrTokOp.hasMoreTokens(tok) ) {
-      const char* id = StrTokOp.nextToken(tok);
-      iOOutput output = ModelOp.getOutput(model, id);
-      if( output != NULL ) {
-        iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
-        wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
-        wOutput.setvalue(cmd, 0);
-        wOutput.setcmd(cmd, wOutput.off);
-        OutputOp.cmd(output, cmd, True);
-      }
-    };
-    StrTokOp.base.del(tok);
+    if( night && nightProps != NULL ) {
+      TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "initialize all night lamps" );
+      iOStrTok tok = StrTokOp.inst( wNight.getoutputs(nightProps), ',' );
+      while( StrTokOp.hasMoreTokens(tok) ) {
+        const char* id = StrTokOp.nextToken(tok);
+        iOOutput output = ModelOp.getOutput(model, id);
+        if( output != NULL ) {
+          iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+          wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+          wOutput.setvalue(cmd, 0);
+          wOutput.setcmd(cmd, wOutput.off);
+          OutputOp.cmd(output, cmd, True);
+        }
+      };
+      StrTokOp.base.del(tok);
+    }
   }
 }
 
@@ -153,6 +156,10 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
   iOList list = ListOp.inst();
   iOList nightList = ListOp.inst();
   int minutes   = hour * 60 + min;
+
+  if( data->props == NULL ) {
+    return;
+  }
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "do daylight at %02d:%02d (%d) on %s", hour, min, minutes, wWeather.getoutputs(data->props) );
 
@@ -387,6 +394,10 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
   iOWeatherData data = Data(weather);
   iOModel model = AppOp.getModel();
 
+  if( data->props == NULL ) {
+    return;
+  }
+
   TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "check weather themes at %02d:%02d theme=%X %d", hour, min, data->theme, data->themetimerrand );
 
   if( data->theme == NULL ) {
@@ -562,6 +573,31 @@ static void _halt( iOWeather inst ) {
   iOWeatherData data = Data(inst);
   data->run = False;
   ThreadOp.sleep(120);
+}
+
+
+static void _setWeather( iOWeather inst, const char* id ) {
+  iOWeatherData data = Data(inst);
+  iOModel model = AppOp.getModel();
+
+  if( id != NULL ) {
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "use weather [%s]", id );
+    data->props = ModelOp.getWeather(model, id);
+  }
+  else {
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "reset weather" );
+    data->props = NULL;
+  }
+}
+
+
+static Boolean _isWeather( iOWeather inst, const char* id ) {
+  iOWeatherData data = Data(inst);
+  if( data->props == NULL )
+    return False;
+
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "is weather [%s] ? [%s]", id, wWeather.getid(data->props) );
+  return StrOp.equals(id, wWeather.getid(data->props));
 }
 
 

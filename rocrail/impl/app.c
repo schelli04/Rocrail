@@ -389,6 +389,14 @@ static iOControl _getControl( void ) {
   return NULL;
 }
 
+static iOWeather _getWeather( void ) {
+  if( __appinst != NULL ) {
+    iOAppData data = Data(__appinst);
+    return data->weather;
+  }
+  return NULL;
+}
+
 static iOClntCon _getClntCon( void ) {
   if( __appinst != NULL ) {
     iOAppData data = Data(__appinst);
@@ -982,11 +990,7 @@ static int _Main( iOApp inst, int argc, char** argv ) {
   data->control = ControlOp.inst( nocom );
 
   /* Weather */
-  if( wPlan.getweather(ModelOp.getModel(data->model)) == NULL ) {
-    iONode weather = NodeOp.inst(wWeather.name(), ModelOp.getModel(data->model), ELEMENT_NODE);
-    NodeOp.addChild(ModelOp.getModel(data->model), weather);
-  }
-  data->weather = WeatherOp.inst( wPlan.getweather(ModelOp.getModel(data->model)) );
+  data->weather = WeatherOp.inst(ModelOp.getWeather(data->model, wRocRail.getweatherid(data->ini)));
 
   /* Client connection */
   {

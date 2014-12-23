@@ -131,6 +131,7 @@
 #include "rocrail/wrapper/public/Variable.h"
 #include "rocrail/wrapper/public/VariableList.h"
 #include "rocrail/wrapper/public/Weather.h"
+#include "rocrail/wrapper/public/WeatherList.h"
 
 static int instCnt = 0;
 
@@ -941,6 +942,19 @@ static Boolean _addItem( iOModel inst, iONode item ) {
     added = True;
   }
 
+  else if( StrOp.equals( wWeather.name(), itemName ) ) {
+    iONode weatherlist = wPlan.getweatherlist( data->model );
+    iONode clone = (iONode)item->base.clone( item );
+    if( weatherlist == NULL ) {
+      weatherlist = NodeOp.inst( wWeatherList.name(), data->model, ELEMENT_NODE );
+      NodeOp.addChild( data->model, weatherlist );
+    }
+    NodeOp.addChild( weatherlist, clone );
+    MapOp.put( data->weatherMap, wWeather.getid(clone), (obj)clone );
+
+    added = True;
+  }
+
   if(added) {
     iONode cmd = NodeOp.inst( wModelCmd.name(), NULL, ELEMENT_NODE );
     wModelCmd.setcmd( cmd, wModelCmd.add );
@@ -963,7 +977,6 @@ static Boolean _modifyItem( iOModel inst, iONode item ) {
 
   if( !StrOp.equals(wMVTrack.name(), NodeOp.getName(item) ) &&
       !StrOp.equals(wSystemActions.name(), NodeOp.getName(item) ) &&
-      !StrOp.equals(wWeather.name(), NodeOp.getName(item) ) &&
       !StrOp.equals(wZLevel.name(), NodeOp.getName(item) ) && (id == NULL ||
       StrOp.len(id) == 0 || StrOp.equals("(null)", id) ) ) {
     TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "invalid id for modify [%s]", name );
@@ -1453,6 +1466,51 @@ static Boolean _modifyItem( iOModel inst, iONode item ) {
       _addItem( inst, item );
     }
   }
+  else if( StrOp.equals( wWeather.name(), name ) ) {
+    /* modify weather... */
+    iONode weather = NULL;
+    iONode weatherlist = wPlan.getweatherlist( data->model );
+    if( weatherlist != NULL ) {
+      iONode node = wWeatherList.getweather( weatherlist );
+      while( node != NULL ) {
+        Boolean prev_id_matched = StrOp.equals( prev_id, wWeather.getid( node ) );
+        if( StrOp.equals( id, wWeather.getid( node ) ) || prev_id_matched ) {
+          int cnt = NodeOp.getAttrCnt( item );
+          int i = 0;
+          for( i = 0; i < cnt; i++ ) {
+            iOAttr attr = NodeOp.getAttr( item, i );
+            const char* name  = AttrOp.getName( attr );
+            const char* value = AttrOp.getVal( attr );
+            NodeOp.setStr( node, name, value );
+          }
+          cnt = NodeOp.getChildCnt( node );
+          while( cnt > 0 ) {
+            iONode child = NodeOp.getChild( node, 0 );
+            NodeOp.removeChild( node, child );
+            cnt = NodeOp.getChildCnt( node );
+          }
+          cnt = NodeOp.getChildCnt( item );
+          for( i = 0; i < cnt; i++ ) {
+            iONode child = NodeOp.getChild( item, i );
+            NodeOp.addChild( node, (iONode)NodeOp.base.clone(child) );
+          }
+          weather = node;
+
+          /* update schedule map */
+          if( prev_id_matched ) {
+            MapOp.remove( data->weatherMap, prev_id );
+            MapOp.put( data->weatherMap, id, (obj)node );
+          }
+
+          break;
+        }
+        node = wWeatherList.nextweather( weatherlist, node );
+      }
+    }
+    if( weather == NULL && wWeather.getid( item ) != NULL && StrOp.len( wWeather.getid( item ) ) > 0 ) {
+      _addItem( inst, item );
+    }
+  }
   else if( StrOp.equals( wMVTrack.name(), name ) ) {
     /* modify mvtrack... */
     iONode mv = wPlan.getmv( data->model );
@@ -1494,35 +1552,6 @@ static Boolean _modifyItem( iOModel inst, iONode item ) {
         iONode child = NodeOp.getChild( item, i );
         NodeOp.addChild( system, (iONode)NodeOp.base.clone(child) );
       }
-    }
-  }
-  else if( StrOp.equals( wWeather.name(), name ) ) {
-    iONode weather = wPlan.getweather( data->model );
-    if( weather == NULL ) {
-      weather = (iONode)NodeOp.base.clone( item );
-      NodeOp.addChild( data->model, weather );
-    }
-    else {
-      int cnt = NodeOp.getChildCnt( weather );
-      int i = 0;
-      while( cnt > 0 ) {
-        iONode child = NodeOp.getChild( weather, 0 );
-        NodeOp.removeChild( weather, child );
-        cnt = NodeOp.getChildCnt( weather );
-      }
-      cnt = NodeOp.getChildCnt( item );
-      for( i = 0; i < cnt; i++ ) {
-        iONode child = NodeOp.getChild( item, i );
-        NodeOp.addChild( weather, (iONode)NodeOp.base.clone(child) );
-      }
-      cnt = NodeOp.getAttrCnt( item );
-      for( i = 0; i < cnt; i++ ) {
-        iOAttr attr = NodeOp.getAttr( item, i );
-        const char* name  = AttrOp.getName( attr );
-        const char* value = AttrOp.getVal( attr );
-        NodeOp.setStr( weather, name, value );
-      }
-
     }
   }
 
@@ -1799,6 +1828,30 @@ static Boolean _removeItem( iOModel inst, iONode item ) {
           break;
         }
         node = wTourList.nexttour( tourlist, node );
+      };
+    }
+  }
+  else if( StrOp.equals( wWeather.name(), name ) ) {
+    iONode weather = NULL;
+    iONode weatherlist = wPlan.getweatherlist( o->model );
+    if( weatherlist != NULL ) {
+      iONode node = wWeatherList.getweather( weatherlist );
+      while( node != NULL ) {
+        if( StrOp.equals( wWeather.getid( item ), wWeather.getid( node ) ) ) {
+          NodeOp.removeChild( weatherlist, node );
+          MapOp.remove( o->weatherMap, wWeather.getid( item ) );
+
+          if( AppOp.getWeather() != NULL ) {
+            if( WeatherOp.isWeather(AppOp.getWeather(), wWeather.getid( item ) ) ) {
+              wRocRail.setweatherid(AppOp.getIni(), "");
+              WeatherOp.setWeather(AppOp.getWeather(), NULL);
+            }
+          }
+          node->base.del( node );
+          removed = True;
+          break;
+        }
+        node = wWeatherList.nextweather( weatherlist, node );
       };
     }
   }
@@ -2138,6 +2191,14 @@ static Boolean _cmd( iOModel inst, iONode cmd ) {
     if( StrOp.equals( wSysCmd.ebreak, cmdVal ) ) {
       if( wCtrl.isebreakforceunlock( wRocRail.getctrl( AppOp.getIni() ) ) ) {
         ModelOp.forceUnlock(inst);
+      }
+    }
+
+    if( StrOp.equals( wSysCmd.weather, cmdVal ) ) {
+      iOWeather weather = AppOp.getWeather();
+      if( weather != NULL ) {
+        wRocRail.setweatherid(AppOp.getIni(), wSysCmd.getid(cmd));
+        WeatherOp.setWeather(weather, wSysCmd.getid(cmd));
       }
     }
 
@@ -3382,6 +3443,12 @@ static iONode _getTour( iOModel inst, const char* id ) {
 }
 
 
+static iONode _getWeather( iOModel inst, const char* id ) {
+  iOModelData o = Data(inst);
+  return (iONode)MapOp.get( o->weatherMap, id );
+}
+
+
 static iOText _getText( iOModel inst, const char* id ) {
   iOModelData o = Data(inst);
   return (iOText)MapOp.get( o->textMap, id );
@@ -3693,6 +3760,7 @@ static Boolean _init( iOModel inst ) {
   _createMap( o, o->locationMap, wLocationList.name(), wLocation.name(), (item_inst)LocationOp.inst, NULL );
   _createMap( o, o->scheduleMap, wScheduleList.name(), wSchedule.name(), NULL, NULL );
   _createMap( o, o->tourMap, wTourList.name(), wTour.name(), NULL, NULL );
+  _createMap( o, o->weatherMap, wWeatherList.name(), wWeather.name(), NULL, NULL );
 
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "init creatingFbAddrMap..." );
@@ -5754,7 +5822,8 @@ static iOModel _inst( const char* fileName, const char* locoFileName ) {
   data->textMap     = MapOp.inst();
   data->locationMap = MapOp.inst();
   data->scheduleMap = MapOp.inst();
-  data->tourMap = MapOp.inst();
+  data->tourMap     = MapOp.inst();
+  data->weatherMap  = MapOp.inst();
 
   data->fbAddrMap   = MapOp.inst();
   data->swAddrMap   = MapOp.inst();

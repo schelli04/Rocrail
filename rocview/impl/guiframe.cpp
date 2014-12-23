@@ -184,6 +184,7 @@
 #include "rocrail/wrapper/public/Operator.h"
 #include "rocrail/wrapper/public/Turntable.h"
 #include "rocrail/wrapper/public/Weather.h"
+#include "rocrail/wrapper/public/WeatherList.h"
 
 
 #include "rocview/symbols/svg.h"
@@ -3990,12 +3991,12 @@ void RocGuiFrame::OnEditVariables( wxCommandEvent& event ) {
 void RocGuiFrame::OnWeather( wxCommandEvent& event ) {
   if( wxGetApp().getModel() == NULL )
     return;
-  iONode weather = wPlan.getweather(wxGetApp().getModel());
-  if( weather == NULL ) {
-    weather = NodeOp.inst(wWeather.name(), wxGetApp().getModel(), ELEMENT_NODE );
-    NodeOp.addChild(wxGetApp().getModel(), weather);
+  iONode weatherlist = wPlan.getweatherlist(wxGetApp().getModel());
+  if( weatherlist == NULL ) {
+    weatherlist = NodeOp.inst(wWeatherList.name(), wxGetApp().getModel(), ELEMENT_NODE );
+    NodeOp.addChild(wxGetApp().getModel(), weatherlist);
   }
-  WeatherDlg*  dlg = new WeatherDlg(this, weather);
+  WeatherDlg*  dlg = new WeatherDlg(this, weatherlist);
   if( wxID_OK == dlg->ShowModal() ) {
     // TODO: inform
   }

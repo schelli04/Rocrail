@@ -40,6 +40,7 @@
     </fun>
     <fun name="getModel" vt="iOModel"/>
     <fun name="getControl" vt="iOControl"/>
+    <fun name="getWeather" vt="iOWeather"/>
     <fun name="getClntCon" vt="iOClntCon"/>
     <fun name="getSrcpCon" vt="iOSrcpCon"/>
     <fun name="shutdown" vt="Boolean">
@@ -1076,6 +1077,10 @@
       <param name="inst" vt="this" remark="Model instance"/>
       <param name="id" vt="const char*" remark="TourID to search for"/>
     </fun>
+    <fun name="getWeather" vt="iONode">
+      <param name="inst" vt="this" remark="Model instance"/>
+      <param name="id" vt="const char*" remark="WeatherID to search for"/>
+    </fun>
     <fun name="getText" vt="iOText">
       <param name="inst" vt="this" remark="Model instance"/>
       <param name="id" vt="const char*" remark="TextID to search for"/>
@@ -1368,6 +1373,7 @@
       <var name="locationMap" vt="iOMap"/>
       <var name="scheduleMap" vt="iOMap"/>
       <var name="tourMap" vt="iOMap"/>
+      <var name="weatherMap" vt="iOMap"/>
       <var name="actionMap" vt="iOMap"/>
       <var name="waybillMap" vt="iOMap"/>
       <var name="muxFindDest" vt="iOMutex"/>
@@ -2753,6 +2759,14 @@
     </fun>
     <fun name="halt">
       <param name="inst" vt="this" remark="Weather instance"/>
+    </fun>
+    <fun name="setWeather" vt="void">
+      <param name="inst" vt="this" remark="Weather instance"/>
+      <param name="id" vt="const char*" remark="Weather ID."/>
+    </fun>
+    <fun name="isWeather" vt="Boolean">
+      <param name="inst" vt="this" remark="Weather instance"/>
+      <param name="id" vt="const char*" remark="Weather ID."/>
     </fun>
     <data>
       <var name="props" vt="iONode"/>
