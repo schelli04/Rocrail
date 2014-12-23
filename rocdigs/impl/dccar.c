@@ -170,11 +170,11 @@ static void __translate( iODCCar inst, iONode node ) {
     int  speed = 0;
 
     byte lsb = addr & 0x3F;
-    byte msb = 0x40 + (addr >> 6) & 0x1F;
+    byte msb = 0x40 + (addr >> 6) & 0x0F;
     byte V   = 0xC8;
     /*
     1. Byte = Niedere Addresse mit der Bitfolge 00AAAAAA
-    2. Byte = Hohe Addresse mit der Bitfolge 010AAAAA
+    2. Byte = Hohe Addresse mit der Bitfolge 0100AAAA (Function group 1), 0110AAAA (Function group 2)
     3. Byte = Kommando Licht mit der Bitfolge 10CCCCCC oder Kommando Motor mit der Bitfolge 11MM1MMM
     */
     if( wLoc.getV( node ) != -1 ) {
@@ -199,8 +199,9 @@ static void __translate( iODCCar inst, iONode node ) {
   else if( StrOp.equals( NodeOp.getName( node ), wFunCmd.name() ) ) {
     int   addr = wFunCmd.getaddr( node );
 
+    /* Group 1 */
     byte lsb = addr & 0x3F;
-    byte msb = 0x40 + (addr >> 6) & 0x1F;
+    byte msb = 0x40 + (addr >> 6) & 0x0F;
     byte fx  = 0x80;
     fx |= (wFunCmd.isf1(node)?0x01:0x00);
     fx |= (wFunCmd.isf2(node)?0x02:0x00);
@@ -214,9 +215,28 @@ static void __translate( iODCCar inst, iONode node ) {
     cmd[ 1] = lsb;
     cmd[ 2] = msb;
     cmd[ 3] = fx;
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "dccar %d fx 0x%02X", addr, fx );
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "dccar %d fx1 0x%02X", addr, fx );
     ThreadOp.post(data->writer, (obj)cmd);
-  }
+
+    /* Group 2 */
+    lsb = addr & 0x3F;
+    msb = 0x60 + (addr >> 6) & 0x0F;
+    fx  = 0x80;
+    fx |= (wFunCmd.isf0(node)?0x01:0x00);
+    fx |= (wFunCmd.isf7(node)?0x02:0x00);
+    fx |= (wFunCmd.isf8(node)?0x04:0x00);
+    fx |= (wFunCmd.isf9(node)?0x08:0x00);
+    fx |= (wFunCmd.isf10(node)?0x10:0x00);
+    fx |= (wFunCmd.isf11(node)?0x20:0x00);
+
+    cmd = allocMem(32);
+    cmd[ 0] = 3;
+    cmd[ 1] = lsb;
+    cmd[ 2] = msb;
+    cmd[ 3] = fx;
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "dccar %d fx2 0x%02X", addr, fx );
+    ThreadOp.post(data->writer, (obj)cmd);
+}
 
 }
 
