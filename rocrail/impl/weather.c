@@ -591,6 +591,11 @@ static void _setWeather( iOWeather inst, const char* id ) {
 }
 
 
+static void _setTheme( iOWeather inst, const char* id ) {
+  iOWeatherData data = Data(inst);
+}
+
+
 static Boolean _isWeather( iOWeather inst, const char* id ) {
   iOWeatherData data = Data(inst);
   if( data->props == NULL )

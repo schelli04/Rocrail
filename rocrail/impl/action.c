@@ -37,6 +37,7 @@
 #include "rocrail/public/car.h"
 #include "rocrail/public/var.h"
 #include "rocrail/public/location.h"
+#include "rocrail/public/weather.h"
 
 #include "rocs/public/system.h"
 #include "rocs/public/mem.h"
@@ -69,6 +70,7 @@
 #include "rocrail/wrapper/public/BinStateCmd.h"
 #include "rocrail/wrapper/public/Variable.h"
 #include "rocrail/wrapper/public/Location.h"
+#include "rocrail/wrapper/public/Weather.h"
 
 static int instCnt = 0;
 static int levelCnt = 0;
@@ -696,6 +698,24 @@ static void __executeAction( struct OAction* inst, iONode actionctrl ) {
       TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "location[%s], [%s] [%s]",
           id, cmdStr, wAction.getparam(data->action) );
       LocationOp.cmd( location, cmd );
+    }
+  }
+
+
+  /* weather action */
+  if( StrOp.equals( wWeather.name(), wAction.gettype( data->action ) ) ) {
+    const char* id     = wAction.getoid( data->action );
+    if( StrOp.equals( wAction.weather_set, wAction.getcmd( data->action ) ) ) {
+      iOWeather weather = AppOp.getWeather();
+      if( weather != NULL ) {
+        WeatherOp.setWeather(weather, id);
+      }
+    }
+    else if( StrOp.equals( wAction.weather_theme, wAction.getcmd( data->action ) ) ) {
+      iOWeather weather = AppOp.getWeather();
+      if( weather != NULL ) {
+        WeatherOp.setWeather(weather, id);
+      }
     }
   }
 

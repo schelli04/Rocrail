@@ -2764,6 +2764,10 @@
       <param name="inst" vt="this" remark="Weather instance"/>
       <param name="id" vt="const char*" remark="Weather ID."/>
     </fun>
+    <fun name="setTheme" vt="void">
+      <param name="inst" vt="this" remark="Weather instance"/>
+      <param name="id" vt="const char*" remark="Theme ID."/>
+    </fun>
     <fun name="isWeather" vt="Boolean">
       <param name="inst" vt="this" remark="Weather instance"/>
       <param name="id" vt="const char*" remark="Weather ID."/>

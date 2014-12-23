@@ -3027,6 +3027,8 @@
         <const name="sound_play" vt="string" val="play"/>
         <const name="loco_binstate_on" vt="string" val="binstate_on"/>
         <const name="loco_binstate_off" vt="string" val="binstate_off"/>
+        <const name="weather_set" vt="string" val="setweather"/>
+        <const name="weather_theme" vt="string" val="weathertheme"/>
         <var name="id" vt="string" defval="NULL" range="*" remark="action id"/>
         <var name="desc" vt="string" defval="" range="*" remark="description"/>
         <var name="group" vt="string" defval="" range="*"/>
