@@ -1327,10 +1327,14 @@ static void __executeAction( struct OAction* inst, iONode actionctrl ) {
         }
         else if( StrOp.equals(wLoc.go, wAction.getcmd(data->action) ) ) {
           if( wAction.getparam(data->action) != NULL && StrOp.len( wAction.getparam(data->action) ) > 0 ) {
+            iONode tour = ModelOp.getTour(model, wAction.getparam(data->action));
             iONode schedule = ModelOp.getSchedule(model, wAction.getparam(data->action));
             iIBlockBase block = ModelOp.getBlock(model, wAction.getparam(data->action));
             iOLocation location = ModelOp.getLocation(model, wAction.getparam(data->action));
-            if( schedule != NULL ) {
+            if( tour != NULL ) {
+              LocOp.useTour( lc, wAction.getparam(data->action));
+            }
+            else if( schedule != NULL ) {
               LocOp.useSchedule( lc, wAction.getparam(data->action));
             }
             else if( block != NULL ) {
