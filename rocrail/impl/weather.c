@@ -499,10 +499,13 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
           OutputOp.cmd(output, cmd, False);
 
           if( cnt == wWeatherTheme.getsoundrandomrate(data->theme) && StrOp.len(wWeatherTheme.getsound(data->theme)) > 0 ) {
-            char* s = StrOp.fmt("%s \"%s%c%s\"", wRocRail.getsoundplayer(AppOp.getIni()),
-                wRocRail.getsoundpath(AppOp.getIni()), SystemOp.getFileSeparator(), wWeatherTheme.getsound(data->theme) );
-            SystemOp.system( s, True, False );
-            StrOp.free(s);
+            if( data->themesoundtimer <= 0 ) {
+              char* s = StrOp.fmt("%s \"%s%c%s\"", wRocRail.getsoundplayer(AppOp.getIni()),
+                  wRocRail.getsoundpath(AppOp.getIni()), SystemOp.getFileSeparator(), wWeatherTheme.getsound(data->theme) );
+              SystemOp.system( s, True, False );
+              StrOp.free(s);
+              data->themesoundtimer = 10;
+            }
           }
 
 
@@ -516,9 +519,11 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
       StrTokOp.base.del(tok);
 
       data->themetimer1 = rand()%wWeatherTheme.getduration(data->theme);
+      data->themesoundtimer--;
     }
     else {
       data->themetimer1--;
+      data->themesoundtimer--;
     }
 
   }

@@ -2784,6 +2784,7 @@
       <var name="themestartup" vt="Boolean"/>
       <var name="themeshutdown" vt="Boolean"/>
       <var name="requestedTheme" vt="char*"/>
+      <var name="themesoundtimer" vt="int"/>
     </data>
   </object>
   
