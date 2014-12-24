@@ -170,7 +170,7 @@ static void __translate( iODCCar inst, iONode node ) {
     int  speed = 0;
 
     byte lsb = addr & 0x3F;
-    byte msb = 0x40 + (addr >> 6) & 0x0F;
+    byte msb = 0x40 + ((addr >> 6) & 0x0F);
     byte V   = 0xC8;
     /*
     1. Byte = Niedere Addresse mit der Bitfolge 00AAAAAA
@@ -201,7 +201,7 @@ static void __translate( iODCCar inst, iONode node ) {
 
     /* Group 1 */
     byte lsb = addr & 0x3F;
-    byte msb = 0x40 + (addr >> 6) & 0x0F;
+    byte msb = 0x40 + ((addr >> 6) & 0x0F);
     byte fx  = 0x80;
     fx |= (wFunCmd.isf1(node)?0x01:0x00);
     fx |= (wFunCmd.isf2(node)?0x02:0x00);
@@ -220,7 +220,7 @@ static void __translate( iODCCar inst, iONode node ) {
 
     /* Group 2 */
     lsb = addr & 0x3F;
-    msb = 0x60 + (addr >> 6) & 0x0F;
+    msb = 0x60 + ((addr >> 6) & 0x0F);
     fx  = 0x80;
     fx |= (wFunCmd.isf0(node)?0x01:0x00);
     fx |= (wFunCmd.isf7(node)?0x02:0x00);
