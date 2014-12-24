@@ -109,6 +109,8 @@
 #include "rocrail/wrapper/public/DecList.h"
 #include "rocrail/wrapper/public/Variable.h"
 #include "rocrail/wrapper/public/VariableList.h"
+#include "rocrail/wrapper/public/Weather.h"
+#include "rocrail/wrapper/public/WeatherList.h"
 
 #include <wx/dcbuffer.h>
 
@@ -1461,6 +1463,9 @@ iONode PlanPanel::addItemInList( iONode item ) {
   else if( StrOp.equals( wVariable.name(), name ) ) {
     dbkey = wVariableList.name();
   }
+  else if( StrOp.equals( wWeather.name(), name ) ) {
+    dbkey = wWeatherList.name();
+  }
 
   const char* id = wItem.getid(item);
 
@@ -1485,7 +1490,7 @@ iONode PlanPanel::addItemInList( iONode item ) {
 
   }
   else {
-    TraceOp.trc( "planpanel", TRCLEVEL_WARNING, __LINE__, 9999, "Unknown item %s with dbkey %s", name, dbkey );
+    TraceOp.trc( "planpanel", TRCLEVEL_WARNING, __LINE__, 9999, "Unknown item %s with dbkey ????", name );
   }
 
   return item;
