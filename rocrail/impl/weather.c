@@ -498,7 +498,7 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
           wOutput.setcmd(cmd, wOutput.value);
           OutputOp.cmd(output, cmd, False);
 
-          if( cnt % 1 == 0 && StrOp.len(wWeatherTheme.getsound(data->theme)) > 0 ) {
+          if( cnt == wWeatherTheme.getsoundrandomrate(data->theme) && StrOp.len(wWeatherTheme.getsound(data->theme)) > 0 ) {
             char* s = StrOp.fmt("%s \"%s%c%s\"", wRocRail.getsoundplayer(AppOp.getIni()),
                 wRocRail.getsoundpath(AppOp.getIni()), SystemOp.getFileSeparator(), wWeatherTheme.getsound(data->theme) );
             SystemOp.system( s, True, False );
