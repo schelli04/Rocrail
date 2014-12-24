@@ -196,7 +196,7 @@ static void __translate( iOInfracar inst, iONode node ) {
     int  speed = 0;
 
     byte lsb = addr & 0x3F;
-    byte msb = 0x40 + (addr >> 6) & 0x3F;
+    byte msb = 0x40 + ((addr >> 6) & 0x3F);
     byte V   = 0xC8;
     /*
       Motor direkt:
@@ -227,7 +227,7 @@ static void __translate( iOInfracar inst, iONode node ) {
     int   addr = wFunCmd.getaddr( node );
 
     byte lsb = addr & 0x3F;
-    byte msb = 0x40 + (addr >> 6) & 0x3F;
+    byte msb = 0x40 + ((addr >> 6) & 0x3F);
     byte fx  = 0x80;
     fx |= (wFunCmd.isf1(node)?0x01:0x00);
     fx |= (wFunCmd.isf2(node)?0x02:0x00);
