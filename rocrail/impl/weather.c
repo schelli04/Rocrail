@@ -187,6 +187,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
     if( noonProps == NULL ) {
       noonProps = NodeOp.inst(wNoon.name(), data->props, ELEMENT_NODE );
       NodeOp.addChild(data->props, noonProps);
+      wNoon.sethour(sunsetProps, 12) ;
     }
     if( sunsetProps == NULL ) {
       sunsetProps = NodeOp.inst(wSunset.name(), data->props, ELEMENT_NODE );
@@ -211,7 +212,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
 
 
     int sunrise = wSunrise.gethour(sunriseProps) * 60 + wSunrise.getminute(sunriseProps);
-    int noon    = 12 * 60;
+    int noon    = wNoon.gethour(noonProps) * 60 + wNoon.getminute(noonProps);
     int sunset  = wSunset.gethour(sunsetProps) * 60 + wSunset.getminute(sunsetProps);
 
     int sunriseRed   = wSunrise.getred(sunriseProps);
