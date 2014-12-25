@@ -7655,3 +7655,9 @@ msgstr ""
 msgid "Dim"
 msgstr ""
 
+#. 
+# id="redirecttomaster"
+#, c-format
+msgid "Redirect slave commands to the master loco"
+msgstr ""
+

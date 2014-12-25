@@ -29343,4 +29343,7 @@
     <nl txt="Dimmen"/>
     <sl txt="Zatemnitev"/>
   </Msg>
+  <Msg id="redirecttomaster">
+    <en txt="Redirect slave commands to the master loco"/>
+  </Msg>
 </Messages>

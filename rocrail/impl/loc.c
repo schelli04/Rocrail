@@ -2968,7 +2968,7 @@ static Boolean _cmd( iOLoc inst, iONode nodeA ) {
   TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "%scommand %s:%s for loco %s",
       wLoc.isconsistcmd(nodeA)?"consist ":"", nodename, (cmd==NULL?"-":cmd), wLoc.getid( data->props ) );
 
-  if( !wLoc.isconsistcmd( nodeA ) ) {
+  if( !wLoc.isconsistcmd( nodeA ) && wCtrl.isredirecttomaster(AppOp.getIniNode(wCtrl.name())) ) {
     iOLoc master = ModelOp.getMasterLoc(model, wLoc.getid( data->props ));
 
     if( master != NULL && StrOp.equals(wLoc.name(), nodename ) ) {

@@ -923,6 +923,7 @@
       <var name="v0atpoweron" vt="bool" defval="false"/>
       <var name="useonlyfirstident" vt="bool" defval="true"/>
       <var name="userandomrate" vt="bool" defval="false"/>
+      <var name="redirecttomaster" vt="bool" defval="true" remark="Redirect commands send to a slave consist member to the master loco."/>
     </ctrl>
     <anaopt remark="Analyser options." wrappername="AnaOpt">
       <!-- option -->
