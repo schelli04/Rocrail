@@ -1844,7 +1844,7 @@ static Boolean _removeItem( iOModel inst, iONode item ) {
           if( AppOp.getWeather() != NULL ) {
             if( WeatherOp.isWeather(AppOp.getWeather(), wWeather.getid( item ) ) ) {
               wRocRail.setweatherid(AppOp.getIni(), "");
-              WeatherOp.setWeather(AppOp.getWeather(), NULL);
+              WeatherOp.setWeather(AppOp.getWeather(), NULL, NULL);
             }
           }
           node->base.del( node );
@@ -2198,7 +2198,7 @@ static Boolean _cmd( iOModel inst, iONode cmd ) {
       iOWeather weather = AppOp.getWeather();
       if( weather != NULL ) {
         wRocRail.setweatherid(AppOp.getIni(), wSysCmd.getid(cmd));
-        WeatherOp.setWeather(weather, wSysCmd.getid(cmd));
+        WeatherOp.setWeather(weather, wSysCmd.getid(cmd), NULL);
       }
     }
 

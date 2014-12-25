@@ -586,13 +586,41 @@ static void _halt( iOWeather inst ) {
 }
 
 
-static void _setWeather( iOWeather inst, const char* id ) {
+static void _setWeather( iOWeather inst, const char* id, const char* param ) {
   iOWeatherData data = Data(inst);
   iOModel model = AppOp.getModel();
 
   if( id != NULL ) {
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "use weather [%s]", id );
     data->props = ModelOp.getWeather(model, id);
+    if( data->props != NULL && param != NULL ) {
+      iONode sunriseProps = wWeather.getsunrise(data->props);
+      iONode noonProps    = wWeather.getnoon(data->props);
+      iONode sunsetProps  = wWeather.getsunset(data->props);
+      /* 360,720,1080 */
+      int idx = 0;
+      iOStrTok tok = StrTokOp.inst( wWeather.getoutputs(data->props), ',' );
+      while( StrTokOp.hasMoreTokens(tok) ) {
+        int minutes = atoi(StrTokOp.nextToken(tok));
+        if( idx == 0 && sunriseProps != NULL ) {
+          TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "set sunrise time to [%d:%d]", minutes / 60, minutes % 60 );
+          wSunrise.sethour( sunriseProps, minutes / 60 );
+          wSunrise.setminute( sunriseProps, minutes % 60 );
+        }
+        else if( idx == 1 && noonProps != NULL ) {
+          TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "set noon time to [%d:%d]", minutes / 60, minutes % 60 );
+          wNoon.sethour( noonProps, minutes / 60 );
+          wNoon.setminute( noonProps, minutes % 60 );
+        }
+        else if( idx == 2 && sunsetProps != NULL ) {
+          TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "set sunset time to [%d:%d]", minutes / 60, minutes % 60 );
+          wSunset.sethour( sunsetProps, minutes / 60 );
+          wSunset.setminute( sunsetProps, minutes % 60 );
+        }
+        idx++;
+      };
+      StrTokOp.base.del(tok);
+    }
   }
   else {
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "reset weather" );

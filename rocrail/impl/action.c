@@ -708,13 +708,13 @@ static void __executeAction( struct OAction* inst, iONode actionctrl ) {
     if( StrOp.equals( wAction.weather_set, wAction.getcmd( data->action ) ) ) {
       iOWeather weather = AppOp.getWeather();
       if( weather != NULL ) {
-        WeatherOp.setWeather(weather, id);
+        WeatherOp.setWeather(weather, id, wAction.getparam(data->action));
       }
     }
     else if( StrOp.equals( wAction.weather_theme, wAction.getcmd( data->action ) ) ) {
       iOWeather weather = AppOp.getWeather();
       if( weather != NULL ) {
-        WeatherOp.setWeather(weather, id);
+        WeatherOp.setTheme(weather, id);
       }
     }
   }
