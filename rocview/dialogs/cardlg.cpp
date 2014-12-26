@@ -220,6 +220,8 @@ void CarDlg::initLabels() {
   m_labVMax->SetLabel( wxGetApp().getMsg( "maxkmh" ) );
 
   // Interface
+  BaseDialog::addIIDs(m_IID);
+
   m_labBus->SetLabel( wxGetApp().getMsg( "bus" ) );
   m_labAddr->SetLabel( wxGetApp().getMsg( "address" ) );
   m_labIID->SetLabel( wxGetApp().getMsg( "iid" ) );

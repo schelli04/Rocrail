@@ -141,6 +141,7 @@ void AccDecDlg::initLabels() {
   m_Delete->SetLabel( wxGetApp().getMsg( "delete" ) );
   m_Doc->SetLabel( wxGetApp().getMsg( "doc_report" ) );
 
+  BaseDialog::addIIDs(m_IID);
   m_labIID->SetLabel( wxGetApp().getMsg( "iid" ) );
   m_labID->SetLabel( wxGetApp().getMsg( "id" ) );
   m_labBus->SetLabel( wxGetApp().getMsg( "bus" ) );

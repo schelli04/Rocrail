@@ -51,6 +51,8 @@
 #include "rocs/public/trace.h"
 #include "rocs/public/strtok.h"
 
+#include "basedlg.h"
+
 
 static bool m_bInvertSortOrder;
 
@@ -129,6 +131,7 @@ void PowerManDlg::initLabels() {
   m_BoosterList->InsertColumn(2, wxGetApp().getMsg( "uid" ), wxLIST_FORMAT_LEFT );
 
   // General
+  BaseDialog::addIIDs(m_IID);
   m_labID->SetLabel( wxGetApp().getMsg( "id" ) );
   m_labIID->SetLabel( wxGetApp().getMsg( "iid" ) );
   m_labDistrict->SetLabel( wxGetApp().getMsg( "powerdistrict" ) );

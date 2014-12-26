@@ -71,6 +71,7 @@
 #include "rocs/public/strtok.h"
 
 #include "rocprodlg.h"
+#include "basedlg.h"
 
 #include "rocview/dialogs/speedcurvedlg.h"
 #include "rocview/dialogs/dipdlg.h"
@@ -159,6 +160,7 @@ RocProDlgGen( parent )
   m_VCurve->Enable(true);
   m_CVURL->Enable(false);
 
+  BaseDialog::addIIDs(m_IID);
 }
 
 RocProDlg::~RocProDlg() {
