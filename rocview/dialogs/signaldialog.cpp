@@ -208,6 +208,8 @@ void SignalDialog::initLabels() {
   m_ori->SetString( 3, wxGetApp().getMsg( "west" ) );
 
   // Interface
+  BaseDialog::addIIDs(m_iid);
+
   m_Labeliid->SetLabel( wxGetApp().getMsg( "iid" ) );
   m_Label_Bus->SetLabel( wxGetApp().getMsg( "bus" ) );
   m_labUIDName->SetLabel(wxGetApp().getMsg( "uidname" ));
@@ -849,8 +851,9 @@ void SignalDialog::CreateControls()
     m_Labeliid = new wxStaticText( m_InterfacePanel, wxID_STATIC_SG_IID, _("iid"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer42->Add(m_Labeliid, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
 
-    m_iid = new wxTextCtrl( m_InterfacePanel, ID_TEXTCTRL_SG_IID, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer42->Add(m_iid, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5);
+    wxArrayString m_iidStrings;
+    m_iid = new wxComboBox( m_InterfacePanel, ID_TEXTCTRL_SG_IID, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_iidStrings, wxCB_DROPDOWN );
+    itemFlexGridSizer42->Add(m_iid, 0, wxALIGN_CENTER_HORIZONTAL|wxGROW|wxLEFT|wxRIGHT|wxTOP, 5);
 
     itemFlexGridSizer42->AddGrowableCol(1);
 

@@ -215,7 +215,7 @@ public:
     wxSpinCtrl* m_Size;
     wxPanel* m_Interface;
     wxStaticText* m_Labeliid;
-    wxTextCtrl* m_IID;
+    wxComboBox* m_IID;
     wxStaticText* m_Label_Bus;
     wxTextCtrl* m_Bus;
     wxStaticText* m_labUIDName;

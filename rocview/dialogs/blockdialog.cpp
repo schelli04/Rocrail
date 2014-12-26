@@ -444,6 +444,8 @@ void BlockDialog::initLabels() {
   initSensorCombos();
 
   // Interface
+  BaseDialog::addIIDs(m_iid);
+
   m_Labeliid->SetLabel( wxGetApp().getMsg( "iid" ) );
   m_LabelAddress->SetLabel( wxGetApp().getMsg( "address" ) );
   m_LabelPort->SetLabel( wxGetApp().getMsg( "port" ) );
@@ -1921,8 +1923,9 @@ void BlockDialog::CreateControls()
     m_Labeliid = new wxStaticText( m_Interface, wxID_STATIC_BK_IID, _("iid"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer170->Add(m_Labeliid, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
-    m_iid = new wxTextCtrl( m_Interface, ID_TEXTCTRL_BK_IID, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer170->Add(m_iid, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    wxArrayString m_iidStrings;
+    m_iid = new wxComboBox( m_Interface, ID_TEXTCTRL_BK_IID, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_iidStrings, wxCB_DROPDOWN );
+    itemFlexGridSizer170->Add(m_iid, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_LabelAddress = new wxStaticText( m_Interface, wxID_STATIC_BK_ADDRESS, _("address"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer170->Add(m_LabelAddress, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);

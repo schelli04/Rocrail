@@ -248,6 +248,8 @@ void SwitchDialog::initLabels() {
   m_ori->SetString( 3, wxGetApp().getMsg( "west" ) );
 
   // Interface
+  BaseDialog::addIIDs(m_iid);
+
   m_Labeliid->SetLabel( wxGetApp().getMsg( "iid" ) );
   m_Label_Bus->SetLabel( wxGetApp().getMsg( "bus" ) );
   m_labUIDName->SetLabel(wxGetApp().getMsg( "uidname" ));
@@ -293,6 +295,7 @@ void SwitchDialog::initLabels() {
   m_PortType->SetString( 5, wxGetApp().getMsg( "analog" ) );
   m_PortType->SetString( 6, wxGetApp().getMsg( "macro" ) );
 
+  BaseDialog::addIIDs(m_TrackDriverIID);
   m_labTrackDriverIID->SetLabel( wxGetApp().getMsg( "iid" ) );
   m_labTrackDriverAddr->SetLabel( wxGetApp().getMsg( "address" ) );
   m_labTrackDriverPort->SetLabel( wxGetApp().getMsg( "port" ) );
@@ -1411,8 +1414,9 @@ void SwitchDialog::CreateControls()
     m_Labeliid = new wxStaticText( m_InterfacePanel, wxID_STATIC_SW_IID, _("iid"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer63->Add(m_Labeliid, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP|wxADJUST_MINSIZE, 5);
 
-    m_iid = new wxTextCtrl( m_InterfacePanel, ID_TEXTCTRL_SW_IID, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer63->Add(m_iid, 1, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5);
+    wxArrayString m_iidStrings;
+    m_iid = new wxComboBox( m_InterfacePanel, ID_TEXTCTRL_SW_IID, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_iidStrings, wxCB_DROPDOWN );
+    itemFlexGridSizer63->Add(m_iid, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5);
 
     m_Label_Bus = new wxStaticText( m_InterfacePanel, wxID_STATIC_SW_BUS, _("Bus:"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer63->Add(m_Label_Bus, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
@@ -1983,8 +1987,9 @@ void SwitchDialog::CreateControls()
     m_labTrackDriverIID = new wxStaticText( m_TrackdriverPanel, wxID_ANY, _("IID"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer230->Add(m_labTrackDriverIID, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
 
-    m_TrackDriverIID = new wxTextCtrl( m_TrackdriverPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer230->Add(m_TrackDriverIID, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
+    wxArrayString m_TrackDriverIIDStrings;
+    m_TrackDriverIID = new wxComboBox( m_TrackdriverPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_TrackDriverIIDStrings, wxCB_DROPDOWN );
+    itemFlexGridSizer230->Add(m_TrackDriverIID, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_labTrackDriverAddr = new wxStaticText( m_TrackdriverPanel, wxID_ANY, _("Address"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer230->Add(m_labTrackDriverAddr, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5);

@@ -254,6 +254,8 @@ void LocDialog::initLabels() {
   m_labThrottleNr->SetLabel( wxGetApp().getMsg( "locctrl" ) );
 
   // Interface
+  BaseDialog::addIIDs(m_IID);
+
   m_Label_Bus->SetLabel( wxGetApp().getMsg( "bus" ) );
   m_Label_Address->SetLabel( wxGetApp().getMsg( "address" ) );
   m_Label_IID->SetLabel( wxGetApp().getMsg( "iid" ) );
@@ -1822,8 +1824,9 @@ void LocDialog::CreateControls()
     m_Label_IID = new wxStaticText( m_Interface_Panel, wxID_STATIC_IID, _("IID:"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer87->Add(m_Label_IID, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 2);
 
-    m_IID = new wxTextCtrl( m_Interface_Panel, ID_TEXTCTRL_IID, wxEmptyString, wxDefaultPosition, wxSize(160, -1), 0 );
-    itemFlexGridSizer87->Add(m_IID, 1, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 2);
+    wxArrayString m_IIDStrings;
+    m_IID = new wxComboBox( m_Interface_Panel, ID_TEXTCTRL_IID, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_IIDStrings, wxCB_DROPDOWN );
+    itemFlexGridSizer87->Add(m_IID, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_Label_Bus = new wxStaticText( m_Interface_Panel, wxID_STATIC_LC_BUS, _("Bus:"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer87->Add(m_Label_Bus, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 2);

@@ -41,6 +41,7 @@
 
 #include "turntabledialog.h"
 #include "actionsctrldlg.h"
+#include "basedlg.h"
 
 ////@begin XPM images
 ////@end XPM images
@@ -241,6 +242,8 @@ void TurntableDialog::initLabels() {
   m_labSize->SetLabel( wxGetApp().getMsg( "size" ) );
 
   // Interface
+  BaseDialog::addIIDs(m_IID);
+
   m_Labeliid->SetLabel( wxGetApp().getMsg( "iid" ) );
   m_Label_Bus->SetLabel( wxGetApp().getMsg( "bus" ) );
   m_labUIDName->SetLabel(wxGetApp().getMsg( "uidname" ));
@@ -897,12 +900,13 @@ void TurntableDialog::CreateControls()
     wxBoxSizer* itemBoxSizer32 = new wxBoxSizer(wxVERTICAL);
     itemBoxSizer31->Add(itemBoxSizer32, 0, wxGROW, 5);
     wxFlexGridSizer* itemFlexGridSizer33 = new wxFlexGridSizer(0, 2, 0, 0);
-    itemBoxSizer32->Add(itemFlexGridSizer33, 0, wxALIGN_CENTER_HORIZONTAL|wxALL, 5);
+    itemBoxSizer32->Add(itemFlexGridSizer33, 0, wxGROW|wxALL, 5);
     m_Labeliid = new wxStaticText( m_Interface, wxID_STATIC_TT_IID, _("iid"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer33->Add(m_Labeliid, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
-    m_IID = new wxTextCtrl( m_Interface, ID_TEXTCTRL_TT_IID, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer33->Add(m_IID, 0, wxALIGN_LEFT|wxGROW|wxALL, 5);
+    wxArrayString m_IIDStrings;
+    m_IID = new wxComboBox( m_Interface, ID_TEXTCTRL_TT_IID, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_IIDStrings, wxCB_DROPDOWN );
+    itemFlexGridSizer33->Add(m_IID, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_Label_Bus = new wxStaticText( m_Interface, wxID_STATIC_TT_BUS, _("Bus:"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer33->Add(m_Label_Bus, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxBOTTOM|wxADJUST_MINSIZE, 5);

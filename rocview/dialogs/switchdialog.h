@@ -294,7 +294,7 @@ public:
     wxRadioBox* m_ori;
     wxPanel* m_InterfacePanel;
     wxStaticText* m_Labeliid;
-    wxTextCtrl* m_iid;
+    wxComboBox* m_iid;
     wxStaticText* m_Label_Bus;
     wxTextCtrl* m_Bus;
     wxStaticText* m_labUIDName;
@@ -436,7 +436,7 @@ public:
     wxRadioBox* m_FrogPortType;
     wxPanel* m_TrackdriverPanel;
     wxStaticText* m_labTrackDriverIID;
-    wxTextCtrl* m_TrackDriverIID;
+    wxComboBox* m_TrackDriverIID;
     wxStaticText* m_labTrackDriverAddr;
     wxTextCtrl* m_TrackDriverAddr;
     wxStaticText* m_labTrackDriverPort;

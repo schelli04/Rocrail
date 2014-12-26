@@ -453,7 +453,7 @@ public:
     wxPanel* m_Interface;
     wxCheckBox* m_TD;
     wxStaticText* m_Labeliid;
-    wxTextCtrl* m_iid;
+    wxComboBox* m_iid;
     wxStaticText* m_LabelAddress;
     wxTextCtrl* m_Address;
     wxStaticText* m_LabelPort;

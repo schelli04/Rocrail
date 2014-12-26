@@ -244,7 +244,7 @@ public:
     wxRadioBox* m_ori;
     wxPanel* m_InterfacePanel;
     wxStaticText* m_Labeliid;
-    wxTextCtrl* m_iid;
+    wxComboBox* m_iid;
     wxStaticText* m_Label_Bus;
     wxTextCtrl* m_Bus;
     wxStaticText* m_labUIDName;

@@ -447,7 +447,7 @@ public:
     wxButton* m_Actions;
     wxPanel* m_Interface_Panel;
     wxStaticText* m_Label_IID;
-    wxTextCtrl* m_IID;
+    wxComboBox* m_IID;
     wxStaticText* m_Label_Bus;
     wxTextCtrl* m_Bus;
     wxStaticText* m_Label_Address;
