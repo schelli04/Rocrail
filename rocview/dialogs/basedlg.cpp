@@ -16,6 +16,9 @@
 #include "rocrail/wrapper/public/Signal.h"
 #include "rocrail/wrapper/public/Loc.h"
 #include "rocrail/wrapper/public/Block.h"
+#include "rocrail/wrapper/public/DigInt.h"
+#include "rocrail/wrapper/public/RocRail.h"
+
 #include "rocview/wrapper/public/Gui.h"
 
 #include "rocview/public/guiapp.h"
@@ -602,6 +605,19 @@ int BaseDialog::findID( const char* ID ) {
 }
 
 
+
+
+void BaseDialog::addIIDs( wxComboBox* combobox ) {
+  combobox->Append(wxT(""));
+  iONode rrini = wxGetApp().getFrame()->getRocrailIni();
+  if( rrini != NULL ) {
+    iONode digint = wRocRail.getdigint(rrini);
+    while( digint != NULL ) {
+      combobox->Append(wxString(wDigInt.getiid(digint),wxConvUTF8));
+      digint = wRocRail.nextdigint(rrini, digint);
+    }
+  }
+}
 
 
 bool BaseDialog::existID( wxWindow* dlg, iONode list, iONode props, wxString  id ) {
