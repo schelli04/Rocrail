@@ -427,7 +427,7 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
     data->themeduration++;
   }
 
-  if( data->theme != NULL &&  data->themeduration > (wWeatherTheme.getduration(data->theme)*10) ) {
+  if( data->theme != NULL &&  data->themeduration > (wWeatherTheme.getduration(data->theme)*10) && !data->themeshutdown ) {
     /*data->theme = NULL;
     data->themedim = 0;*/
     data->themetimer1 = 0;
@@ -435,33 +435,39 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "deactivate theme [%s]", wWeatherTheme.getid(data->theme) );
   }
 
+  data->themedimtimer++;
+
   if( data->theme != NULL ) {
     if( data->themestartup && data->themedim < wWeatherTheme.getdim(data->theme) ) {
-      float dim = wWeatherTheme.getdim(data->theme);
-      dim /= 25.0;
-      if( dim < 1 )
-        dim = 1;
-      data->themedim += (int)dim;
-      TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "***** themedim=%d", data->themedim );
-      __doDaylight(weather, hour, min, False, False);
+      if( data->themedimtimer >= 10 ) {
+        float dim = wWeatherTheme.getdim(data->theme);
+        dim /= 10.0;
+        if( dim < 1 )
+          dim = 1;
+        data->themedim += (int)dim;
+        TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "***** themedim=%d", data->themedim );
+        __doDaylight(weather, hour, min, False, False);
+      }
     }
     else if( data->themestartup ) {
       data->themestartup = False;
     }
 
     if( data->themeshutdown && data->themedim > 0 ) {
-      float dim = wWeatherTheme.getdim(data->theme);
-      dim /= 25.0;
-      if( dim < 1 )
-        dim = 1;
-      data->themedim -= (int)dim;
-      if( data->themedim <= 0) {
-        data->themedim = 0;
-        data->themeshutdown = False;
-        data->theme = NULL;
+      if( data->themedimtimer >= 10 ) {
+        float dim = wWeatherTheme.getdim(data->theme);
+        dim /= 10.0;
+        if( dim < 1 )
+          dim = 1;
+        data->themedim -= (int)dim;
+        if( data->themedim <= 0) {
+          data->themedim = 0;
+          data->themeshutdown = False;
+          data->theme = NULL;
+        }
+        TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "***** themedim=%d", data->themedim );
+        __doDaylight(weather, hour, min, False, False);
       }
-      TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "***** themedim=%d", data->themedim );
-      __doDaylight(weather, hour, min, False, False);
     }
     else if( data->themeshutdown ) {
       data->themeshutdown = False;
@@ -534,6 +540,8 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
   else
     data->themetimerrand--;
 
+  if( data->themedimtimer >= 10 )
+    data->themedimtimer = 0;
 }
 
 
