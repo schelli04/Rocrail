@@ -317,7 +317,7 @@ void BlockDialog::initLabels() {
   m_Notebook->SetPageText( 7, wxGetApp().getMsg( "permissions" ) );
 
   // Index
-  initList(m_List2, this, true, true, true);
+  initList(m_List2, this, true, true, true, false);
   m_New->SetLabel( wxGetApp().getMsg( "new" ) );
   m_Delete->SetLabel( wxGetApp().getMsg( "delete" ) );
   m_Doc->SetLabel( wxGetApp().getMsg( "doc_report" ) );
