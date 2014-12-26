@@ -8,6 +8,7 @@
 #define BASEDLG_CPP_
 
 #include <wx/listctrl.h>
+#include <wx/combobox.h>
 
 #include "rocs/public/node.h"
 
