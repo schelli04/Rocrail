@@ -1240,6 +1240,9 @@ void Symbol::OnLeftUp(wxMouseEvent& event) {
       iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE );
       wOutput.setid( cmd, wOutput.getid( m_Props ) );
       wOutput.setvalue( cmd, wOutput.getvalue( m_Props ) );
+      if( wOutput.getcolor(m_Props) != NULL ) {
+        NodeOp.addChild( cmd, (iONode)NodeOp.base.clone(wOutput.getcolor(m_Props)) );
+      }
       if( wOutput.istoggleswitch(m_Props) ) {
         wOutput.setcmd( cmd, wOutput.flip );
       }
