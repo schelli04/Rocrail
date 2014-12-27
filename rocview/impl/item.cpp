@@ -1239,6 +1239,7 @@ void Symbol::OnLeftUp(wxMouseEvent& event) {
     else if( StrOp.equals( wOutput.name(), nodeName ) ) {
       iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE );
       wOutput.setid( cmd, wOutput.getid( m_Props ) );
+      wOutput.setvalue( cmd, wOutput.getvalue( m_Props ) );
       if( wOutput.istoggleswitch(m_Props) ) {
         wOutput.setcmd( cmd, wOutput.flip );
       }

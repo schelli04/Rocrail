@@ -1904,6 +1904,8 @@ void SymbolRenderer::drawOutput( wxPaintDC& dc, bool occupied, bool actroute, co
     pen->SetStyle(wxSOLID);
     if( m_UseGC ) {
       int bri = wOutput.getvalue(m_Props);
+      if( StrOp.equals( wOutput.off, state ) )
+        bri = 0;
       float factor = (1.0 / 255.0) * (float)bri;
       setPen( *pen );
       setBrush( wxBrush(wxColour(bri, bri, bri)) );
