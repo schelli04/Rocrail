@@ -504,7 +504,7 @@ static Boolean _event( iIBlockBase inst, Boolean puls, const char* id, const cha
     TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "loco %s found", data->locId, loc==NULL?"NOT ":"" );
   }
   else {
-    TraceOp.trc( name, puls?TRCLEVEL_WARNING:TRCLEVEL_USER1, __LINE__, 9999, "locId not set in block %s", data->id );
+    TraceOp.trc( name, puls?TRCLEVEL_INFO:TRCLEVEL_USER1, __LINE__, 9999, "locId not set in block %s", data->id );
   }
 
   /* handle a dedicated ident event */
