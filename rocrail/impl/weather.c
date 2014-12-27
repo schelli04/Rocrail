@@ -602,6 +602,7 @@ static void _setWeather( iOWeather inst, const char* id, const char* param ) {
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "use weather [%s] with parameter [%s]", id, param!=NULL?param:"-" );
     data->props = ModelOp.getWeather(model, id);
     if( data->props != NULL && param != NULL ) {
+      iONode clone = NULL;
       iONode sunriseProps = wWeather.getsunrise(data->props);
       iONode noonProps    = wWeather.getnoon(data->props);
       iONode sunsetProps  = wWeather.getsunset(data->props);
@@ -628,6 +629,9 @@ static void _setWeather( iOWeather inst, const char* id, const char* param ) {
         idx++;
       };
       StrTokOp.base.del(tok);
+
+      clone = (iONode)NodeOp.base.clone( data->props );
+      AppOp.broadcastEvent( clone );
     }
   }
   else {
