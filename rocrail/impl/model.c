@@ -2703,8 +2703,15 @@ static iOLoc _getLoc( iOModel inst, const char* id, iONode props, Boolean genera
   iOModelData o = Data(inst);
   iOLoc loc = (iOLoc)MapOp.get( o->locMap, id );
   char identifier[64] = {'\0'};
+  int addr = 0;
+  if( props != NULL ) {
+    addr = wLoc.getaddr(props);
+  }
+
   if( loc == NULL && id != NULL && StrOp.len(id) > 0 ) {
-    int addr = atoi(id);
+    if( addr == 0 )
+      addr = atoi(id);
+
     if( addr > 0 ) {
       TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "try to find loco by addres [%d] generate=%s", addr, generate?"true":"false" );
       loc = ModelOp.getLocByAddress(inst, addr, NULL);
@@ -2762,6 +2769,7 @@ static iOLoc _getLoc( iOModel inst, const char* id, iONode props, Boolean genera
 
 static iOCar _getCar( iOModel inst, const char* id ) {
   iOModelData o = Data(inst);
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "try to find car by id [%s]", id );
   return (iOCar)MapOp.get( o->carMap, id );
 }
 

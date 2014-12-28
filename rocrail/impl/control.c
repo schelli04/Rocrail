@@ -746,16 +746,25 @@ static void __callback( obj inst, iONode nodeA ) {
     }
   }
   else if( StrOp.equals( wLoc.name(), nodeName ) ) {
-    iOLoc loc = ModelOp.getLoc( model, wLoc.getid( nodeA ), nodeA, True );
+    iOLoc loc = ModelOp.getLoc( model, wLoc.getid( nodeA ), nodeA, False );
     if( loc != NULL ) {
       LocOp.cmd( loc, nodeA );
       return;
     }
     else {
       iOCar car = ModelOp.getCar( model, wLoc.getid( nodeA ) );
+      if( car == NULL )
+        car = ModelOp.getCarByAddress( model, wLoc.getaddr( nodeA ), wLoc.getiid(nodeA) );
       if( car != NULL ) {
         CarOp.cmd( car, nodeA );
         return;
+      }
+      else {
+        loc = ModelOp.getLoc( model, wLoc.getid( nodeA ), nodeA, True );
+        if( loc != NULL ) {
+          LocOp.cmd( loc, nodeA );
+          return;
+        }
       }
     }
   }

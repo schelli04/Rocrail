@@ -437,6 +437,7 @@ void ThrottleDlg::speedCmd(bool sendCmd)
 
   iONode cmd = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE );
   wLoc.setid( cmd, wLoc.getid( m_Props ) );
+  wLoc.setaddr( cmd, wLoc.getaddr( m_Props ) );
 
   int* iSpeed = m_bSecAddr ? &m_iSpeed2:&m_iSpeed1;
   wLoc.setV( cmd, *iSpeed );
@@ -470,6 +471,7 @@ void ThrottleDlg::funCmd(int fidx, bool on)
   wFunCmd.setid ( cmd, wLoc.getid( m_Props ) );
   wFunCmd.setgroup ( cmd, group );
   wFunCmd.setfncnt ( cmd, wLoc.getfncnt( m_Props ) );
+  wFunCmd.setaddr ( cmd, wLoc.getaddr( m_Props ) );
   char f[32];
   StrOp.fmtb(f, "f%d", fidx);
   NodeOp.setBool(cmd, f, on?True:False);
