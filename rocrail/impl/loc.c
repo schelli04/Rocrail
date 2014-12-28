@@ -2223,6 +2223,11 @@ static void _event( iOLoc inst, obj emitter, int evt, int timer, Boolean forcewa
       }
     }
   }
+  else if(evt == enter_event && block != NULL && !block->allowBBT(block) ) {
+    /* reset BBT */
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "BBT block=%s does not allow BBT", blockid );
+    LocOp.resetBBT(inst);
+  }
 
   if( data->runner != NULL ) {
     TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
