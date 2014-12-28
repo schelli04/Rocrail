@@ -264,6 +264,7 @@ static Boolean _cmd( iOCar inst, iONode nodeA ) {
 
       if( wCar.getiid(data->props) != NULL )
         wCar.setiid( nodeA, wCar.getiid(data->props) );
+      wCar.setid( nodeA, wCar.getid(data->props) );
       wCar.setaddr( nodeA, wCar.getaddr(data->props) );
       wCar.setprot( nodeA, wCar.getprot( data->props ) );
       wCar.setprotver( nodeA, wCar.getprotver( data->props ) );
@@ -277,7 +278,7 @@ static Boolean _cmd( iOCar inst, iONode nodeA ) {
           StrOp.fmtb(fattr, "f%d", mappedfn);
           NodeOp.setBool(nodeA, fattr, fon);
           wFunCmd.setfnchanged( nodeA, mappedfn );
-          data->fx[fnchanged] = fon;
+          data->fx[mappedfn] = fon;
         }
         else {
           data->fx[fnchanged] = NodeOp.getBool(nodeA, fattr, False);
