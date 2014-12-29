@@ -2195,6 +2195,13 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
         symbolLength = 64;
 
       int x = (symbolLength - imageBitmap->GetWidth()) / 2;
+      if( symbolLength - imageBitmap->GetWidth() >= 20 ) {
+        if( (m_rotate && StrOp.equals(ori, wItem.west)) || (!m_rotate && StrOp.equals(ori, wItem.east)) )
+          x = symbolLength - imageBitmap->GetWidth() - 10;
+        else
+          x = 10;
+      }
+
       int y = (32-maxheight)/2;
       if( x < 10 )
         x = 10;
@@ -2215,6 +2222,12 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
         imageBitmap = new wxBitmap(img);
         x = (32-maxheight)/2;
         y = (symbolLength - imageBitmap->GetHeight()) / 2;
+        if( symbolLength - imageBitmap->GetHeight() >= 20 ) {
+          if( (!m_rotate && StrOp.equals(ori, wItem.north)) || (m_rotate && StrOp.equals(ori, wItem.south)) )
+            y = symbolLength - imageBitmap->GetHeight() - 10;
+          else
+            y = 10;
+        }
         if( y < 10 )
           y = 10;
       }
