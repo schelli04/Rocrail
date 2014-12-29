@@ -1565,6 +1565,7 @@
         <var name="maxbri" vt="int" defval="255" range="0-255" remark="Maximal brightness."/>
         <var name="minbri" vt="int" defval="0" range="0-255" remark="Minimal brightness."/>
         <var name="slidingdaylight" vt="bool" defval="true"/>
+        <var name="relativetime" vt="bool" defval="false"/>
         <var name="colorsliding" vt="int" defval="30" range="10-120" unit="min" remark="Color sliding time."/>
         <sunrise cardinality="1" remark="Sunrise definition" wrappername="Sunrise">
           <var name="hour" vt="int" defval="6" range="0-23"/>

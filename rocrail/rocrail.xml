@@ -2787,6 +2787,8 @@
       <var name="requestedTheme" vt="char*"/>
       <var name="themesoundtimer" vt="int"/>
       <var name="themedimtimer" vt="int"/>
+      <var name="starthour" vt="int"/>
+      <var name="startminute" vt="int"/>
     </data>
   </object>
   

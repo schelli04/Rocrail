@@ -563,8 +563,8 @@ static void __makeWeather( void* threadinst ) {
   while( data->run ) {
     long t = ControlOp.getTime(control);
     struct tm* ltm = localtime( &t );
-    int hour = ltm->tm_hour;
-    int min  = ltm->tm_min;
+    int hour = ltm->tm_hour + data->starthour;
+    int min  = ltm->tm_min  + data->startminute;
 
     if( loopCnt >= 10 ) {
       loopCnt = 0;
@@ -596,21 +596,24 @@ static void _halt( iOWeather inst ) {
 
 static void _setWeather( iOWeather inst, const char* id, const char* param ) {
   iOWeatherData data = Data(inst);
-  iOModel model = AppOp.getModel();
+  iOModel   model   = AppOp.getModel();
+  iOControl control = AppOp.getControl();
 
   if( id != NULL ) {
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "use weather [%s] with parameter [%s]", id, param!=NULL?param:"-" );
     data->props = ModelOp.getWeather(model, id);
     if( data->props != NULL && param != NULL ) {
       iONode clone = NULL;
-      iONode sunriseProps = wWeather.getsunrise(data->props);
-      iONode noonProps    = wWeather.getnoon(data->props);
-      iONode sunsetProps  = wWeather.getsunset(data->props);
+      Boolean relativetime = wWeather.isrelativetime(data->props);
+      iONode  sunriseProps = wWeather.getsunrise(data->props);
+      iONode  noonProps    = wWeather.getnoon(data->props);
+      iONode  sunsetProps  = wWeather.getsunset(data->props);
       /* 360,720,1080 */
       int idx = 0;
       iOStrTok tok = StrTokOp.inst( param, ',' );
       while( StrTokOp.hasMoreTokens(tok) ) {
-        int minutes = atoi(StrTokOp.nextToken(tok));
+        const char* sMinutes = StrTokOp.nextToken(tok);
+        int minutes = atoi(sMinutes);
         if( idx == 0 && sunriseProps != NULL ) {
           TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "set sunrise time to [%d:%02d]", minutes / 60, minutes % 60 );
           wSunrise.sethour( sunriseProps, minutes / 60 );
@@ -626,12 +629,27 @@ static void _setWeather( iOWeather inst, const char* id, const char* param ) {
           wSunset.sethour( sunsetProps, minutes / 60 );
           wSunset.setminute( sunsetProps, minutes % 60 );
         }
+        else if( idx == 3 ) {
+          TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "set relative to [%s]", sMinutes );
+          relativetime = StrOp.equals("relative", sMinutes);
+        }
         idx++;
       };
       StrTokOp.base.del(tok);
 
       clone = (iONode)NodeOp.base.clone( data->props );
       AppOp.broadcastEvent( clone );
+
+      if( relativetime ) {
+        long t = ControlOp.getTime(control);
+        struct tm* ltm = localtime( &t );
+        data->starthour   = ltm->tm_hour;
+        data->startminute = ltm->tm_min;
+      }
+      else {
+        data->starthour   = 0;
+        data->startminute = 0;
+      }
     }
   }
   else {
