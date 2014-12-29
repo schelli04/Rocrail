@@ -1631,7 +1631,7 @@ void RocGuiFrame::UpdateActiveLocs( wxCommandEvent& event ) {
         else if(!wLoc.isactive(node))
           m_ActiveLocs->SetCellBackgroundColour( i, LOC_COL_MODE, Base::getNoneActiveColor());
 
-        if( wLoc.getblockid( node ) != NULL ) {
+        if( wLoc.getblockid( node ) != NULL && wLoc.getdestblockid( node ) == NULL) {
           m_ActiveLocs->SetCellValue( i, LOC_COL_BLOCK, (wLoc.isblockenterside(node)?_T(""):_T("-")) + wxString(wLoc.getblockid( node ),wxConvUTF8) );
 
           iONode block = findBlock4Loc(wLoc.getid( node ), wLoc.getblockid( node ));
