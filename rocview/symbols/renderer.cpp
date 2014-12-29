@@ -2167,7 +2167,7 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
 
   drawBlockTriangle( dc, ori );
 
-
+  int labelOffset = 0;
   bool l_ImageOK = false;
   if( (m_iOccupied == 1 || m_iOccupied == 3) && m_LocoImage != NULL && StrOp.len(m_LocoImage) > 0 ) {
     // Show loco image.
@@ -2194,12 +2194,30 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
       if( m_bSmall )
         symbolLength = 64;
 
+
       int x = (symbolLength - imageBitmap->GetWidth()) / 2;
       if( symbolLength - imageBitmap->GetWidth() >= 20 ) {
-        if( (m_rotate && StrOp.equals(ori, wItem.west)) || (!m_rotate && StrOp.equals(ori, wItem.east)) )
+        if( (m_rotate && StrOp.equals(ori, wItem.west)) || (!m_rotate && StrOp.equals(ori, wItem.east)) ) {
           x = symbolLength - imageBitmap->GetWidth() - 10;
-        else
+          if( m_rotate && StrOp.equals(ori, wItem.west) ) {
+            wxImage img = imageBitmap->ConvertToImage();
+            delete imageBitmap;
+            img = img.Mirror(true);
+            imageBitmap = new wxBitmap(img);
+            TraceOp.trc( "renderer", TRCLEVEL_INFO, __LINE__, 9999, "*****MIRROR m_rotate=%d ori=%s label=%s", m_rotate, ori, m_Label );
+          }
+        }
+        else {
           x = 10;
+          labelOffset = imageBitmap->GetWidth();
+          if( !m_rotate && StrOp.equals(ori, wItem.west) ) {
+            wxImage img = imageBitmap->ConvertToImage();
+            delete imageBitmap;
+            img = img.Mirror(true);
+            imageBitmap = new wxBitmap(img);
+            TraceOp.trc( "renderer", TRCLEVEL_INFO, __LINE__, 9999, "*****MIRROR m_rotate=%d ori=%s label=%s", m_rotate, ori, m_Label );
+          }
+        }
       }
 
       int y = (32-maxheight)/2;
@@ -2218,15 +2236,17 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
       if( StrOp.equals( ori, wItem.north ) || StrOp.equals( ori, wItem.south ) ) {
         wxImage img = imageBitmap->ConvertToImage();
         delete imageBitmap;
-        img = img.Rotate90( StrOp.equals( ori, wItem.north ) ? true:false );
+        img = img.Rotate90( StrOp.equals( ori, wItem.north ) ? false:true );
         imageBitmap = new wxBitmap(img);
         x = (32-maxheight)/2;
         y = (symbolLength - imageBitmap->GetHeight()) / 2;
         if( symbolLength - imageBitmap->GetHeight() >= 20 ) {
           if( (!m_rotate && StrOp.equals(ori, wItem.north)) || (m_rotate && StrOp.equals(ori, wItem.south)) )
             y = symbolLength - imageBitmap->GetHeight() - 10;
-          else
+          else {
             y = 10;
+            labelOffset = imageBitmap->GetHeight();
+          }
         }
         if( y < 10 )
           y = 10;
@@ -2240,7 +2260,8 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
     }
   }
 
-  if( !l_ImageOK && StrOp.len(m_Label) > 0 ) {
+
+  if( (!l_ImageOK || !m_bSmall) && StrOp.len(m_Label) > 0 ) {
     int red = 0;
     int green = 0;
     int blue = 0;
@@ -2270,17 +2291,13 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
     }
 
     if( StrOp.equals( textOri, wItem.south ) ) {
-      drawString( wxString(m_Label,wxConvUTF8), 32-5, 9, 270.0, false );
+      drawString( wxString(m_Label,wxConvUTF8), 32-5, 9 + labelOffset, 270.0, false );
     }
     else if( StrOp.equals( textOri, wItem.north ) ) {
-      drawString( wxString(m_Label,wxConvUTF8), 7, (32 * m_cy)-8, 90.0, false );
+      drawString( wxString(m_Label,wxConvUTF8), 7, (32 * m_cy)-8 - labelOffset, 90.0, false );
     }
     else {
-#ifdef __WIN32__
-      drawString( wxString(m_Label,wxConvUTF8), 9, 8, 0.0, false );
-#else
-      drawString( wxString(m_Label,wxConvUTF8), ((32*m_cx-width)/2), (32-height)/2, 0.0, false );
-#endif
+      drawString( wxString(m_Label,wxConvUTF8), 10 + labelOffset, (32-height)/2, 0.0, false );
     }
 
     delete font;
