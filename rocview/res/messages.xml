@@ -10557,7 +10557,7 @@
     <sr_latin txt="izmeni"/>
     <ja txt="変更"/>
     <zh_CN txt="修改"/>
-    <sl txt="uredi"/>
+    <sl txt="Uredi"/>
     <pt_BR txt="Modificar"/>
     <fi txt="Muokkaa"/>
   </Msg>
@@ -26645,7 +26645,7 @@
     <it txt="giorno"/>
     <nl txt="dag"/>
     <sr_latin txt="dan"/>
-    <sl txt="dan"/>
+    <sl txt="Podnevi"/>
     <ru txt="день"/>
     <es txt="dia"/>
     <sv txt="dag"/>
@@ -29049,7 +29049,7 @@
     <pt_BR txt="Tabela de variáveis"/>
     <ru txt="Переменные"/>
     <sl txt="Seznam spremenljivk"/>
-    <sr_latin txt="Izmenjiva tabela"/>
+    <sr_latin txt="Tabela promenljivih"/>
     <fr txt="Table variable"/>
     <fi txt="Muuttujat"/>
   </Msg>
@@ -29287,7 +29287,7 @@
     <nl txt="Nacht"/>
     <sr_latin txt="Noć"/>
     <ru txt="Ночь"/>
-    <sl txt="Noč"/>
+    <sl txt="Ponoči"/>
   </Msg>
   <Msg id="brightness">
     <en txt="Brightness"/>
@@ -29315,6 +29315,7 @@
     <it txt="Scorrimento luce del giorno"/>
     <nl txt="Bewegend daglicht"/>
     <sl txt="Prehodi svetlobe"/>
+    <sr_latin txt="Podešavanje osvetljenja"/>
   </Msg>
   <Msg id="colorsliding">
     <en txt="Color sliding"/>
@@ -29323,27 +29324,35 @@
     <it txt="Scorrimento colore"/>
     <nl txt="Kleur overgang"/>
     <sl txt="Barvni prehod"/>
+    <sr_latin txt="Podešavanje boje"/>
   </Msg>
   <Msg id="noon">
     <en txt="Noon"/>
     <de txt="Mittag"/>
     <en_GB txt="Noon"/>
-    <nl txt="12 uur 's middags"/>
+    <nl txt="Middag"/>
     <sl txt="Opoldne"/>
+    <sr_latin txt="podne"/>
   </Msg>
   <Msg id="blue">
     <en txt="blue"/>
     <de txt="blau"/>
     <nl txt="blauw"/>
     <sl txt="modra"/>
+    <sr_latin txt="plavo"/>
   </Msg>
   <Msg id="dim">
     <en txt="Dim"/>
     <de txt="Dimmen"/>
     <nl txt="Dimmen"/>
     <sl txt="Zatemnitev"/>
+    <sr_latin txt="Zatamnjenje"/>
   </Msg>
   <Msg id="redirecttomaster">
     <en txt="Redirect slave commands to the master loco"/>
+    <de txt="Befehle für Loks einer Mehrfachtraktion zur Hauptlok umleiten"/>
+    <nl txt="Leidt commandos om naar het hoofd van de tractie"/>
+    <sl txt="Preusmeri ukaze na glavno lokomotivo"/>
+    <sr_latin txt="Preusmeri sporedne komande na glavnu loko."/>
   </Msg>
 </Messages>
