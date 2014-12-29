@@ -2204,7 +2204,6 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
             delete imageBitmap;
             img = img.Mirror(true);
             imageBitmap = new wxBitmap(img);
-            TraceOp.trc( "renderer", TRCLEVEL_INFO, __LINE__, 9999, "*****MIRROR m_rotate=%d ori=%s label=%s", m_rotate, ori, m_Label );
           }
         }
         else {
@@ -2215,7 +2214,6 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
             delete imageBitmap;
             img = img.Mirror(true);
             imageBitmap = new wxBitmap(img);
-            TraceOp.trc( "renderer", TRCLEVEL_INFO, __LINE__, 9999, "*****MIRROR m_rotate=%d ori=%s label=%s", m_rotate, ori, m_Label );
           }
         }
       }
@@ -2240,12 +2238,21 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
         imageBitmap = new wxBitmap(img);
         x = (32-maxheight)/2;
         y = (symbolLength - imageBitmap->GetHeight()) / 2;
+        labelOffset = 0;
         if( symbolLength - imageBitmap->GetHeight() >= 20 ) {
-          if( (!m_rotate && StrOp.equals(ori, wItem.north)) || (m_rotate && StrOp.equals(ori, wItem.south)) )
+          if( (!m_rotate && StrOp.equals(ori, wItem.north)) || (m_rotate && StrOp.equals(ori, wItem.south)) ) {
             y = symbolLength - imageBitmap->GetHeight() - 10;
+            if( StrOp.equals(ori, wItem.north) )
+              labelOffset = imageBitmap->GetHeight();
+            else
+              labelOffset = 0;
+          }
           else {
             y = 10;
-            labelOffset = imageBitmap->GetHeight();
+            if( StrOp.equals(ori, wItem.north) )
+              labelOffset = 0;
+            else
+              labelOffset = imageBitmap->GetHeight();
           }
         }
         if( y < 10 )
@@ -2294,7 +2301,7 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
       drawString( wxString(m_Label,wxConvUTF8), 32-5, 9 + labelOffset, 270.0, false );
     }
     else if( StrOp.equals( textOri, wItem.north ) ) {
-      drawString( wxString(m_Label,wxConvUTF8), 7, (32 * m_cy)-8 - labelOffset, 90.0, false );
+      drawString( wxString(m_Label,wxConvUTF8), 7, (32 * m_cy) - 8 - labelOffset,  90.0, false );
     }
     else {
       drawString( wxString(m_Label,wxConvUTF8), 10 + labelOffset, (32-height)/2, 0.0, false );
