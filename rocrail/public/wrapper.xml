@@ -249,6 +249,7 @@
     <var name="val3" vt="int" defval="0" range="0-*" required="true" remark="Value"/>
     <var name="val4" vt="int" defval="0" range="0-*" required="true" remark="Value"/>
     <var name="accevent" vt="bool" defval="false" remark="To check in the model if it was an accessory event."/>
+    <var name="state" vt="string" defval="" range="*"/>
 	</acc>
 
   <rocrail structname="RRI" wrappername="RocRail">

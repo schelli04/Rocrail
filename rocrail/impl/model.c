@@ -3873,6 +3873,7 @@ static void _event( iOModel inst, iONode nodeC ) {
     wSwitch.setaccessory(nodeC, True);
     wSwitch.setaddr1( nodeC, addr );
     wSwitch.setport1( nodeC, 0 );
+    wSwitch.setstate( nodeC, wAccessory.getstate(nodeC) );
     wSwitch.setgatevalue(nodeC, val);
   }
 

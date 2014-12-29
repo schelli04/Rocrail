@@ -2792,8 +2792,23 @@ static void __handleUpdateStat(iOBiDiB bidib, iOBiDiBNode bidibnode, byte* pdata
 }
 
 
-static void __handleManual(iOBiDiB bidib, int uid, byte* pdata) {
+static void __handleManual(iOBiDiB bidib, iOBiDiBNode bidibnode, byte* pdata) {
   iOBiDiBData data = Data(bidib);
+  /*pdata[0] + pdata[1]*256, pdata[2], (pdata[2]&0x10)?"ON":"OFF"*/
+  iONode nodeC = NodeOp.inst( wAccessory.name(), NULL, ELEMENT_NODE );
+  wAccessory.setnodenr( nodeC, bidibnode->uid );
+  wItem.setuidname( nodeC, bidibnode->username );
+  wAccessory.setdevid( nodeC, pdata[0] + pdata[1]*256 + 1 );
+  wAccessory.setval1( nodeC, (pdata[2] & 0x20) ? 1:0 );
+  wAccessory.setval2( nodeC, pdata[2] & 0x1F );
+  wAccessory.setstate( nodeC, (pdata[2] & 0x1F) == 0 ? wSwitch.turnout:wSwitch.straight );
+  wAccessory.setaccevent( nodeC, True );
+  if( data->iid != NULL )
+    wAccessory.setiid( nodeC, data->iid );
+
+  if( data->listenerFun != NULL && data->listenerObj != NULL )
+    data->listenerFun( data->listenerObj, nodeC, TRCLEVEL_INFO );
+
 }
 
 
@@ -3456,7 +3471,7 @@ static Boolean __processBidiMsg(iOBiDiB bidib, byte* msg, int size) {
         "MSG_CS_ACCESSORY_MANUAL path=%s addr=%d event=0x%02X %s",
         pathKey, pdata[0] + pdata[1]*256, pdata[2], (pdata[2]&0x10)?"ON":"OFF" );
     if( bidibnode != NULL )
-      __handleManual(bidib, bidibnode->uid, pdata);
+      __handleManual(bidib, bidibnode, pdata);
     break;
 
   case MSG_VENDOR:
