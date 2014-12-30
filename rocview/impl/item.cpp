@@ -3184,9 +3184,12 @@ void Symbol::modelEvent( iONode node, bool oncreate ) {
 
       wBlock.setreserved( m_Props, isReserved );
 
-      if( wBlock.issmallsymbol(m_Props) && StrOp.len(locoid) > 0 )
+      Boolean showLocoImage = wGui.isshowlocoimageinblock(wxGetApp().getIni());
+      Boolean smallSymbol   = wBlock.issmallsymbol(m_Props);
+
+      if( (smallSymbol || showLocoImage) && StrOp.len(locoid) > 0 )
         l_locidStr = StrOp.fmt( "%s%s", fifoids!=NULL?fifoids:locoid, hasCars?"#":"" );
-      else if( showID && wBlock.issmallsymbol(m_Props) )
+      else if( showID && (smallSymbol || showLocoImage) )
         l_locidStr = StrOp.fmt( "%s%s", wBlock.getid( node ), hasCars?"#":"" );
       else {
         if(showID && fifoids == NULL) {
