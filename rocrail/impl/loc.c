@@ -1261,9 +1261,10 @@ static Boolean __engine( iOLoc inst, iONode cmd ) {
 
       /* secondary decoder check */
       if( wFunCmd.getfnchanged(cmd) != -1 ) {
+        int locoAddr = cmdFn==NULL?wLoc.getaddr( cmd ):wFunCmd.getaddr(cmdFn);
         int mappedfn = 0;
         int decaddr = __getFnAddr(inst, wFunCmd.getfnchanged(cmd), &mappedfn );
-        if( decaddr > 0 ) {
+        if( decaddr > 0 && decaddr!=locoAddr ) {
           int ifn = 0;
           wLoc.setaddr( cmdFn==NULL?cmd:cmdFn, decaddr > 0 ? decaddr:wLoc.getaddr(data->props) );
           TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
