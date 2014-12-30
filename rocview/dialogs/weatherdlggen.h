@@ -56,6 +56,8 @@ class WeatherDlgGen : public wxDialog
 		wxSpinCtrl* m_MinBri;
 		wxStaticText* m_labColorSliding;
 		wxSpinCtrl* m_ColorSliding;
+		wxStaticText* m_labNightSliding;
+		wxSpinCtrl* m_NightSliding;
 		wxCheckBox* m_SlidingDaylight;
 		wxCheckBox* m_RelativeTime;
 		wxStaticBoxSizer* m_SunriseBox;

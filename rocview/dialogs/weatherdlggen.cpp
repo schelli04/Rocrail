@@ -97,6 +97,13 @@ WeatherDlgGen::WeatherDlgGen( wxWindow* parent, wxWindowID id, const wxString& t
 	m_ColorSliding = new wxSpinCtrl( m_DayPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 80,-1 ), wxSP_ARROW_KEYS, 0, 120, 0 );
 	fgSizer1->Add( m_ColorSliding, 0, wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT, 5 );
 	
+	m_labNightSliding = new wxStaticText( m_DayPanel, wxID_ANY, wxT("Night sliding"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_labNightSliding->Wrap( -1 );
+	fgSizer1->Add( m_labNightSliding, 0, wxALL|wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT, 5 );
+	
+	m_NightSliding = new wxSpinCtrl( m_DayPanel, wxID_ANY, wxT("30"), wxDefaultPosition, wxSize( 80,-1 ), wxSP_ARROW_KEYS, 1, 60, 30 );
+	fgSizer1->Add( m_NightSliding, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	
 	bSizer2->Add( fgSizer1, 0, wxEXPAND, 5 );
 	
 	wxFlexGridSizer* fgSizer15;

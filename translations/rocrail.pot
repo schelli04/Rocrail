@@ -7661,3 +7661,9 @@ msgstr ""
 msgid "Redirect slave commands to the master loco"
 msgstr ""
 
+#. 
+# id="nightsliding"
+#, c-format
+msgid "Night sliding"
+msgstr ""
+

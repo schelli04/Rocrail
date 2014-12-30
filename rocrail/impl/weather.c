@@ -211,9 +211,9 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
 
 
 
-    int sunrise = wSunrise.gethour(sunriseProps) * 60 + wSunrise.getminute(sunriseProps);
-    int noon    = wNoon.gethour(noonProps) * 60 + wNoon.getminute(noonProps);
-    int sunset  = wSunset.gethour(sunsetProps) * 60 + wSunset.getminute(sunsetProps);
+    int sunrise = (wSunrise.gethour(sunriseProps) + data->starthour) * 60 + wSunrise.getminute(sunriseProps) + data->startminute;
+    int noon    = (wNoon.gethour(noonProps) + data->starthour) * 60 + wNoon.getminute(noonProps) + data->startminute;
+    int sunset  = (wSunset.gethour(sunsetProps) + data->starthour) * 60 + wSunset.getminute(sunsetProps) + data->startminute;
 
     int sunriseRed   = wSunrise.getred(sunriseProps);
     int sunriseGreen = wSunrise.getgreen(sunriseProps);
@@ -339,7 +339,8 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
       __doInitialize(weather, True, False );
     }
 
-    if( minutes+30 > sunset || minutes-30 < sunrise || shutdown ) {
+    float nightsliding = wWeather.getnightsliding(data->props);
+    if( minutes+nightsliding > sunset || minutes-nightsliding < sunrise || shutdown ) {
       /* Night. */
       TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "do nightlight at %02d:%02d (%d) on %s", hour, min, minutes, wNight.getoutputs(nightProps) );
       if( ListOp.size(nightList) > 0 ) {
@@ -347,18 +348,18 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
         int bri = wNight.getbri(nightProps);
         int n = 0;
 
-        if( minutes+30 > sunset ) {
+        if( minutes+nightsliding > sunset ) {
           if( sunset - minutes > 0 ) {
             float l_bri = bri;
-            l_bri = l_bri - ((l_bri / 30.0) * (sunset - minutes));
+            l_bri = l_bri - ((l_bri / nightsliding) * (sunset - minutes));
             bri = (int)l_bri;
           }
         }
 
-        if( minutes-30 < sunrise ) {
+        if( minutes-nightsliding < sunrise ) {
           if( minutes - sunrise > 0 ) {
             float l_bri = bri;
-            l_bri = l_bri - ((l_bri / 30.0) * (minutes - sunrise));
+            l_bri = l_bri - ((l_bri / nightsliding) * (minutes - sunrise));
             bri = (int)l_bri;
           }
         }
@@ -563,8 +564,8 @@ static void __makeWeather( void* threadinst ) {
   while( data->run ) {
     long t = ControlOp.getTime(control);
     struct tm* ltm = localtime( &t );
-    int hour = ltm->tm_hour + data->starthour;
-    int min  = ltm->tm_min  + data->startminute;
+    int hour = ltm->tm_hour;
+    int min  = ltm->tm_min;
 
     if( loopCnt >= 10 ) {
       loopCnt = 0;
@@ -599,7 +600,7 @@ static void _setWeather( iOWeather inst, const char* id, const char* param ) {
   iOModel   model   = AppOp.getModel();
   iOControl control = AppOp.getControl();
 
-  if( id != NULL ) {
+  if( id != NULL && StrOp.len(id) > 0 ) {
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "use weather [%s] with parameter [%s]", id, param!=NULL?param:"-" );
     data->props = ModelOp.getWeather(model, id);
     if( data->props != NULL && param != NULL ) {
@@ -663,8 +664,12 @@ static void _setTheme( iOWeather inst, const char* id ) {
   iOWeatherData data = Data(inst);
   if( data->requestedTheme != NULL )
     StrOp.free(data->requestedTheme);
-  data->requestedTheme = StrOp.dup(id);
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "use weather theme [%s]", id );
+  if( id != NULL && StrOp.len(id) > 0 ) {
+    data->requestedTheme = StrOp.dup(id);
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "use weather theme [%s]", id );
+  }
+  else
+    data->requestedTheme = NULL;
 }
 
 

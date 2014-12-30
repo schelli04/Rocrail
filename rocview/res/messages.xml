@@ -29355,4 +29355,7 @@
     <sl txt="Preusmeri ukaze na glavno lokomotivo"/>
     <sr_latin txt="Preusmeri sporedne komande na glavnu loko."/>
   </Msg>
+  <Msg id="nightsliding">
+    <en txt="Night sliding"/>
+  </Msg>
 </Messages>
