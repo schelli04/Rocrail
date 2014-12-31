@@ -118,6 +118,14 @@ static char* _getText( const char* p_ValStr, iOMap map, char separator ) {
         StrOp.free(sV);
       }
     }
+    else if( v[0] == '@' ) { /* variable */
+      iONode valVar = ModelOp.getVariable(model, v+1);
+      if( valVar != NULL ) {
+        char* sV = StrOp.fmt( "%s%c", wVariable.gettext(valVar), separator );
+        retVal = StrOp.cat( retVal, sV );
+        StrOp.free(sV);
+      }
+    }
     else if( v[0] == '$' ) { /* text */
       iOText text = ModelOp.getText(model, v+1);
       if( text != NULL ) {
