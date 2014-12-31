@@ -78,6 +78,7 @@ SymbolRenderer::SymbolRenderer( iONode props, wxWindow* parent, iOMap symmap, in
   m_iTextps = textps;
   m_DC = NULL;
   m_LocoImage = "";
+  m_bLocoPlacing = true;
 }
 
 

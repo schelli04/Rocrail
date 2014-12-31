@@ -571,7 +571,7 @@ static void __makeWeather( void* threadinst ) {
       loopCnt = 0;
 
       if( lastMin != ltm->tm_min ) {
-        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "weather time is %02d:%02d", hour, min );
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "weather time is %02d:%02d", hour, min );
         __doDaylight(weather, hour, min, False, False );
         lastMin = min;
       }

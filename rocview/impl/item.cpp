@@ -3129,6 +3129,7 @@ void Symbol::modelEvent( iONode node, bool oncreate ) {
     Boolean showID = True;
 
     m_Renderer->setLocoImage("");
+    m_Renderer->setLocoPlacing(true);
 
     if( locoid == NULL ) {
       locoid = "";
@@ -3136,8 +3137,10 @@ void Symbol::modelEvent( iONode node, bool oncreate ) {
     else {
       iONode loc = wxGetApp().getFrame()->findLoc( updateEnterside ? wBlock.getlocid(m_Props):locoid );
       if( loc != NULL ) {
-        if( wGui.isshowlocoimageinblock(wxGetApp().getIni()) )
+        if( wGui.isshowlocoimageinblock(wxGetApp().getIni()) ) {
           m_Renderer->setLocoImage(wLoc.getimage(loc));
+          m_Renderer->setLocoPlacing(wLoc.isplacing(loc)?true:false);
+        }
         trainid = wLoc.gettrain(loc);
       }
     }
