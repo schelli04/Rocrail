@@ -49,6 +49,7 @@ class wxSpinCtrl;
 #define ID_BUTTON_COPY 10443
 #define ID_BT_DEL 10218
 #define ID_BUTTON_AC_DOC 10143
+#define ID_ACTION_TEST 10454
 #define ID_DEFINITIONPANEL 10404
 #define ID_ACTIONS_TYPE 10195
 #define ID_COMBOBOX 10371
@@ -124,6 +125,9 @@ public:
     /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_BUTTON_AC_DOC
     void OnButtonAcDocClick( wxCommandEvent& event );
 
+    /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_ACTION_TEST
+    void OnActionTestClick( wxCommandEvent& event );
+
     /// wxEVT_COMMAND_CHOICE_SELECTED event handler for ID_ACTIONS_TYPE
     void OnActionsTypeSelected( wxCommandEvent& event );
 
@@ -174,6 +178,7 @@ public:
     wxButton* m_Copy;
     wxButton* m_Del;
     wxButton* m_Doc;
+    wxButton* m_Test;
     wxPanel* m_DefinitionPanel;
     wxStaticText* m_labType;
     wxChoice* m_Type;
