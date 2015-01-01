@@ -236,6 +236,7 @@ static Boolean _cmd( iOCar inst, iONode nodeA ) {
         /* use mapped function */
         wFunCmd.setfnchanged(nodeA, wCar.getfnlights(data->props));
         NodeOp.setBool(nodeA, fattr, lights);
+        data->fx[0] = lights;
 
         wFunCmd.setf0(nodeA, lights); /**/
         wLoc.setdir( nodeA, wCar.isplacing(data->props)?dir:!dir );
@@ -330,6 +331,9 @@ static Boolean _cmd( iOCar inst, iONode nodeA ) {
         NodeOp.setName( nodeA, wLoc.name() );
         wLoc.setfn(nodeA, wFunCmd.isf0(nodeA) );
         data->fx[0] = wFunCmd.isf0(nodeA);
+      }
+      else {
+        wFunCmd.setf0(nodeA, data->fx[0] );
       }
 
       for( i = 1; i < 29; i++ ) {
