@@ -203,6 +203,15 @@ static void __checkAction( iOStage inst, const char* state ) {
       if( Action != NULL ) {
         wActionCtrl.setbkid(action, data->id);
         wActionCtrl.setlcid(action, data->locId);
+        if( data->locId == NULL || StrOp.len(data->locId) == 0 ) {
+          int cnt = ListOp.size(data->sectionList);
+          if( cnt > 0 ) {
+            iONode lastSection = (iONode)ListOp.get(data->sectionList, cnt - 1);
+            if( lastSection != NULL ) {
+              wActionCtrl.setlcid(action, wStageSection.getlcid(lastSection) );
+            }
+          }
+        }
         ActionOp.exec(Action, action);
       }
     }
