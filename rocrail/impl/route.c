@@ -252,6 +252,10 @@ static void __broadcast(iORoute inst) {
     else if( o->lockedId != NULL && StrOp.len(o->lockedId) > 0 )
       wRoute.setstatus( nodeD, wRoute.status_locked);
   }
+  else if( wRoute.getstatus(o->props) == wRoute.status_closed && RouteOp.isLocked(inst) ) {
+    /* only signal closed if the route is no longer locked */
+    wRoute.setstatus( nodeD, wRoute.status_locked);
+  }
   else {
     wRoute.setstatus( nodeD, wRoute.getstatus(o->props));
   }
