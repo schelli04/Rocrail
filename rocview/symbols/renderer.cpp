@@ -2168,7 +2168,10 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
 
   drawBlockTriangle( dc, ori );
 
-  int labelOffset = 0;
+  int labelOffset  = 0;
+  int symbolLength = 128;
+  int imageWidth   = 0;
+
   bool l_ImageOK = false;
   if( (m_iOccupied == 1 || m_iOccupied == 3) && m_LocoImage != NULL && StrOp.len(m_LocoImage) > 0 ) {
     // Show loco image.
@@ -2191,10 +2194,10 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
         imageBitmap = new wxBitmap(img);
       }
 
-      int symbolLength = 128;
       if( m_bSmall )
         symbolLength = 64;
 
+      imageWidth = imageBitmap->GetWidth();
 
       int x = (symbolLength - imageBitmap->GetWidth()) / 2;
       if( symbolLength - imageBitmap->GetWidth() >= 20 ) {
@@ -2298,14 +2301,16 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
       height = h;
     }
 
-    if( StrOp.equals( textOri, wItem.south ) ) {
-      drawString( wxString(m_Label,wxConvUTF8), 32-5, 9 + labelOffset, 270.0, false );
-    }
-    else if( StrOp.equals( textOri, wItem.north ) ) {
-      drawString( wxString(m_Label,wxConvUTF8), 7, (32 * m_cy) - 8 - labelOffset,  90.0, false );
-    }
-    else {
-      drawString( wxString(m_Label,wxConvUTF8), 10 + labelOffset, (32-height)/2, 0.0, false );
+    if( imageWidth == 0 || (width <= (symbolLength - imageWidth - 20 )) ) {
+      if( StrOp.equals( textOri, wItem.south ) ) {
+        drawString( wxString(m_Label,wxConvUTF8), 32-5, 9 + labelOffset, 270.0, false );
+      }
+      else if( StrOp.equals( textOri, wItem.north ) ) {
+        drawString( wxString(m_Label,wxConvUTF8), 7, (32 * m_cy) - 8 - labelOffset,  90.0, false );
+      }
+      else {
+        drawString( wxString(m_Label,wxConvUTF8), 10 + labelOffset, (32-height)/2, 0.0, false );
+      }
     }
 
     delete font;
