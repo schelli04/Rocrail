@@ -561,6 +561,20 @@ static iONode __translate( iOMCS2 inst, iONode node ) {
     }
   }
 
+  /* Sensor command. */
+  else if( StrOp.equals( NodeOp.getName( node ), wFeedback.name() ) ) {
+    int addr = wFeedback.getaddr( node );
+    Boolean state = wFeedback.isstate( node );
+
+    if( wFeedback.isactivelow(node) )
+      wFeedback.setstate( node, !state);
+
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "simulate fb addr=%d state=%s", addr, state?"true":"false" );
+    data->listenerFun( data->listenerObj, (iONode)NodeOp.base.clone( node ), TRCLEVEL_INFO );
+
+  }
+
+
   return rsp;
 }
 
