@@ -1109,7 +1109,7 @@
                                             </object>
                                             <object class="sizeritem" expanded="1">
                                                 <property name="border">5</property>
-                                                <property name="flag">wxALL|wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT</property>
+                                                <property name="flag">wxALIGN_CENTER_VERTICAL|wxALIGN_RIGHT|wxBOTTOM|wxRIGHT|wxLEFT</property>
                                                 <property name="proportion">0</property>
                                                 <object class="wxStaticText" expanded="1">
                                                     <property name="bg"></property>
@@ -1165,7 +1165,7 @@
                                             </object>
                                             <object class="sizeritem" expanded="1">
                                                 <property name="border">5</property>
-                                                <property name="flag">wxALL|wxALIGN_CENTER_VERTICAL</property>
+                                                <property name="flag">wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT</property>
                                                 <property name="proportion">0</property>
                                                 <object class="wxSpinCtrl" expanded="1">
                                                     <property name="bg"></property>
