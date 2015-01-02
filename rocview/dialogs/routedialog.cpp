@@ -331,6 +331,11 @@ void RouteDialog::initLabels() {
   // Permissions
   m_labInclude->SetLabel( wxGetApp().getMsg( "include" ) );
   m_labExclude->SetLabel( wxGetApp().getMsg( "exclude" ) );
+  m_labLocoListPerm->SetLabel( wxGetApp().getMsg( "loctable" ) );
+  m_AddInclude->SetLabel( wxGetApp().getMsg( "include" ) );
+  m_AddExclude->SetLabel( wxGetApp().getMsg( "exclude" ) );
+  m_RemoveInclude->SetLabel( wxGetApp().getMsg( "delete" ) );
+  m_RemoveExclude->SetLabel( wxGetApp().getMsg( "delete" ) );
 
   m_PermType->SetLabel( wxGetApp().getMsg( "type" ) );
   m_PermTypeNone->SetLabel( wxGetApp().getMsg( "others" ) );
