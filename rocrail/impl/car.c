@@ -188,6 +188,19 @@ static int __getFnAddr( iOCar inst, int function, int* mappedfn) {
 }
 
 
+static void __copyFx2Node( iOCar inst, iONode nodeA ) {
+  iOCarData data = Data(inst);
+  char fattr[32] = {'\0'};
+  int i = 0;
+
+  for( i = 1; i <= 28; i++ ) {
+    StrOp.fmtb(fattr, "f%d", i);
+    NodeOp.setBool(nodeA, fattr, data->fx[i]);
+  }
+
+}
+
+
 static Boolean _cmd( iOCar inst, iONode nodeA ) {
   iOCarData data = Data(inst);
   iOControl control = AppOp.getControl();
@@ -237,6 +250,7 @@ static Boolean _cmd( iOCar inst, iONode nodeA ) {
         wFunCmd.setfnchanged(nodeA, wCar.getfnlights(data->props));
         NodeOp.setBool(nodeA, fattr, lights);
         data->fx[0] = lights;
+        __copyFx2Node(inst, nodeA);
 
         wFunCmd.setf0(nodeA, lights); /**/
         wLoc.setdir( nodeA, wCar.isplacing(data->props)?dir:!dir );
