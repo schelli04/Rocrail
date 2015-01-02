@@ -125,6 +125,7 @@ void StageDlg::initLabels() {
   m_labEnterSignal->SetLabel( wxGetApp().getMsg("entersignal") );
   m_labExitSignal->SetLabel( wxGetApp().getMsg("exitsignal") );
   m_labRandomRate->SetLabel( wxGetApp().getMsg( "randomrate" ) );
+  m_Actions->SetLabel( wxGetApp().getMsg( "actions" ) + _T("...") );
 
   // Sections
   m_labSectionID->SetLabel( wxGetApp().getMsg( "id" ) );
