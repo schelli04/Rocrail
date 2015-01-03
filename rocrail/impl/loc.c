@@ -3907,6 +3907,9 @@ static iOLoc _inst( iONode props ) {
   data->bbtMap = MapOp.inst();
   data->muxEngine = MutexOp.inst( NULL, True );
   data->muxCmd = MutexOp.inst( NULL, True );
+  data->destBlock = NULL;
+
+  wLoc.setdestblockid(data->props, "");
 
   wLoc.setmode(data->props, wLoc.mode_idle);
 
