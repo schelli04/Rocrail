@@ -86,6 +86,7 @@ public:
   void onCVModify( wxCommandEvent& event );
   void onShow( wxCommandEvent& event );
   void onListAvailableOnly( wxCommandEvent& event );
+  void onF0Icon( wxMouseEvent& event );
   void onF1Icon( wxMouseEvent& event );
   void onF2Icon( wxMouseEvent& event );
   void onF3Icon( wxMouseEvent& event );

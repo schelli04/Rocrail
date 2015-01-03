@@ -1240,6 +1240,18 @@ void CarDlg::onListAvailableOnly( wxCommandEvent& event ) {
   initIndex();
 }
 
+void CarDlg::onF0Icon( wxMouseEvent& event )
+{
+  const char* imagepath = wGui.getimagepath( wxGetApp().getIni() );
+  TraceOp.trc( "cardlg", TRCLEVEL_INFO, __LINE__, 9999, "imagepath = [%s]", imagepath );
+  wxFileDialog* fdlg = new wxFileDialog(this, _T("Search icon image"),  wxString(imagepath,wxConvUTF8), _T(""),
+      _T("PNG files (*.png)|*.png"), wxFD_OPEN);
+  if( fdlg->ShowModal() == wxID_OK ) {
+    m_F0Icon->SetValue( fdlg->GetFilename() );
+  }
+}
+
+
 void CarDlg::onF1Icon( wxMouseEvent& event )
 {
   const char* imagepath = wGui.getimagepath( wxGetApp().getIni() );
