@@ -254,7 +254,9 @@ void StageDlg::initLabels() {
 
   // Buttons
   m_stdButtonOK->SetLabel( wxGetApp().getMsg( "ok" ) );
+  m_stdButtonApply->SetLabel( wxGetApp().getMsg( "apply" ) );
   m_stdButtonCancel->SetLabel( wxGetApp().getMsg( "cancel" ) );
+  m_stdButtonHelp->SetLabel( wxGetApp().getMsg( "help" ) );
 }
 
 bool StageDlg::evaluate() {
