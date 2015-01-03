@@ -655,7 +655,10 @@ static void __broadcastLocoProps( iOLoc inst, const char* cmd, iONode node, cons
     wLoc.setdestblockid(node, blockId );
   else
     wLoc.setdestblockid( node, data->destBlock );
+
   wLoc.setblockid( node, data->curBlock );
+  if( (wLoc.getdestblockid(node) != NULL && StrOp.equals(wLoc.getdestblockid(node), wLoc.getblockid(node))) || wLoc.getdestblockid(node) == NULL )
+    wLoc.setdestblockid( node, "" );
   wLoc.setfn( node, wLoc.isfn(data->props) );
   wLoc.setruntime( node, wLoc.getruntime(data->props) );
   wLoc.setmtime( node, wLoc.getmtime(data->props) );
@@ -3855,7 +3858,8 @@ static void _setBlockEnterSide( iOLoc loc, Boolean enterside, const char* blockI
   if( blockId != NULL )
     __broadcastLocoProps( loc, NULL, NULL, blockId );
   else
-    __broadcastLocoProps( loc, NULL, NULL, data->curBlock );
+    __broadcastLocoProps( loc, NULL, NULL, NULL );
+    /*__broadcastLocoProps( loc, NULL, NULL, data->curBlock );*/
 
 }
 
