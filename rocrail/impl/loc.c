@@ -1923,7 +1923,9 @@ static void __runner( void* threadinst ) {
 
     /* BBT 10ms cycle */
     if( !data->gomanual && wLoc.isusebbt(data->props) ) {
-      if( StrOp.equals( wLoc.mode_wait, wLoc.getmode(data->props) )  && !data->bbtExternalStop ) {
+      if( (StrOp.equals( wLoc.mode_wait, wLoc.getmode(data->props) ) || StrOp.equals( wLoc.mode_idle, wLoc.getmode(data->props) ) )
+          && !data->bbtExternalStop )
+      {
         __BBT(loc);
       }
       ThreadOp.sleep( RUNNERBBTTICK );
