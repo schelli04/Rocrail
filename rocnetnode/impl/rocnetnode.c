@@ -1152,6 +1152,7 @@ static void __macro(iORocNetNode rocnetnode, int macro, Boolean on, int offset) 
           data->channels[port]->ready = False;
           data->channels[port]->sleep = False;
           data->channels[port]->idle  = 0;
+          data->channels[port]->delay = data->macro[macro]->line[i].delay;
           data->channels[port]->state = (data->macro[macro]->line[i].value?1:0);
         }
       }
