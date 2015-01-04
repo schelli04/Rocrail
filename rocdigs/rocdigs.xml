@@ -151,7 +151,8 @@
       <var name="serial" vt="iOSerial"/>
       <var name="serialMux" vt="iOMutex"/>
       <var name="serialOK" vt="Boolean"/>
-      </data>
+      <var name="enablecom" vt="Boolean"/>
+    </data>
   </object>
 
 

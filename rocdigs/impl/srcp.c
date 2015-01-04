@@ -509,6 +509,11 @@ static iONode __translate( iOSRCP inst, iONode node, char* srcp ) {
         }
       }
     }
+    else if( StrOp.equals( cmd, wSysCmd.enablecom ) ) {
+      TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "%s: %s communication", o->iid, wSysCmd.getval(node) == 1 ? "enable":"disable" );
+      o->enablecom = wSysCmd.getval(node) == 1 ? True:False;
+    }
+
     return NULL;
   }
 
@@ -573,7 +578,7 @@ static iONode _cmd( obj inst, const iONode nodeA ) {
   char cmd[1024] = {0};
   iONode rsp = NULL;
 
-  if( nodeA != NULL ) {
+  if( nodeA != NULL && data->enablecom ) {
     int rc = data->subConnect((obj)inst, False);
 
     if( rc == SRCPCONNECT_RECONNECTED ) {
@@ -613,6 +618,10 @@ static iONode _cmd( obj inst, const iONode nodeA ) {
 
     nodeA->base.del(nodeA);
   }
+  else if( nodeA != NULL && !data->enablecom ) {
+    nodeA->base.del(nodeA);
+  }
+
 
   return rsp;
 }
@@ -809,6 +818,10 @@ static void __infoReader( void * threadinst ) {
 
   while( o->run && !o->handshakeerror ) {
     int inlen = 0;
+    if( !o->enablecom ) {
+      ThreadOp.sleep(10);
+      continue;
+    }
     int rc = o->subConnect((obj)srcp, True);
     if( (rc == SRCPCONNECT_RECONNECTED ) && __initInfoConnection(srcp) ) {
       /* OK */
@@ -1106,6 +1119,7 @@ static iOSRCP _inst( const iONode settings, const iOTrace trace ) {
   data->host   = wDigInt.gethost( settings );
   data->port   = wSRCP.getcmdport( data->srcpini );
   data->run    = True;
+  data->enablecom = True;
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "SRCP %d.%d.%d", vmajor, vminor, patch );
