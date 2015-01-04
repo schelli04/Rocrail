@@ -1316,6 +1316,10 @@ static void _reset( iIBlockBase inst, Boolean saveCurBlock ) {
   StageOp.red( inst, True,  False );
   StageOp.red( inst, False, False );
 
+  if( !saveCurBlock )
+    wStage.setlocid(data->props, NULL);
+  wStage.setentering(data->props, False );
+
   /* Broadcast to clients. */
   AppOp.broadcastEvent( (iONode)NodeOp.base.clone(data->props) );
 
@@ -2068,6 +2072,8 @@ static struct OStage* _inst( iONode props ) {
   }
 
   wStage.setlocid(data->props, NULL);
+  wStage.setentering(data->props, False );
+
 
   __initSensors(__Stage);
 
