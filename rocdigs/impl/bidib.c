@@ -998,6 +998,10 @@ static iONode __translate( iOBiDiB inst, iONode node ) {
     Boolean fnstate = __getFState(node, fnchanged);
 
     slot->f[fnchanged] = fnstate;
+    slot->f[1] = __getFState(node, 1);
+    slot->f[2] = __getFState(node, 2);
+    slot->f[3] = __getFState(node, 3);
+    slot->f[4] = __getFState(node, 4);
 
     bidibnode = (iOBiDiBNode)MapOp.get( data->nodemap, uidKey );
     if( bidibnode == NULL )
