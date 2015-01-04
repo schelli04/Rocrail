@@ -135,7 +135,11 @@ static void __fx2fn(iOSlot slot, int fx) {
   }
 }
 
-Boolean __getFState(iONode fcmd, int fn) {
+Boolean __getFState(iONode fcmd, int fn, Boolean oldFxValue) {
+  char fnStr[32] = {'\0'};
+  if( NodeOp.findAttr(fcmd, fnStr) == NULL ) {
+    return oldFxValue;
+  }
   switch( fn ) {
     case 0 : return (wFunCmd.isf0 (fcmd) | wLoc.isfn(fcmd));
     case 1 : return wFunCmd.isf1 (fcmd);
@@ -933,9 +937,9 @@ static iONode __translate( iOBiDiB inst, iONode node ) {
       msgdata[0] = addr % 256;
       msgdata[1] = addr / 256;
       msgdata[2] = (steps==128?0x03:0x02); // 128 speed steps
-      msgdata[3] = 0x03; // speed and function group 1
+      msgdata[3] = 0x01; // speed
       msgdata[4] = (dir ? 0x80:0x00) + speed;
-      msgdata[5] = (fn?0x10:0x00) + (slot->f[1]?0x01:0x00) + (slot->f[2]?0x02:0x00) + (slot->f[3]?0x04:0x00) + (slot->f[4]?0x08:0x00);
+      msgdata[5] = 0;
       msgdata[6] = 0;
       msgdata[7] = 0;
       msgdata[8] = 0;
@@ -995,13 +999,9 @@ static iONode __translate( iOBiDiB inst, iONode node ) {
     iOSlot slot = __getSlot(inst, node);
 
     int fnchanged = wFunCmd.getfnchanged(node);
-    Boolean fnstate = __getFState(node, fnchanged);
+    Boolean fnstate = __getFState(node, fnchanged, slot->f[fnchanged]);
 
     slot->f[fnchanged] = fnstate;
-    slot->f[1] = __getFState(node, 1);
-    slot->f[2] = __getFState(node, 2);
-    slot->f[3] = __getFState(node, 3);
-    slot->f[4] = __getFState(node, 4);
 
     bidibnode = (iOBiDiBNode)MapOp.get( data->nodemap, uidKey );
     if( bidibnode == NULL )

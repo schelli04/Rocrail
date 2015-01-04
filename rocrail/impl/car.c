@@ -246,6 +246,10 @@ static Boolean _cmd( iOCar inst, iONode nodeA ) {
       Boolean dir = wCar.isinvdir(data->props) ? !wLoc.isdir(nodeA):wLoc.isdir(nodeA);
       Boolean lights = wLoc.isfn(nodeA);
 
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
+          "car %s (%d) V=%d usedir=%d uselights=%d", wCar.getid(data->props), wCar.getaddr(data->props),
+          wCar.getV(nodeA),  wCar.isusedir(data->props), wCar.isuselights(data->props) );
+
       if( wCar.isusedir(data->props) ) {
         wLoc.setdir( nodeA, wCar.isplacing(data->props)?dir:!dir );
         if( wCar.getiid(data->props) != NULL )
