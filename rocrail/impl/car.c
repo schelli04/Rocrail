@@ -201,6 +201,22 @@ static void __copyFx2Node( iOCar inst, iONode nodeA ) {
 }
 
 
+static void __traceFunctions(iOCar inst, int fnchanged) {
+  iOCarData data = Data(inst);
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "car=%s [addr=%d] [fn=%d] lights=%s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s %s",
+      wCar.getid( data->props ), wCar.getaddr( data->props ), fnchanged,
+      data->fx[0]  ? "on":"off",
+      data->fx[1]  ? "01":"--", data->fx[2]  ? "02":"--", data->fx[3]  ? "03":"--", data->fx[4]  ? "04":"--",
+      data->fx[5]  ? "05":"--", data->fx[6]  ? "06":"--", data->fx[7]  ? "07":"--", data->fx[8]  ? "08":"--",
+      data->fx[9]  ? "09":"--", data->fx[10] ? "10":"--", data->fx[11] ? "11":"--", data->fx[12] ? "12":"--",
+      data->fx[13] ? "13":"--", data->fx[14] ? "14":"--", data->fx[15] ? "15":"--", data->fx[16] ? "16":"--",
+      data->fx[17] ? "17":"--", data->fx[18] ? "18":"--", data->fx[19] ? "19":"--", data->fx[20] ? "20":"--",
+      data->fx[21] ? "21":"--", data->fx[22] ? "22":"--", data->fx[23] ? "23":"--", data->fx[24] ? "24":"--",
+      data->fx[25] ? "25":"--", data->fx[26] ? "26":"--", data->fx[27] ? "27":"--", data->fx[28] ? "28":"--"
+  );
+}
+
+
 static Boolean _cmd( iOCar inst, iONode nodeA ) {
   iOCarData data = Data(inst);
   iOControl control = AppOp.getControl();
@@ -251,6 +267,7 @@ static Boolean _cmd( iOCar inst, iONode nodeA ) {
         NodeOp.setBool(nodeA, fattr, lights);
         data->fx[0] = lights;
         __copyFx2Node(inst, nodeA);
+        __traceFunctions(inst, wFunCmd.getfnchanged(nodeA) );
 
         wFunCmd.setf0(nodeA, lights); /**/
         wLoc.setdir( nodeA, wCar.isplacing(data->props)?dir:!dir );
@@ -354,6 +371,8 @@ static Boolean _cmd( iOCar inst, iONode nodeA ) {
         StrOp.fmtb(fattr, "f%d", i);
         NodeOp.setBool(nodeA, fattr, data->fx[i]);
       }
+
+      __traceFunctions(inst, fnchanged);
 
       ControlOp.cmd( control, nodeA, NULL );
     }
