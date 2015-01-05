@@ -29358,4 +29358,7 @@
   <Msg id="nightsliding">
     <en txt="Night sliding"/>
   </Msg>
+  <Msg id="search">
+    <en txt="Search"/>
+  </Msg>
 </Messages>

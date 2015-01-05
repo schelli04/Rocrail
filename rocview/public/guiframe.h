@@ -96,6 +96,7 @@ public:
   void setOnline( bool online );
   void SyncClock( iONode node );
 
+  void OnTrace(wxCommandEvent& event);
   void OnOpenWorkspace(wxCommandEvent& event);
   void OnSetStatusText(wxCommandEvent& event);
   void OnQuit(wxCommandEvent& event);
@@ -633,6 +634,7 @@ enum
     ME_PowerEvent,
     ME_RocguiIni,
     ME_Weather,
+    ME_Trace,
     ME_ZoomX,
     ME_Zoom25,
     ME_Zoom50,

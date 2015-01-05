@@ -107,6 +107,7 @@
 #include "rocview/dialogs/zoomdlg.h"
 #include "rocview/dialogs/variabledlg.h"
 #include "rocview/dialogs/weatherdlg.h"
+#include "rocview/dialogs/tracedlg.h"
 
 
 
@@ -351,6 +352,7 @@ BEGIN_EVENT_TABLE(RocGuiFrame, wxFrame)
     EVT_MENU( ME_EditActions    , RocGuiFrame::OnEditActions)
     EVT_MENU( ME_EditVariables  , RocGuiFrame::OnEditVariables)
     EVT_MENU( ME_Weather        , RocGuiFrame::OnWeather)
+    EVT_MENU( ME_Trace          , RocGuiFrame::OnTrace)
     EVT_MENU( ME_PanelProps     , RocGuiFrame::OnPanelProps)
     EVT_MENU( ME_AddItem        , RocGuiFrame::OnAddItem)
     EVT_MENU( ME_AddPanel       , RocGuiFrame::OnAddPanel)
@@ -2259,6 +2261,7 @@ void RocGuiFrame::initFrame() {
 
   menuHelp->Append(ME_Bug, wxGetApp().getMsg("bug") + wxT(" / ") + wxGetApp().getMenu("feature"), wxGetApp().getTip("bug") );
   menuHelp->Append(ME_Issue, wxGetApp().getMenu("issue"), wxGetApp().getTip("issue") );
+  menuHelp->Append(ME_Trace, wxGetApp().getMenu("trace") + wxT("..."), wxGetApp().getTip("trace") );
 
 /*
   menuHelp->AppendSeparator();
@@ -4003,6 +4006,13 @@ void RocGuiFrame::OnWeather( wxCommandEvent& event ) {
   if( wxID_OK == dlg->ShowModal() ) {
     // TODO: inform
   }
+  dlg->Destroy();
+}
+
+
+void RocGuiFrame::OnTrace( wxCommandEvent& event ) {
+  TraceDlg*  dlg = new TraceDlg(this);
+  dlg->ShowModal();
   dlg->Destroy();
 }
 
