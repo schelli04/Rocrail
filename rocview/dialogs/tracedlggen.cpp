@@ -16,6 +16,12 @@ TraceDlgGen::TraceDlgGen( wxWindow* parent, wxWindowID id, const wxString& title
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer( wxVERTICAL );
 	
+	m_labHeader = new wxStaticText( this, wxID_ANY, wxT("yyyyMMDD.HHMMSS.mmm a ID l Thread   Object   Line Message"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_labHeader->Wrap( -1 );
+	m_labHeader->SetFont( wxFont( 9, 76, 90, 90, false, wxEmptyString ) );
+	
+	bSizer1->Add( m_labHeader, 0, wxLEFT|wxRIGHT|wxTOP, 9 );
+	
 	m_Trace = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, wxLB_SINGLE ); 
 	m_Trace->SetFont( wxFont( 9, 76, 90, 90, false, wxEmptyString ) );
 	m_Trace->SetMinSize( wxSize( 600,400 ) );

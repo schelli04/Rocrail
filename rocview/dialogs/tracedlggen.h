@@ -9,12 +9,12 @@
 #define __tracedlggen__
 
 #include <wx/string.h>
-#include <wx/listbox.h>
+#include <wx/stattext.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
 #include <wx/colour.h>
 #include <wx/settings.h>
-#include <wx/stattext.h>
+#include <wx/listbox.h>
 #include <wx/combobox.h>
 #include <wx/textctrl.h>
 #include <wx/button.h>
@@ -32,6 +32,7 @@ class TraceDlgGen : public wxDialog
 	private:
 	
 	protected:
+		wxStaticText* m_labHeader;
 		wxListBox* m_Trace;
 		wxStaticText* m_labType;
 		wxComboBox* m_ObjectType;
