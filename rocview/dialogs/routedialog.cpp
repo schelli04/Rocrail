@@ -1535,7 +1535,7 @@ void RouteDialog::CreateControls()
     itemBoxSizer61->Add(m_LabelSwitchId, 0, wxALIGN_LEFT|wxALL|wxADJUST_MINSIZE, 5);
 
     wxArrayString m_SwitchIdStrings;
-    m_SwitchId = new wxComboBox( m_CommandPanel, ID_COMBOBOX_ST_SWITCH_ID, wxEmptyString, wxDefaultPosition, wxSize(120, -1), m_SwitchIdStrings, wxCB_DROPDOWN );
+    m_SwitchId = new wxComboBox( m_CommandPanel, ID_COMBOBOX_ST_SWITCH_ID, wxEmptyString, wxDefaultPosition, wxSize(120, -1), m_SwitchIdStrings, wxCB_READONLY );
     itemBoxSizer61->Add(m_SwitchId, 0, wxGROW|wxALL, 5);
 
     wxFlexGridSizer* itemFlexGridSizer64 = new wxFlexGridSizer(1, 2, 0, 0);
