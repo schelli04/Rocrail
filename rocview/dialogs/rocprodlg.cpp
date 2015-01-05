@@ -730,6 +730,7 @@ void RocProDlg::onLocoList(wxCommandEvent& event) {
     m_IID->SetValue(wxString( wLoc.getiid(m_LocoProps), wxConvUTF8));
   }
   m_ImageSizer->Layout();
+  Refresh();
 }
 
 iONode RocProDlg::getLocoCV(int nr) {
