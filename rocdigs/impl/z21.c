@@ -923,7 +923,7 @@ static int _version( obj inst ) {
 }
 
 
-static void __reportState(iOZ21 inst) {
+static void __reportState(iOZ21 inst, Boolean shortcircuit) {
   iOZ21Data data = Data(inst);
 
   if( data->listenerFun != NULL && data->listenerObj != NULL ) {
@@ -939,6 +939,7 @@ static void __reportState(iOZ21 inst) {
     wState.settrackbus( node, data->serialOK );
     wState.setsensorbus( node, True );
     wState.setaccessorybus( node, True );
+    wState.setshortcut(node, shortcircuit);
 
     data->listenerFun( data->listenerObj, node, TRCLEVEL_INFO );
   }
@@ -1083,22 +1084,23 @@ static void __evaluatePacket(iOZ21 inst, byte* packet, int packetSize) {
       if( packet[packetIdx+4] == 0x61 && packet[packetIdx+5] == 0x00 ) {
         data->power = False;
         TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "LAN_X_BC_TRACK_POWER_OFF" );
-        __reportState(inst);
+        __reportState(inst, False);
       }
       else if( packet[packetIdx+4] == 0x61 && packet[packetIdx+5] == 0x01 ) {
         data->power = True;
         TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "LAN_X_BC_TRACK_POWER_ON" );
-        __reportState(inst);
+        __reportState(inst, False);
       }
       else if( packet[packetIdx+4] == 0x61 && packet[packetIdx+5] == 0x08 ) {
         /* Shortcut */
         TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "LAN_X_BC_TRACK_SHORT_CIRCUIT" );
+        __reportState(inst, True);
       }
       else if( packet[packetIdx+4] == 0x81 && packet[packetIdx+5] == 0x00 ) {
         /* Emergency break */
         TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "LAN_X_BC_STOPPED" );
         data->power = False;
-        __reportState(inst);
+        __reportState(inst, False);
       }
       else if( packet[packetIdx+4] == 0x61 && packet[packetIdx+5] == 0x12 ) {
         /* PT short cut */
@@ -1117,7 +1119,7 @@ static void __evaluatePacket(iOZ21 inst, byte* packet, int packetSize) {
       else if( packet[packetIdx+4] == 0x61 && packet[packetIdx+5] == 0x02 ) {
         TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "LAN_X_BC_PROGRAMMING_MODE" );
         data->power = False;
-        __reportState(inst);
+        __reportState(inst, False);
       }
     }
 
@@ -1216,7 +1218,7 @@ static void __evaluatePacket(iOZ21 inst, byte* packet, int packetSize) {
         data->power = False;
       else
         data->power = True;
-      __reportState(inst);
+      __reportState(inst, False);
     }
 
     /* RailCom */
