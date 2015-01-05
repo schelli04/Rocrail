@@ -2051,10 +2051,12 @@ void RouteDialog::OnButtonTurnoutAddClick( wxCommandEvent& event )
 
 void RouteDialog::OnButtonTurnoutDeleteClick( wxCommandEvent& event )
 {
-  iONode swcmd = (iONode)m_Commands->GetClientData( m_Commands->GetSelection() );
-  if( swcmd != NULL ) {
-    m_Commands->Delete( m_Commands->GetSelection() );
-    NodeOp.removeChild( m_Props, swcmd );
+  if( m_Commands->GetSelection() != wxNOT_FOUND ) {
+    iONode swcmd = (iONode)m_Commands->GetClientData( m_Commands->GetSelection() );
+    if( swcmd != NULL ) {
+      m_Commands->Delete( m_Commands->GetSelection() );
+      NodeOp.removeChild( m_Props, swcmd );
+    }
   }
 }
 
