@@ -19,6 +19,7 @@
 #include <wx/textctrl.h>
 #include <wx/button.h>
 #include <wx/sizer.h>
+#include <wx/choice.h>
 #include <wx/dialog.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -40,6 +41,7 @@ class TraceDlgGen : public wxDialog
 		wxTextCtrl* m_ID;
 		wxButton* m_Search;
 		wxButton* m_Open;
+		wxChoice* m_ServerTraces;
 		wxStdDialogButtonSizer* m_stdButton;
 		wxButton* m_stdButtonOK;
 		wxButton* m_stdButtonHelp;

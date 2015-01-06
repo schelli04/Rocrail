@@ -2769,7 +2769,7 @@ static iOLoc _getLoc( iOModel inst, const char* id, iONode props, Boolean genera
 
 static iOCar _getCar( iOModel inst, const char* id ) {
   iOModelData o = Data(inst);
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "try to find car by id [%s]", id );
+  TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "try to find car by id [%s]", id );
   return (iOCar)MapOp.get( o->carMap, id );
 }
 

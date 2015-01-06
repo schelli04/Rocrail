@@ -100,6 +100,21 @@
     <var name="currenttrc" vt="bool" defval="false" remark="Current trace only."/>
   </issue>
 
+  <direntry wrappername="DirEntry" remark="Directory">
+    <fileentry wrappername="FileEntry" cardinality="n">
+      <var name="fname" vt="string" defval="" range="*" remark="File name"/>
+      <var name="stamp" vt="string" defval="" range="*" remark="Time stamp"/>
+      <var name="size" vt="long" defval="0" range="0-*" remark="File size"/>
+    </fileentry>
+  </direntry>
+  
+  <filecmd wrappername="FileCmd">
+    <var name="cmd" vt="string" defval=""/>
+    <const name="gettracedir" vt="string" val="gettracedir"/>
+    <const name="gettracefile" vt="string" val="gettracefile"/>
+    <var name="fname" vt="string" defval="" range="*" remark="File name"/>
+  </filecmd>
+  
   <description wrappername="Description">
     <var name="lang" vt="string" defval="" range="*" remark="Language"/>
     <var name="text" vt="string" defval="" range="*" remark="Description"/>

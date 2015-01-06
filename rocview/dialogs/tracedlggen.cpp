@@ -55,13 +55,21 @@ TraceDlgGen::TraceDlgGen( wxWindow* parent, wxWindowID id, const wxString& title
 	
 	bSizer1->Add( fgSizer1, 0, wxEXPAND, 5 );
 	
-	wxBoxSizer* bSizer2;
-	bSizer2 = new wxBoxSizer( wxHORIZONTAL );
+	wxFlexGridSizer* fgSizer2;
+	fgSizer2 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer2->AddGrowableCol( 1 );
+	fgSizer2->SetFlexibleDirection( wxBOTH );
+	fgSizer2->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
 	m_Open = new wxButton( this, wxID_ANY, wxT("Open..."), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizer2->Add( m_Open, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
+	fgSizer2->Add( m_Open, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 	
-	bSizer1->Add( bSizer2, 0, wxEXPAND, 5 );
+	wxArrayString m_ServerTracesChoices;
+	m_ServerTraces = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxSize( 260,-1 ), m_ServerTracesChoices, 0 );
+	m_ServerTraces->SetSelection( 0 );
+	fgSizer2->Add( m_ServerTraces, 0, wxALL|wxALIGN_CENTER_VERTICAL|wxEXPAND, 5 );
+	
+	bSizer1->Add( fgSizer2, 0, wxEXPAND, 5 );
 	
 	m_stdButton = new wxStdDialogButtonSizer();
 	m_stdButtonOK = new wxButton( this, wxID_OK );
