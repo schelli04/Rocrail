@@ -1367,7 +1367,7 @@ static void __executeAction( struct OAction* inst, iONode actionctrl ) {
         else if( StrOp.equals(wAction.loco_velocity, wAction.getcmd(data->action) ) ) {
           int v = atoi(wAction.getparam(data->action));
           iONode cmd = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE);
-          if( v<0 ) {
+          if( v<0 || wAction.getparam(data->action)[0] == '-' ) {
               wLoc.setdir( cmd, !LocOp.getDir( lc ) );
               v = abs( v );
           }
@@ -1377,7 +1377,7 @@ static void __executeAction( struct OAction* inst, iONode actionctrl ) {
         else if( StrOp.equals(wAction.loco_velocity2, wAction.getcmd(data->action) ) ) {
           int v = atoi(wAction.getparam(data->action));
           iONode cmd = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE);
-          if( v<0 ) {
+          if( v<0 || wAction.getparam(data->action)[0] == '-' ) {
               wLoc.setdir( cmd, !LocOp.getDir( lc ) );
               v = abs( v );
           }
@@ -1396,7 +1396,7 @@ static void __executeAction( struct OAction* inst, iONode actionctrl ) {
         else if( StrOp.equals(wAction.loco_percent, wAction.getcmd(data->action) ) ) {
           int v = atoi(wAction.getparam(data->action));
           iONode cmd = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE);
-          if( v<0 ) {
+          if( v<0 || wAction.getparam(data->action)[0] == '-' ) {
               wLoc.setdir( cmd, !LocOp.getDir( lc ) );
               v = abs( v );
           }
