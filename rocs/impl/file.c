@@ -617,6 +617,7 @@ static Boolean _readStr( iOFile inst, char* buffer ) {
   iOFileData data = Data(inst);
   data->readed = 0;
   int idx = 0;
+  Boolean newLine = False;
   int rc = 0;
   char c = '\0';
 
@@ -631,8 +632,10 @@ static Boolean _readStr( iOFile inst, char* buffer ) {
     if( idx > 0 && rc != 1 )
       break;
 
-    if(c == '\n')
+    if(c == '\n') {
+      newLine = True;
       break;
+    }
 
     buffer[idx] = c;
     idx++;
@@ -641,7 +644,7 @@ static Boolean _readStr( iOFile inst, char* buffer ) {
 
   data->readed = idx;
   data->rc = errno;
-  return idx > 0 ? True:False;
+  return (idx > 0 || newLine) ? True:False;
 
 }
 
