@@ -117,7 +117,7 @@ void TraceDlg::onSearch( wxCommandEvent& event ) {
         m_Trace->SetDefaultStyle(wxTextAttr(*wxBLACK));
 
       m_Trace->AppendText(wxString(buffer,wxConvUTF8) + wxT("\n"));
-      m_Trace->SetInsertionPoint(0);
+      //m_Trace->SetInsertionPoint(0);
       m_Trace->ShowPosition(0);
     }
     FileOp.base.del( f );
