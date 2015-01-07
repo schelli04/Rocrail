@@ -86,6 +86,7 @@ TraceDlgGen::TraceDlgGen( wxWindow* parent, wxWindowID id, const wxString& title
 	this->Centre( wxBOTH );
 	
 	// Connect Events
+	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( TraceDlgGen::onClose ) );
 	m_ObjectType->Connect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( TraceDlgGen::onObjectType ), NULL, this );
 	m_Search->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TraceDlgGen::onSearch ), NULL, this );
 	m_Open->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TraceDlgGen::onOpen ), NULL, this );
@@ -96,6 +97,7 @@ TraceDlgGen::TraceDlgGen( wxWindow* parent, wxWindowID id, const wxString& title
 TraceDlgGen::~TraceDlgGen()
 {
 	// Disconnect Events
+	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( TraceDlgGen::onClose ) );
 	m_ObjectType->Disconnect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( TraceDlgGen::onObjectType ), NULL, this );
 	m_Search->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TraceDlgGen::onSearch ), NULL, this );
 	m_Open->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TraceDlgGen::onOpen ), NULL, this );

@@ -43,6 +43,7 @@ class TraceDlg : public TraceDlgGen
 		void onOK( wxCommandEvent& event );
     void onObjectType( wxCommandEvent& event );
     void onSearch( wxCommandEvent& event );
+    void onClose( wxCloseEvent& event );
 
 	public:
 		/** Constructor */

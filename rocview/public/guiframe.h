@@ -61,6 +61,7 @@
 #include "rocview/dialogs/cmdrecorder.h"
 #include "rocview/dialogs/sensorevents.h"
 #include "rocview/dialogs/trackpickerdlg.h"
+#include "rocview/dialogs/tracedlg.h"
 
 #include <wx/splitter.h>
 #include <wx/textctrl.h>
@@ -388,6 +389,7 @@ public:
   void resetBidibIdentRef() {m_BidibIdentDlg=NULL;}
   void resetTrackPickerRef() {m_TrackPickerDlg=NULL;}
   bool isPendingOpenWorkspace() {return m_bPendingOpenWorkspace;}
+  void resetTraceRef() {m_TraceDlg=NULL;}
 
 private:
   void Save();
@@ -435,6 +437,7 @@ private:
   SensorEventsDlg* m_SensorMonitor;
   TrackPickerDlg* m_TrackPickerDlg;
   iOMutex m_muxInitActiveLocs;
+  TraceDlg* m_TraceDlg;
 
   const char* m_ThemePath;
   const char* m_ServerPath;

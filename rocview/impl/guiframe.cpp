@@ -1831,6 +1831,7 @@ RocGuiFrame::RocGuiFrame(const wxString& title, const wxPoint& pos, const wxSize
   m_LocoIO             = NULL;
   m_CBusNodeDlg        = NULL;
   m_BidibIdentDlg      = NULL;
+  m_TraceDlg           = NULL;
   m_RocnetNodeDlg      = NULL;
   m_MGV141             = NULL;
   m_DTOpSw             = NULL;
@@ -4011,9 +4012,13 @@ void RocGuiFrame::OnWeather( wxCommandEvent& event ) {
 
 
 void RocGuiFrame::OnTrace( wxCommandEvent& event ) {
-  TraceDlg*  dlg = new TraceDlg(this);
-  dlg->ShowModal();
-  dlg->Destroy();
+  if( m_TraceDlg == NULL) {
+    m_TraceDlg = new TraceDlg(this);
+    m_TraceDlg->Show(true);
+  }
+  else if( m_TraceDlg != NULL ) {
+    m_TraceDlg->Raise();
+  }
 }
 
 

@@ -122,5 +122,11 @@ void TraceDlg::onHelp( wxCommandEvent& event )
 
 void TraceDlg::onOK( wxCommandEvent& event )
 {
-  EndModal( wxID_OK );
+  wxGetApp().getFrame()->resetTraceRef();
+  Destroy();
+}
+
+void TraceDlg::onClose( wxCloseEvent& event ) {
+  wxGetApp().getFrame()->resetTraceRef();
+  Destroy();
 }

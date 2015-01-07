@@ -47,6 +47,7 @@ class TraceDlgGen : public wxDialog
 		wxButton* m_stdButtonHelp;
 		
 		// Virtual event handlers, overide them in your derived class
+		virtual void onClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void onObjectType( wxCommandEvent& event ) { event.Skip(); }
 		virtual void onSearch( wxCommandEvent& event ) { event.Skip(); }
 		virtual void onOpen( wxCommandEvent& event ) { event.Skip(); }
