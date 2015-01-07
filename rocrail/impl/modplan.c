@@ -45,6 +45,7 @@
 #include "rocrail/wrapper/public/WaybillList.h"
 #include "rocrail/wrapper/public/BoosterList.h"
 #include "rocrail/wrapper/public/OperatorList.h"
+#include "rocrail/wrapper/public/VariableList.h"
 
 #include "rocrail/wrapper/public/Block.h"
 #include "rocrail/wrapper/public/Stage.h"
@@ -1254,6 +1255,9 @@ static void __saveRoutes( iOModPlan inst, const char* filename ) {
   if( wPlan.getsystem(data->model) != NULL )
     NodeOp.addChild( model, (iONode)NodeOp.base.clone( wPlan.getsystem(data->model) ) );
 
+  if( wPlan.getweatherlist(data->model) != NULL )
+    NodeOp.addChild( model, (iONode)NodeOp.base.clone( wPlan.getweatherlist(data->model) ) );
+
   /* only routes without a modid set */
   if( wPlan.getstlist(data->model) != NULL ) {
   iONode routes = wPlan.getstlist(data->model);
@@ -1318,6 +1322,7 @@ static void __saveModule( iOModPlan inst, iONode module, int level ) {
   __copyLevel( inst, model, level, wScheduleList.name() );
   __copyLevel( inst, model, level, wActionList.name() );
   __copyLevel( inst, model, level, wBoosterList.name() );
+  __copyLevel( inst, model, level, wVariableList.name() );
 
   __copyResolvedRoutes( inst, model, wModule.getid(module) );
   __copyUnresolvedRoutes( inst, model, level );
