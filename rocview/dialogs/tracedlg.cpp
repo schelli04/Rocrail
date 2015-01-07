@@ -107,8 +107,18 @@ void TraceDlg::onSearch( wxCommandEvent& event ) {
         if( StrOp.find(buffer, m_ObjectType->GetStringSelection().mb_str(wxConvUTF8) ) == NULL )
           continue;
       }
+      if( buffer[25] == 'E' )
+        m_Trace->SetDefaultStyle(wxTextAttr(*wxRED));
+      else if( buffer[25] == 'W' )
+        m_Trace->SetDefaultStyle(wxTextAttr(*wxBLUE));
+      else if( buffer[25] == 'v' )
+        m_Trace->SetDefaultStyle(wxTextAttr(*wxGREEN));
+      else
+        m_Trace->SetDefaultStyle(wxTextAttr(*wxBLACK));
 
-      m_Trace->Append(wxString(buffer,wxConvUTF8));
+      m_Trace->AppendText(wxString(buffer,wxConvUTF8) + wxT("\n"));
+      m_Trace->SetInsertionPoint(0);
+      m_Trace->ShowPosition(0);
     }
     FileOp.base.del( f );
   }
