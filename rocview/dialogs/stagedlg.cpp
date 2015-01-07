@@ -115,6 +115,7 @@ void StageDlg::initLabels() {
   m_StageList->InsertColumn(3, wxGetApp().getMsg( "length" ), wxLIST_FORMAT_LEFT );
   m_IndexNew->SetLabel( wxGetApp().getMsg( "new" ) );
   m_IndexDelete->SetLabel( wxGetApp().getMsg( "delete" ) );
+  m_Doc->SetLabel( wxGetApp().getMsg( "doc_report" ) );
 
   // General
   m_labID->SetLabel( wxGetApp().getMsg( "id" ) );
@@ -837,4 +838,10 @@ void StageDlg::OnHelp( wxCommandEvent& event ) {
   default: wxGetApp().openLink( "stage" ); break;
   }
 }
+
+void StageDlg::onDoc( wxCommandEvent& event )
+{
+  doDoc( event, "stagingblock" );
+}
+
 
