@@ -45,6 +45,7 @@
 #include "rocs/public/map.h"
 #include "rocs/public/lib.h"
 #include "rocs/public/system.h"
+#include "rocs/public/dir.h"
 
 #include "rocrail/wrapper/public/Global.h"
 #include "rocrail/wrapper/public/RocRail.h"
@@ -85,6 +86,9 @@
 #include "rocrail/wrapper/public/Operator.h"
 #include "rocrail/wrapper/public/Variable.h"
 #include "rocrail/wrapper/public/VariableList.h"
+#include "rocrail/wrapper/public/DirEntry.h"
+#include "rocrail/wrapper/public/FileEntry.h"
+#include "rocrail/wrapper/public/Trace.h"
 
 #include "rocutils/public/devices.h"
 #include "rocutils/public/fileutils.h"
@@ -595,6 +599,94 @@ static void __analyse( void* threadinst ) {
   ThreadOp.base.del(th);
 }
 
+static char* __getTrcFile( iOControl inst, const char* fileName ) {
+  iOControlData data = Data(inst);
+  char*     protpath = FileOp.getPath( TraceOp.getFilename(NULL) );
+  Boolean   absolute = False;
+  char*     text     = NULL;
+
+  if( protpath == NULL )
+    protpath = StrOp.dup(".");
+
+  char* realpath = StrOp.fmt( "%s%c%s", protpath, SystemOp.getFileSeparator(), fileName );
+
+  if( FileOp.exist(realpath) ) {
+    iOFile file = FileOp.inst( realpath, OPEN_READONLY );
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "read trace file [%s] size=%ld", realpath, FileOp.size( file ) );
+    text = allocMem( FileOp.size( file ) + 1 );
+    FileOp.read( file, text, FileOp.size( file ) );
+    FileOp.close( file );
+    FileOp.base.del( file );
+  }
+
+  StrOp.free( realpath );
+  StrOp.free( protpath );
+
+  return text;
+}
+
+
+static iONode __scan4Trc( iOControl inst ) {
+  iOControlData    data = Data(inst);
+  iODir        dir = NULL;
+  const char*  fileName = NULL;
+  char*  protpath = FileOp.getPath( TraceOp.getFilename(NULL) );
+  const char* tracefile = FileOp.ripPath( wTrace.getrfile( wRocRail.gettrace( AppOp.getIni() ) ) );
+  Boolean      absolute = False;
+
+  iONode direntry = NULL;
+
+  if( protpath == NULL )
+    protpath = StrOp.dup(".");
+
+  absolute = FileOp.isAbsolute( protpath );
+
+  dir = DirOp.inst( protpath );
+  if( dir != NULL ) {
+    direntry = NodeOp.inst(wDirEntry.name(), NULL, ELEMENT_NODE);
+    wDirEntry.setdir(direntry, protpath);
+    /* Get the first directory entry. */
+    fileName = DirOp.read( dir );
+
+    /* Iterate all directory entries. */
+    while( fileName != NULL ) {
+      char sep[10];
+      sep[0] = SystemOp.getFileSeparator();
+      sep[1] = '.';
+      sep[2] = SystemOp.getFileSeparator();
+      sep[3] = '\0';
+      if( StrOp.find( fileName, tracefile ) && StrOp.find( fileName, ".trc" ) ) {
+        char* realpath = StrOp.fmt( "%s%c%s", protpath, SystemOp.getFileSeparator(), fileName );
+        char* path = StrOp.fmt( "%s%s%c%s", absolute?sep:"", protpath, SystemOp.getFileSeparator(), fileName );
+        char* encp = StrOp.encode4URL(path);
+        long size  = FileOp.fileSize( realpath );
+        long ftime = FileOp.fileTime( realpath );
+        StrOp.replaceAll( path, '\\', '/' );
+
+        iONode fileentry = NodeOp.inst(wFileEntry.name(), direntry, ELEMENT_NODE);
+        wFileEntry.setfname(fileentry, FileOp.ripPath(path));
+        wFileEntry.setsize(fileentry, size);
+        wFileEntry.settime(fileentry,ctime(&ftime));
+        NodeOp.addChild(direntry, fileentry);
+
+        StrOp.free( encp );
+        StrOp.free( path );
+        StrOp.free( realpath );
+      }
+      /* Get the next directory entry. */
+      fileName = DirOp.read( dir );
+    };
+
+    /* Close and cleanup. */
+    DirOp.close( dir );
+    dir->base.del( dir );
+  }
+
+  StrOp.free( protpath );
+
+  return direntry;
+}
+
 
 static void __callback( obj inst, iONode nodeA ) {
   iOControlData data    = Data(inst);
@@ -855,6 +947,33 @@ static void __callback( obj inst, iONode nodeA ) {
           TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "empty image name..." );
           ClntConOp.postEvent( AppOp.getClntCon(), nodeA, wCommand.getserver( nodeA ) );
           return;
+        }
+      }
+    }
+    else if( wDataReq.getcmd(nodeA) == wDataReq.gettracedir ) {
+      iONode direntry = __scan4Trc((iOControl)inst);
+      if( direntry != NULL ) {
+        NodeOp.addChild( nodeA, direntry);
+        ClntConOp.postEvent( AppOp.getClntCon(), nodeA, wCommand.getserver( nodeA ) );
+      }
+    }
+    else if( wDataReq.getcmd(nodeA) == wDataReq.gettracefile ) {
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "DataReq trace filename=[%s]", wDataReq.getfilename(nodeA)!=NULL?wDataReq.getfilename(nodeA):"-" );
+      if( wDataReq.getfilename(nodeA) == NULL || StrOp.len(wDataReq.getfilename(nodeA)) == 0 ) {
+        /* Get current trace file */
+        char* text = __getTrcFile((iOControl)inst, TraceOp.getCurrentFilename(NULL));
+        if( text != NULL ) {
+          wDataReq.setdata( nodeA, text );
+          freeMem( text );
+          ClntConOp.postEvent( AppOp.getClntCon(), nodeA, wCommand.getserver( nodeA ) );
+        }
+      }
+      else if(wDataReq.getfilename(nodeA) != NULL &&  StrOp.len(wDataReq.getfilename(nodeA)) > 0 ) {
+        char* text = __getTrcFile((iOControl)inst, wDataReq.getfilename(nodeA));
+        if( text != NULL ) {
+          wDataReq.setdata( nodeA, text );
+          freeMem( text );
+          ClntConOp.postEvent( AppOp.getClntCon(), nodeA, wCommand.getserver( nodeA ) );
         }
       }
     }
