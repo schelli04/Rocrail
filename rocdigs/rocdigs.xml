@@ -925,6 +925,7 @@
       <var name="load" vt="int"/>
       <var name="volt" vt="int"/>
       <var name="temp" vt="int"/>
+      <var name="overload" vt="Boolean"/>
       <var name="sod_fbmod" vt="int"/>
       <var name="sod_sensorbegin" vt="int"/>
       <var name="sod_sensorend" vt="int"/>
@@ -2043,6 +2044,7 @@
       <var name="load" vt="int"/>
       <var name="volt" vt="int"/>
       <var name="temp" vt="int"/>
+      <var name="overload" vt="Boolean"/>
       <var name="sod_fbmod" vt="int"/>
       <var name="sod_sensorbegin" vt="int"/>
       <var name="sod_sensorend" vt="int"/>
