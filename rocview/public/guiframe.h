@@ -337,6 +337,7 @@ public:
   void OnButton(wxCommandEvent& event);
   void OnSlider(wxScrollEvent& event);
 
+  void ServerTrace(wxCommandEvent& event);
   void UpdateActiveLocs(wxCommandEvent& event);
   void CVevent(wxCommandEvent& event);
   void UpdateLocImage(wxCommandEvent& event);
@@ -595,6 +596,7 @@ enum
     ME_LocoHelp,
     UPDATE_ACTIVELOCS_EVENT,
     UPDATE_LOC_IMAGE_EVENT,
+    SERVER_TRACE_EVENT,
     CV_EVENT,
     ME_PanelProps,
     ME_AddItem,

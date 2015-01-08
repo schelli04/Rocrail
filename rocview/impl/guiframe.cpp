@@ -251,6 +251,7 @@ BEGIN_EVENT_TABLE(RocGuiFrame, wxFrame)
     EVT_MENU( ZLEVEL_EVENT_REMOVE, RocGuiFrame::OnZLevelEventRemove)
     EVT_MENU( INIT_NOTEBOOK, RocGuiFrame::OnInitNotebook)
     EVT_MENU( UPDATE_ACTIVELOCS_EVENT, RocGuiFrame::UpdateActiveLocs)
+    EVT_MENU( SERVER_TRACE_EVENT, RocGuiFrame::ServerTrace)
     EVT_MENU( UPDATE_LOC_IMAGE_EVENT, RocGuiFrame::UpdateLocImage)
     EVT_MENU( CV_EVENT, RocGuiFrame::CVevent)
     EVT_MENU( ME_PowerEvent, RocGuiFrame::OnPowerEvent)
@@ -1531,6 +1532,14 @@ void RocGuiFrame::CVevent( wxCommandEvent& event ) {
     }
   }
 }
+
+void RocGuiFrame::ServerTrace( wxCommandEvent& event ) {
+  iONode node = (iONode)event.GetClientData();
+  TraceOp.trc( "frame", TRCLEVEL_INFO, __LINE__, 9999, "server trace [%s]", wDataReq.getfilename(node));
+
+  NodeOp.base.del(node);
+}
+
 
 void RocGuiFrame::UpdateActiveLocs( wxCommandEvent& event ) {
   // Get copied node:

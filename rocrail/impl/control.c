@@ -960,15 +960,10 @@ static void __callback( obj inst, iONode nodeA ) {
     else if( wDataReq.getcmd(nodeA) == wDataReq.gettracefile ) {
       TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "DataReq trace filename=[%s]", wDataReq.getfilename(nodeA)!=NULL?wDataReq.getfilename(nodeA):"-" );
       if( wDataReq.getfilename(nodeA) == NULL || StrOp.len(wDataReq.getfilename(nodeA)) == 0 ) {
-        /* Get current trace file */
-        char* text = __getTrcFile((iOControl)inst, TraceOp.getCurrentFilename(NULL));
-        if( text != NULL ) {
-          wDataReq.setdata( nodeA, text );
-          freeMem( text );
-          ClntConOp.postEvent( AppOp.getClntCon(), nodeA, wCommand.getserver( nodeA ) );
-        }
+        wDataReq.setfilename(nodeA, TraceOp.getCurrentFilename(NULL));
       }
-      else if(wDataReq.getfilename(nodeA) != NULL &&  StrOp.len(wDataReq.getfilename(nodeA)) > 0 ) {
+
+      if(wDataReq.getfilename(nodeA) != NULL &&  StrOp.len(wDataReq.getfilename(nodeA)) > 0 ) {
         char* text = __getTrcFile((iOControl)inst, wDataReq.getfilename(nodeA));
         if( text != NULL ) {
           wDataReq.setdata( nodeA, text );

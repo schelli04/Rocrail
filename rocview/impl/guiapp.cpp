@@ -1154,10 +1154,18 @@ static void rocrailCallback( obj me, iONode node ) {
   }
   /* DataReq (loco image?) */
   else if( StrOp.equals( wDataReq.name(), NodeOp.getName( node ) ) ) {
-    wxCommandEvent event( wxEVT_COMMAND_MENU_SELECTED, UPDATE_ACTIVELOCS_EVENT );
-    // Make a copy of the node for using it out of this scope:
-    event.SetClientData( node->base.clone( node ) );
-    wxPostEvent( guiApp->getFrame(), event );
+    if( wDataReq.getcmd(node) == wDataReq.get ) {
+      wxCommandEvent event( wxEVT_COMMAND_MENU_SELECTED, UPDATE_ACTIVELOCS_EVENT );
+      // Make a copy of the node for using it out of this scope:
+      event.SetClientData( node->base.clone( node ) );
+      wxPostEvent( guiApp->getFrame(), event );
+    }
+    else if( wDataReq.getcmd(node) == wDataReq.gettracedir || wDataReq.getcmd(node) == wDataReq.gettracefile ) {
+      wxCommandEvent event( wxEVT_COMMAND_MENU_SELECTED, SERVER_TRACE_EVENT );
+      // Make a copy of the node for using it out of this scope:
+      event.SetClientData( node->base.clone( node ) );
+      wxPostEvent( guiApp->getFrame(), event );
+    }
   }
   /* System on/off */
   else if( StrOp.equals( wSysCmd.name(), NodeOp.getName( node ) ) ) {
