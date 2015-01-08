@@ -1535,8 +1535,9 @@ void RocGuiFrame::CVevent( wxCommandEvent& event ) {
 
 void RocGuiFrame::ServerTrace( wxCommandEvent& event ) {
   iONode node = (iONode)event.GetClientData();
-  TraceOp.trc( "frame", TRCLEVEL_INFO, __LINE__, 9999, "server trace [%s]", wDataReq.getfilename(node));
-
+  TraceOp.trc( "frame", TRCLEVEL_INFO, __LINE__, 9999, "server trace [%s]", wDataReq.getfilename(node)!=NULL?wDataReq.getfilename(node):"-");
+  if( m_TraceDlg != NULL )
+    m_TraceDlg->traceEvent(node);
   NodeOp.base.del(node);
 }
 

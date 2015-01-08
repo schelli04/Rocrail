@@ -28,6 +28,11 @@
 
 #include "rocs/public/system.h"
 #include "rocs/public/file.h"
+#include "rocs/public/trace.h"
+
+#include "rocrail/wrapper/public/DataReq.h"
+#include "rocrail/wrapper/public/DirEntry.h"
+#include "rocrail/wrapper/public/FileEntry.h"
 
 #include "rocview/public/guiapp.h"
 #include "rocview/wrapper/public/Gui.h"
@@ -39,6 +44,19 @@ TraceDlg::TraceDlg( wxWindow* parent ):TraceDlgGen( parent )
   initLabels();
   GetSizer()->Fit(this);
   GetSizer()->SetSizeHints(this);
+
+  if( !wxGetApp().isStayOffline() ) {
+    /* Request the Rocrail server the current trace. */
+    iONode cmd = NodeOp.inst( wDataReq.name(), NULL, ELEMENT_NODE );
+    wDataReq.setcmd( cmd, wDataReq.gettracefile );
+    wxGetApp().sendToRocrail( cmd );
+    cmd->base.del(cmd);
+
+    cmd = NodeOp.inst( wDataReq.name(), NULL, ELEMENT_NODE );
+    wDataReq.setcmd( cmd, wDataReq.gettracedir );
+    wxGetApp().sendToRocrail( cmd );
+    cmd->base.del(cmd);
+  }
 }
 
 TraceDlg::~TraceDlg() {
@@ -73,6 +91,19 @@ void TraceDlg::initLabels() {
 
 void TraceDlg::onOpen( wxCommandEvent& event )
 {
+  if(!m_ServerTraces->GetStringSelection().empty()) {
+    if( !wxGetApp().isStayOffline() ) {
+      /* Request the Rocrail server the current trace. */
+      iONode cmd = NodeOp.inst( wDataReq.name(), NULL, ELEMENT_NODE );
+      wDataReq.setcmd( cmd, wDataReq.gettracefile );
+      wDataReq.setfilename( cmd, m_ServerTraces->GetStringSelection().mb_str(wxConvUTF8) );
+      wxGetApp().sendToRocrail( cmd );
+      cmd->base.del(cmd);
+    }
+    return;
+  }
+
+
   wxFileDialog* fdlg = new wxFileDialog(this, _T("Search trace"),
       wxString(".",wxConvUTF8), _T(""),
       _T("TRC files (*.trc)|*.trc"), wxFD_OPEN);
@@ -99,28 +130,63 @@ void TraceDlg::onSearch( wxCommandEvent& event ) {
     iOFile f = FileOp.inst( m_TraceFile, OPEN_READONLY );
     char* buffer = (char*)allocMem( FileOp.size( f ) +1 );
     while( FileOp.readStr(f, buffer)) {
-      if( m_ID->GetValue().Len() > 0 ) {
-        if( StrOp.find(buffer, m_ID->GetValue().mb_str(wxConvUTF8) ) == NULL )
-          continue;
-      }
-      if( m_ObjectType->GetSelection() > 0 ) {
-        if( StrOp.find(buffer, m_ObjectType->GetStringSelection().mb_str(wxConvUTF8) ) == NULL )
-          continue;
-      }
-      if( buffer[25] == 'E' )
-        m_Trace->SetDefaultStyle(wxTextAttr(*wxRED));
-      else if( buffer[25] == 'W' )
-        m_Trace->SetDefaultStyle(wxTextAttr(*wxBLUE));
-      else if( buffer[25] == 'v' )
-        m_Trace->SetDefaultStyle(wxTextAttr(*wxGREEN));
-      else
-        m_Trace->SetDefaultStyle(wxTextAttr(*wxBLACK));
-
-      m_Trace->AppendText(wxString(buffer,wxConvUTF8) + wxT("\n"));
-      //m_Trace->SetInsertionPoint(0);
-      m_Trace->ShowPosition(0);
+      addLine(buffer);
     }
     FileOp.base.del( f );
+    m_Trace->ShowPosition(0);
+  }
+}
+
+void TraceDlg::addLine(const char* buffer) {
+  TraceOp.trc( "tracedlg", TRCLEVEL_DEBUG, __LINE__, 9999, "add line [%s]", buffer );
+  if( m_ID->GetValue().Len() > 0 ) {
+    if( StrOp.find(buffer, m_ID->GetValue().mb_str(wxConvUTF8) ) == NULL )
+      return;
+  }
+  if( m_ObjectType->GetSelection() > 0 ) {
+    if( StrOp.find(buffer, m_ObjectType->GetStringSelection().mb_str(wxConvUTF8) ) == NULL )
+      return;
+  }
+  if( buffer[25] == 'E' )
+    m_Trace->SetDefaultStyle(wxTextAttr(*wxRED));
+  else if( buffer[25] == 'W' )
+    m_Trace->SetDefaultStyle(wxTextAttr(*wxBLUE));
+  else if( buffer[25] == 'v' )
+    m_Trace->SetDefaultStyle(wxTextAttr(*wxGREEN));
+  else
+    m_Trace->SetDefaultStyle(wxTextAttr(*wxBLACK));
+
+  m_Trace->AppendText(wxString(buffer,wxConvUTF8) + wxT("\n"));
+}
+
+
+void TraceDlg::traceEvent(iONode node) {
+  if( wDataReq.getcmd(node) == wDataReq.gettracefile ) {
+    SetTitle(wxGetApp().getMsg( "trace" ) + wxT(": ") + wxString(wDataReq.getfilename(node),wxConvUTF8) );
+
+    m_Trace->Clear();
+    const char* text = wDataReq.getdata(node);
+    TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "trace file [%s] len=%d", wDataReq.getfilename(node), StrOp.len(text) );
+    int lineIdx = 0;
+    char* textline = StrOp.getLine( text, lineIdx );
+    while( textline != NULL && StrOp.len( textline ) > 0 ) {
+      addLine(textline);
+      lineIdx++;
+      textline = StrOp.getLine( text, lineIdx );
+    }
+
+    m_Trace->ShowPosition(0);
+  }
+  else if( wDataReq.getcmd(node) == wDataReq.gettracedir ) {
+    m_ServerTraces->Clear();
+    iONode direntry = wDataReq.getdirentry(node);
+    if( direntry != NULL ) {
+      iONode fileentry = wDirEntry.getfileentry(direntry);
+      while( fileentry != NULL ) {
+        m_ServerTraces->Append( wxString::Format(wxT("%s"), wFileEntry.getfname(fileentry) ));
+        fileentry = wDirEntry.nextfileentry(direntry, fileentry);
+      }
+    }
   }
 }
 

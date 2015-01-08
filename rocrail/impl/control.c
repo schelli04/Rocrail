@@ -608,7 +608,7 @@ static char* __getTrcFile( iOControl inst, const char* fileName ) {
   if( protpath == NULL )
     protpath = StrOp.dup(".");
 
-  char* realpath = StrOp.fmt( "%s%c%s", protpath, SystemOp.getFileSeparator(), fileName );
+  char* realpath = StrOp.fmt( "%s%c%s", protpath, SystemOp.getFileSeparator(), FileOp.ripPath(fileName) );
 
   if( FileOp.exist(realpath) ) {
     iOFile file = FileOp.inst( realpath, OPEN_READONLY );
@@ -617,6 +617,9 @@ static char* __getTrcFile( iOControl inst, const char* fileName ) {
     FileOp.read( file, text, FileOp.size( file ) );
     FileOp.close( file );
     FileOp.base.del( file );
+  }
+  else {
+    TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "trace file [%s] not found", realpath );
   }
 
   StrOp.free( realpath );
@@ -662,6 +665,8 @@ static iONode __scan4Trc( iOControl inst ) {
         long size  = FileOp.fileSize( realpath );
         long ftime = FileOp.fileTime( realpath );
         StrOp.replaceAll( path, '\\', '/' );
+
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "add trace file: [%s]", path );
 
         iONode fileentry = NodeOp.inst(wFileEntry.name(), direntry, ELEMENT_NODE);
         wFileEntry.setfname(fileentry, FileOp.ripPath(path));
@@ -951,11 +956,13 @@ static void __callback( obj inst, iONode nodeA ) {
       }
     }
     else if( wDataReq.getcmd(nodeA) == wDataReq.gettracedir ) {
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "DataReq trace directory" );
       iONode direntry = __scan4Trc((iOControl)inst);
       if( direntry != NULL ) {
         NodeOp.addChild( nodeA, direntry);
         ClntConOp.postEvent( AppOp.getClntCon(), nodeA, wCommand.getserver( nodeA ) );
       }
+      return;
     }
     else if( wDataReq.getcmd(nodeA) == wDataReq.gettracefile ) {
       TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "DataReq trace filename=[%s]", wDataReq.getfilename(nodeA)!=NULL?wDataReq.getfilename(nodeA):"-" );
@@ -971,6 +978,7 @@ static void __callback( obj inst, iONode nodeA ) {
           ClntConOp.postEvent( AppOp.getClntCon(), nodeA, wCommand.getserver( nodeA ) );
         }
       }
+      return;
     }
   }
   else if( StrOp.equals( wFunCmd.name(), nodeName ) ) {
