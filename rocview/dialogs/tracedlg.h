@@ -36,6 +36,7 @@ class TraceDlg : public TraceDlgGen
 {
   char* m_TraceFile;
   void initLabels();
+  char* m_Text;
 
 	protected:
 		// Handlers for TraceDlgGen events.

@@ -41,6 +41,7 @@
 TraceDlg::TraceDlg( wxWindow* parent ):TraceDlgGen( parent )
 {
   m_TraceFile = NULL;
+  m_Text = NULL;
   initLabels();
   GetSizer()->Fit(this);
   GetSizer()->SetSizeHints(this);
@@ -104,6 +105,11 @@ void TraceDlg::onOpen( wxCommandEvent& event )
   }
 
 
+  if( m_Text != NULL ) {
+    StrOp.free(m_Text);
+    m_Text = NULL;
+  }
+
   wxFileDialog* fdlg = new wxFileDialog(this, _T("Search trace"),
       wxString(".",wxConvUTF8), _T(""),
       _T("TRC files (*.trc)|*.trc"), wxFD_OPEN);
@@ -135,6 +141,17 @@ void TraceDlg::onSearch( wxCommandEvent& event ) {
     FileOp.base.del( f );
     m_Trace->ShowPosition(0);
   }
+  else if(m_Text != NULL) {
+    m_Trace->Clear();
+    int lineIdx = 0;
+    char* textline = StrOp.getLine( m_Text, lineIdx );
+    while( textline != NULL ) {
+      addLine(textline);
+      lineIdx++;
+      textline = StrOp.getLine( m_Text, lineIdx );
+    }
+    m_Trace->ShowPosition(0);
+  }
 }
 
 void TraceDlg::addLine(const char* buffer) {
@@ -164,21 +181,32 @@ void TraceDlg::traceEvent(iONode node) {
   if( wDataReq.getcmd(node) == wDataReq.gettracefile ) {
     SetTitle(wxGetApp().getMsg( "trace" ) + wxT(": ") + wxString(wDataReq.getfilename(node),wxConvUTF8) );
 
+    if( m_TraceFile != NULL) {
+      StrOp.free(m_TraceFile);
+      m_TraceFile = NULL;
+    }
+
     m_Trace->Clear();
     const char* text = wDataReq.getdata(node);
+    if( text != NULL ) {
+      if( m_Text != NULL )
+        StrOp.free(m_Text);
+      m_Text = StrOp.dup(text);
+    }
     TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "trace file [%s] len=%d", wDataReq.getfilename(node), StrOp.len(text) );
     int lineIdx = 0;
-    char* textline = StrOp.getLine( text, lineIdx );
-    while( textline != NULL && StrOp.len( textline ) > 0 ) {
+    char* textline = StrOp.getLine( m_Text, lineIdx );
+    while( textline != NULL ) {
       addLine(textline);
       lineIdx++;
-      textline = StrOp.getLine( text, lineIdx );
+      textline = StrOp.getLine( m_Text, lineIdx );
     }
 
     m_Trace->ShowPosition(0);
   }
   else if( wDataReq.getcmd(node) == wDataReq.gettracedir ) {
     m_ServerTraces->Clear();
+    m_ServerTraces->Append( wxT("") );
     iONode direntry = wDataReq.getdirentry(node);
     if( direntry != NULL ) {
       iONode fileentry = wDirEntry.getfileentry(direntry);

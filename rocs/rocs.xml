@@ -158,7 +158,7 @@
 
 
   <object name="Doc" use="node" remark="XML Document parser and builder.">
-    <typedef def="enum {MaxNodeNameLen=1024,MaxAttrNameLen=1024,MaxAttrValLen=1024} parserConst" remark="File type."/>
+    <typedef def="enum {MaxNodeNameLen=1024,MaxAttrNameLen=1024,MaxAttrValLen=2048} parserConst" remark="File type."/>
     <def name="startToken" vt="string" val="&lt;%s"/>
     <def name="endToken" vt="string" val="&lt;/%s&gt;"/>
     <def name="endInline" vt="string" val="/&gt;"/>
