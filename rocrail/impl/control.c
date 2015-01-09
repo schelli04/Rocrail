@@ -1450,7 +1450,7 @@ static Boolean __initDigInts( iOControl inst ) {
       if( vmajor != wGlobal.vmajor || vminor != wGlobal.vminor ) {
         TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999,
             "version mismatch for library [%s]; reports:[%d.%d] wanted:[%d.%d]", lib, vmajor, vminor, wGlobal.vmajor, wGlobal.vminor );
-        pDi->halt((obj)pDi, True);
+        pDi->halt((obj)pDi, True, False );
         return False;
       }
     }
@@ -1514,7 +1514,7 @@ static void _halt( iOControl inst ) {
     {
       iIDigInt di = (iIDigInt)MapOp.first( data->diMap );
       while( di != NULL ) {
-        di->halt((obj)di, wRocRail.ispoweroffonexit(AppOp.getIni()) );
+        di->halt((obj)di, wRocRail.ispoweroffonexit(AppOp.getIni()), wRocRail.isshutdownonexit(AppOp.getIni()) );
         di = (iIDigInt)MapOp.next( data->diMap );
       }
     }

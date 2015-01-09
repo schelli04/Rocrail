@@ -38,6 +38,7 @@
     <fun name="halt" vt="void">
       <param name="inst" vt="obj"/>
       <param name="poweroff" vt="Boolean"/>
+      <param name="shutdown" vt="Boolean"/>
     </fun>
     <fun name="supportPT" vt="Boolean">
       <param name="inst" vt="obj"/>

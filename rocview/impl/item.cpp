@@ -408,7 +408,9 @@ Symbol::Symbol( PlanPanel *parent, iONode props, int itemsize, int z, double sca
   wxAcceleratorEntry acc_entries[8];
   acc_entries[0].Set(wxACCEL_ALT, (int) 'R', ME_Rotate);
   acc_entries[1].Set(wxACCEL_ALT, (int) 'r', ME_Rotate);
-  wxAcceleratorTable m_accel(2, acc_entries);
+  acc_entries[2].Set(wxACCEL_ALT, (int) 'D', ME_Delete);
+  acc_entries[3].Set(wxACCEL_ALT, (int) 'd', ME_Delete);
+  wxAcceleratorTable m_accel(4, acc_entries);
   this->SetAcceleratorTable(m_accel);
 
 }

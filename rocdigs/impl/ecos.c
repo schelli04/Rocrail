@@ -1129,13 +1129,19 @@ static iONode _cmd( obj inst, const iONode cmd ) {
  * _halt -- Called when Rocrail is shutting down?
  *
  */
-static void _halt( obj inst, Boolean poweroff ) {
+static void _halt( obj inst, Boolean poweroff, Boolean shutdown ) {
   iOECoSData data = Data( inst );
 
   if( poweroff ) {
     char ecosCmd[ 1024 ] = {'\0'};
     StrOp.fmtb( ecosCmd, "set(%d, stop)\n", OID_ECOS );
     TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "Power OFF" );
+    __transact(( iOECoS )inst, ecosCmd, StrOp.len(ecosCmd) );
+  }
+  if( shutdown ) {
+    char ecosCmd[ 1024 ] = {'\0'};
+    StrOp.fmtb( ecosCmd, "set(%d, shutdown)\n", OID_ECOS );
+    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "Shutdown" );
     __transact(( iOECoS )inst, ecosCmd, StrOp.len(ecosCmd) );
   }
   __releaseViews( ( iOECoS )inst );

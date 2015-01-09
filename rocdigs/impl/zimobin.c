@@ -876,7 +876,7 @@ static iONode _cmd( obj inst ,const iONode nodeA ) {
 
 
 /**  */
-static void _halt( obj inst, Boolean poweroff ) {
+static void _halt( obj inst, Boolean poweroff, Boolean shutdown ) {
   iOZimoBinData data = Data(inst);
 
   byte* outa = allocMem(32);

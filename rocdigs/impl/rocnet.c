@@ -965,7 +965,7 @@ static iONode _cmd( obj inst ,const iONode cmd ) {
 
 
 /**  */
-static void _halt( obj inst, Boolean poweroff ) {
+static void _halt( obj inst, Boolean poweroff, Boolean shutdown ) {
   iOrocNetData data = Data(inst);
 
   data->shutdown = True;
@@ -993,7 +993,7 @@ static void _halt( obj inst, Boolean poweroff ) {
     ThreadOp.sleep(250);
   }
 
-  if( wRocNet.isshutdownall(data->rnini) ) {
+  if( wRocNet.isshutdownall(data->rnini) || shutdown ) {
     __shutdownAll(inst);
     ThreadOp.sleep(250);
   }

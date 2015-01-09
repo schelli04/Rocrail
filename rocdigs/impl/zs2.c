@@ -802,7 +802,7 @@ static byte* _cmdRaw( obj inst ,const byte* cmd ) {
 
 
 /**  */
-static void _halt( obj inst ,Boolean poweroff ) {
+static void _halt( obj inst ,Boolean poweroff, Boolean shutdown ) {
   iOZS2Data data = Data(inst);
   /* TODO: bus */
   data->run = False;

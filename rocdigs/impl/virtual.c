@@ -117,8 +117,9 @@ static void __inform( iOVirtual inst, int uid ) {
 }
 
 /**  */
-static void _halt( obj inst, Boolean poweroff ) {
+static void _halt( obj inst, Boolean poweroff, Boolean shutdown ) {
   iOVirtualData data = Data(inst);
+  TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "halt [%s]: poweroff=%s shutdown=%s", data->iid, poweroff?"yes":"no", shutdown?"yes":"no");
   data->run = False;
   return;
 }

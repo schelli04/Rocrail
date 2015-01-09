@@ -313,7 +313,7 @@ static byte* _cmdRaw( obj inst ,const byte* cmd ) {
 
 
 /**  */
-static void _halt( obj inst ,Boolean poweroff ) {
+static void _halt( obj inst ,Boolean poweroff, Boolean shutdown ) {
   iOESUNaviData data = Data(inst);
   data->run = False;
   ThreadOp.sleep(500);

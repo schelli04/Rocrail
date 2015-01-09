@@ -627,7 +627,7 @@ static iONode _cmd( obj inst, const iONode nodeA ) {
 }
 
 
-static void _halt( obj inst, Boolean poweroff ) {
+static void _halt( obj inst, Boolean poweroff, Boolean shutdown ) {
   iOSRCPData o = Data( inst );
   o->run = False;
   ThreadOp.sleep(100);

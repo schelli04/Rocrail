@@ -694,10 +694,10 @@ static iONode _cmd( obj inst ,const iONode cmd ) {
 
 
 /**  */
-static void _halt( obj inst, Boolean poweroff ) {
+static void _halt( obj inst, Boolean poweroff, Boolean shutdown ) {
   iOOpenDCCData data = Data(inst);
   data->run = False;
-  data->sublib->halt((obj)data->sublib, poweroff);
+  data->sublib->halt((obj)data->sublib, poweroff, shutdown);
   return;
 }
 

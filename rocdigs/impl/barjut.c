@@ -180,8 +180,7 @@ static iONode _cmd(	obj inst,	const iONode cmd ) {
 
 /**  */
 static void
-_halt(
-	obj inst, Boolean poweroff )
+_halt( obj inst, Boolean poweroff, Boolean shutdown )
 {
 	iOBarjutData    data = Data( inst );
 

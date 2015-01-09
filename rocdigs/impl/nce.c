@@ -461,7 +461,7 @@ static iONode _cmd( obj inst ,const iONode nodeA ) {
 
 
 /**  */
-static void _halt( obj inst, Boolean poweroff) {
+static void _halt( obj inst, Boolean poweroff, Boolean shutdown) {
   iONCEData data = Data(inst);
   data->run = False;
   SerialOp.close( data->serial );

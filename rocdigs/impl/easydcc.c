@@ -423,7 +423,7 @@ static byte* _cmdRaw( obj inst ,const byte* cmd ) {
 
 
 /**  */
-static void _halt( obj inst ,Boolean poweroff ) {
+static void _halt( obj inst ,Boolean poweroff, Boolean shutdown ) {
   iOEasyDCCData data = Data(inst);
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "shutting down <%s>...", data->iid );
   if( poweroff ) {

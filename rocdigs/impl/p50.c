@@ -436,7 +436,7 @@ static iONode _cmd( obj inst, const iONode nodeA ) {
   return nodeB;
 }
 
-static void _halt( obj inst, Boolean poweroff ) {
+static void _halt( obj inst, Boolean poweroff, Boolean shutdown ) {
   iOP50Data data = Data(inst);
   unsigned char p50[2];
 

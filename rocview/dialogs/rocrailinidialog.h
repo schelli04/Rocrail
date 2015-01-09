@@ -406,6 +406,7 @@ public:
     wxStaticBox* m_ControllerOptionsBox;
     wxCheckBox* m_PowerOffOnExit;
     wxCheckBox* m_PowerOnAtInit;
+    wxCheckBox* m_Shutdown;
     wxCheckBox* m_NoDevCheck;
     wxPanel* m_R2RnetPanel;
     wxStaticText* m_labR2RnetID;

@@ -337,7 +337,7 @@ static iONode _cmd( obj inst ,const iONode nodeA ) {
 
 
 /**  */
-static void _halt( obj inst, Boolean poweroff ) {
+static void _halt( obj inst, Boolean poweroff, Boolean shutdown ) {
   char out[32];
   if( poweroff ) {
     sprintf( out, "SA;\r" );

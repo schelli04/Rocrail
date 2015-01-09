@@ -7673,3 +7673,9 @@ msgstr ""
 msgid "Search"
 msgstr ""
 
+#. 
+# id="shutdownonexit"
+#, c-format
+msgid "Shutdown on exit"
+msgstr ""
+
