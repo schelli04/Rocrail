@@ -48,6 +48,7 @@ class TraceDlg : public TraceDlgGen
     void onClose( wxCloseEvent& event );
     void addLine(const char* text);
     void onLevel( wxCommandEvent& event );
+    void onServerTraces( wxCommandEvent& event );
 
 	public:
 		/** Constructor */

@@ -59,6 +59,7 @@ TraceDlg::TraceDlg( wxWindow* parent ):TraceDlgGen( parent )
     wDataReq.setcmd( cmd, wDataReq.gettracedir );
     wxGetApp().sendToRocrail( cmd );
     cmd->base.del(cmd);
+    m_Open->Enable(false);
   }
 }
 
@@ -99,15 +100,21 @@ void TraceDlg::initLabels() {
   m_ObjectType->Append(wxT("OWeather"));
 
 
-  m_labLevel->SetLabel( wxGetApp().getMsg( "level" ) );
-  m_labType->SetLabel( wxGetApp().getMsg( "type" ) );
-  m_labID->SetLabel( wxGetApp().getMsg( "id" ) );
+  m_labLevel->SetLabel( wxGetApp().getMsg( "level" ) + wxT(":") );
+  m_labType->SetLabel( wxGetApp().getMsg( "type" ) + wxT(":") );
+  m_labID->SetLabel( wxGetApp().getMsg( "id" ) + wxT(":") );
   m_Open->SetLabel( wxGetApp().getMsg( "open" ) + wxT("...") );
+  m_labRemote->SetLabel( wxGetApp().getMsg( "server" ) + wxT(":") );
   m_Search->SetLabel( wxGetApp().getMsg( "search" ) );
 
   // Buttons
   m_stdButtonOK->SetLabel( wxGetApp().getMsg( "ok" ) );
   m_stdButtonHelp->SetLabel( wxGetApp().getMsg( "help" ) );
+}
+
+
+void TraceDlg::onServerTraces( wxCommandEvent& event ) {
+  onOpen(event);
 }
 
 
@@ -123,6 +130,7 @@ void TraceDlg::onOpen( wxCommandEvent& event )
       StrTokOp.base.del(tok);
       wxGetApp().sendToRocrail( cmd );
       cmd->base.del(cmd);
+      m_Open->Enable(false);
     }
     return;
   }
@@ -243,6 +251,8 @@ void TraceDlg::traceEvent(iONode node) {
     }
 
     m_Trace->ShowPosition(0);
+    m_Open->Enable(true);
+
   }
   else if( wDataReq.getcmd(node) == wDataReq.gettracedir ) {
     m_ServerTraces->Clear();
