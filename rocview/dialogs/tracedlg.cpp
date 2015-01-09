@@ -102,9 +102,10 @@ void TraceDlg::initLabels() {
   m_ObjectType->Append(wxT("OWeather"));
 
 
+  m_labID->SetLabel( wxGetApp().getMsg( "id" ) + wxT(":") );
   m_labLevel->SetLabel( wxGetApp().getMsg( "level" ) + wxT(":") );
   m_labType->SetLabel( wxGetApp().getMsg( "type" ) + wxT(":") );
-  m_labID->SetLabel( wxGetApp().getMsg( "id" ) + wxT(":") );
+  m_labSearchText->SetLabel( wxGetApp().getMsg( "text" ) + wxT(":") );
   m_Open->SetLabel( wxGetApp().getMsg( "open" ) + wxT("...") );
   m_labRemote->SetLabel( wxGetApp().getMsg( "server" ) + wxT(":") );
   m_Search->SetLabel( wxGetApp().getMsg( "search" ) );
@@ -195,8 +196,16 @@ void TraceDlg::onSearch( wxCommandEvent& event ) {
 
 void TraceDlg::addLine(const char* buffer) {
   TraceOp.trc( "tracedlg", TRCLEVEL_DEBUG, __LINE__, 9999, "add line [%s]", buffer );
-  if( m_ID->GetValue().Len() > 0 ) {
-    if( StrOp.find(buffer, m_ID->GetValue().mb_str(wxConvUTF8) ) == NULL )
+  if( m_ID->GetValue() > 0 ) {
+    int lineID = (buffer[21] - '0') * 1000;
+    lineID += (buffer[22] - '0') * 100;
+    lineID += (buffer[23] - '0') * 10;
+    lineID += (buffer[24] - '0');
+    if( lineID != m_ID->GetValue() )
+      return;
+  }
+  if( m_SearchText->GetValue().Len() > 0 ) {
+    if( StrOp.find(buffer, m_SearchText->GetValue().mb_str(wxConvUTF8) ) == NULL )
       return;
   }
   if( m_ObjectType->GetSelection() > 0 ) {
