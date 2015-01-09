@@ -2749,7 +2749,7 @@ static void __unloadDigInt(iORocNetNode inst, int prevcstype) {
     iIDigInt pRFID = data->pRFID;
     data->pRFID = NULL;
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "unloading RFID..." );
-    pRFID->halt((obj)pRFID, True);
+    pRFID->halt((obj)pRFID, True, False);
     ThreadOp.sleep(100);
     pRFID->base.del(pRFID);
     data->class = (data->class & ~RN_CLASS_RFID);
@@ -2759,7 +2759,7 @@ static void __unloadDigInt(iORocNetNode inst, int prevcstype) {
     iIDigInt pDI = data->pDI;
     data->pDI = NULL;
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "unloading %s...", wDigInt.getlib(data->digintini) );
-    pDI->halt((obj)pDI, True);
+    pDI->halt((obj)pDI, True, False);
     ThreadOp.sleep(100);
     pDI->base.del(pDI);
     data->class = (data->class & ~RN_CLASS_DCC);
@@ -3480,11 +3480,11 @@ static Boolean _shutdown( void ) {
   __sendRN(__RocNetNode, msg);
 
   if(data->pRFID != NULL) {
-    data->pRFID->halt((obj)data->pRFID, True);
+    data->pRFID->halt((obj)data->pRFID, True, False);
   }
 
   if(data->pDI != NULL) {
-    data->pDI->halt((obj)data->pDI, True);
+    data->pDI->halt((obj)data->pDI, True, False);
   }
 
   data->run = False;
