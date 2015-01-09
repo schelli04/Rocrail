@@ -49,7 +49,7 @@ void statusIn( iILcDriverInt inst ) {
   if( data->next2Block == NULL ) {
     /* lp:786421 Also the gomanual trains must halt if no destination is available. */
     if( data->next1Block->hasExtStop(data->next1Block, data->loc->getId(data->loc)) ) {
-      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4201,
           "block %s has a stop module; not sending velocity 0 to loco %s",
           data->next1Block->base.id(data->next1Block), data->loc->getId(data->loc));
     }
@@ -64,7 +64,7 @@ void statusIn( iILcDriverInt inst ) {
     data->prevState = LC_INBLOCK;
 
     data->loc->setMode(data->loc, wLoc.mode_wait);
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                    "Setting state for \"%s\" from LC_INBLOCK to LC_WAITBLOCK.",
                    data->loc->getId( data->loc ) );
 
@@ -90,7 +90,7 @@ void statusIn( iILcDriverInt inst ) {
     data->state = LC_CHECKROUTE;
 
     data->loc->setMode(data->loc, wLoc.mode_auto);
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4201,
                    "Waiting for route, setting state for [%s] from LC_INBLOCK to LC_CHECKROUTE.",
                    data->loc->getId( data->loc ) );
 
@@ -125,7 +125,7 @@ void statusIn( iILcDriverInt inst ) {
     data->state = LC_PRE2GO;
 
     data->loc->setMode(data->loc, wLoc.mode_auto);
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                    "Setting state for \"%s\" from LC_INBLOCK to LC_PRE2GO.",
                    data->loc->getId( data->loc ) );
   }

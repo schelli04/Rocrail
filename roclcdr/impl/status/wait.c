@@ -49,7 +49,7 @@ void statusWait( iILcDriverInt inst, Boolean reverse ) {
   if( data->curBlock == NULL ) {
     iONode cmd = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE );
     data->run = False;
-    TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "no current block set for loco [%s]: stop auto mode.",  data->loc->getId( data->loc ) );
+    TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4101, "no current block set for loco [%s]: stop auto mode.",  data->loc->getId( data->loc ) );
     wLoc.setV( cmd, 0 );
     data->loc->cmd( data->loc, cmd );
 
@@ -60,7 +60,7 @@ void statusWait( iILcDriverInt inst, Boolean reverse ) {
 
   bkprops = (iONode)data->curBlock->base.properties( data->curBlock );
   /* Station wait or all destinations are occupied. */
-  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "Wait in block for [%s]...",
+  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201, "Wait in block for [%s]...",
                  data->loc->getId( data->loc ) );
 
 
@@ -99,7 +99,7 @@ void statusWait( iILcDriverInt inst, Boolean reverse ) {
 
 
     data->curBlock->resetTrigs( data->curBlock );
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                    "Setting state for [%s] timer=%d from LC_WAITBLOCK to LC_TIMER.",
                    data->loc->getId( data->loc ), data->timer );
   }

@@ -45,7 +45,7 @@
 void statusInitDest( iILcDriverInt inst ) {
   iOLcDriverData data = Data(inst);
   /* Lock the block and the needed street. */
-  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "Init destination for [%s]...",
+  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201, "Init destination for [%s]...",
                  data->loc->getId( data->loc ) );
   {
     /*
@@ -61,7 +61,7 @@ void statusInitDest( iILcDriverInt inst ) {
     else
       swapDir = data->next1Route->isSwapPost( data->next1Route ) ? !data->next1RouteFromTo : data->next1RouteFromTo;
     swapDir = dir ? swapDir:!swapDir;
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
         "loco direction for [%s] is [%s], route direction [%s], swappost[%s]",
                    data->loc->getId( data->loc ), dir?"forwards":"reverse",
                    data->next1RouteFromTo?"fromTo":"toFrom",
@@ -118,7 +118,7 @@ void statusInitDest( iILcDriverInt inst ) {
         }
       }
       else {
-        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4201,
                        "Waiting for user to start loc \"%s\"",
                        data->loc->getId( data->loc ) );
       }
@@ -126,7 +126,7 @@ void statusInitDest( iILcDriverInt inst ) {
       data->state = LC_CHECKROUTE;
       data->loc->setMode(data->loc, wLoc.mode_auto);
       /*data->run = False;*/
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                      "Setting state for \"%s\" from LC_INITDEST to LC_CHECKROUTE.",
                      data->loc->getId( data->loc ) );
     }
@@ -157,12 +157,12 @@ void statusInitDest( iILcDriverInt inst ) {
 
       if( data->schedule != NULL ) {
         data->scheduleIdx--;
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "set schedule index back to %d to match the current entry", data->scheduleIdx );
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201, "set schedule index back to %d to match the current entry", data->scheduleIdx );
       }
 
       data->state = data->run ? LC_PAUSE:LC_IDLE;
       data->loc->setMode(data->loc, wLoc.mode_wait);
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                      "Setting state for [%s] pause=%d from LC_INITDEST to %s.",
                      data->loc->getId( data->loc ), data->pause, data->run ? "LC_PAUSE":"LC_IDLE" );
     }

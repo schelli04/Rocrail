@@ -53,7 +53,7 @@ void statusWait4Event( iILcDriverInt inst ) {
           data->run && !data->reqstop )
       {
         /* set step back to ENTER? may be a possible destination block did come free... */
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
             "Setting state for [%s] from LC_WAIT4EVENT to LC_RE_ENTERBLOCK. (check for free block)",
             data->loc->getId( data->loc ) );
         data->state = LC_RE_ENTERBLOCK;
@@ -70,7 +70,7 @@ void statusWait4Event( iILcDriverInt inst ) {
           wLoc.setdir( cmd, wLoc.isdir( data->loc->base.properties( data->loc ) ) );
           data->loc->cmd( data->loc, cmd );
           data->slowdown4route = True;
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
               "Slow down for **not set** route running %s",
               data->loc->getId( data->loc ) );
         }
@@ -85,7 +85,7 @@ void statusWait4Event( iILcDriverInt inst ) {
           wLoc.setV_maxkmh(cmd, maxkmh);
           data->loc->cmd( data->loc, cmd );
           data->slowdown4route = False;
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
               "Restore normale velocity running %s",
               data->loc->getId( data->loc ) );
         }

@@ -50,7 +50,7 @@ void resetSignals(iOLcDriver inst ) {
 
   /* signal current block */
   if( data->curBlock != NULL ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "reset signals of current block..." );
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "reset signals of current block..." );
     data->curBlock->red( data->curBlock, True, signalpair );
     data->curBlock->red( data->curBlock, False, signalpair );
   }
@@ -66,42 +66,42 @@ void setCrossingblockSignals(iOLcDriver inst, iORoute route, int aspect, Boolean
 
     while( StrTokOp.hasMoreTokens(tok) ) {
       const char* bk = StrTokOp.nextToken( tok );
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "crossing block signals for [%s]...", bk );
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "crossing block signals for [%s]...", bk );
       iIBlockBase cblock = data->model->getBlock( data->model, bk );
       if( cblock != NULL ) {
 
         switch( aspect ) {
         case WHITE_ASPECT:
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "white aspect for %s", bk );
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "white aspect for %s", bk );
           cblock->white( cblock, True, routefromto );
           cblock->white( cblock, False, routefromto );
           break;
         case GREEN_ASPECT:
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "green aspect for %s", bk );
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "green aspect for %s", bk );
           cblock->green( cblock, True, routefromto );
           cblock->green( cblock, False, routefromto );
           break;
         case YELLOW_ASPECT:
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "yellow aspect for %s", bk );
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "yellow aspect for %s", bk );
           cblock->yellow( cblock, True, routefromto );
           cblock->yellow( cblock, False, routefromto );
           break;
         case RED_ASPECT:
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "red aspect for %s", bk );
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "red aspect for %s", bk );
           cblock->red( cblock, True, routefromto );
           cblock->red( cblock, False, routefromto );
           break;
         case DEFAULT_ASPECT:
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "red aspect for %s", bk );
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "red aspect for %s", bk );
           cblock->setDefaultAspect( cblock, routefromto );
           break;
         default:
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "unknown aspect: %d", aspect );
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "unknown aspect: %d", aspect );
           break;
         }
       }
       else
-        TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "crossing block [%s] does not exist!", bk );
+        TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4102, "crossing block [%s] does not exist!", bk );
 
     }
     StrTokOp.base.del(tok);
@@ -143,7 +143,7 @@ Boolean setSignals(iOLcDriver inst, Boolean onEnter ) {
   Boolean signalpair = False; /* default false for the forwards signals */
   iIBlockBase curBlock = data->curBlock;
 
-  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "setting signals...(useCurBlock4Signals=%d)", data->useCurBlock4Signals );
+  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "setting signals...(useCurBlock4Signals=%d)", data->useCurBlock4Signals );
   listBlocks(inst);
 
   if( data->useCurBlock4Signals ) {
@@ -154,7 +154,7 @@ Boolean setSignals(iOLcDriver inst, Boolean onEnter ) {
 
   /* set signal current block on enter */
   if( onEnter && curBlock != NULL ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "setting signals for curBlock[%s] to default aspect", curBlock->base.id(curBlock) );
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "setting signals for curBlock[%s] to default aspect", curBlock->base.id(curBlock) );
     if( data->next1Route != NULL ) {
       if( __checkSignalPair(inst, data->next1Route, curBlock, data->next1RouteFromTo, &signalpair) ) {
         data->curBlock->setDefaultAspect( curBlock, signalpair );
@@ -174,7 +174,7 @@ Boolean setSignals(iOLcDriver inst, Boolean onEnter ) {
       data->curBlock != data->next1Block && data->next1Block != data->next2Block )
   {
     if( data->next1Route != NULL && data->next1Route->hasThrownSwitch(data->next1Route) ) {
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202,
           "setting signals for curBlock to white: thrown switches in route [%s], reverse[%s]",
           data->next1Route->getId(data->next1Route), data->next1RouteFromTo?"false":"true" );
       if( __checkSignalPair(inst, data->next1Route, data->curBlock, data->next1RouteFromTo, &signalpair) ) {
@@ -193,7 +193,7 @@ Boolean setSignals(iOLcDriver inst, Boolean onEnter ) {
       }
     }
     else {
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202,
           "setting signals for curBlock to green, reverse[%s]", data->next1RouteFromTo?"false":"true");
       if( __checkSignalPair(inst, data->next1Route, data->curBlock, data->next1RouteFromTo, &signalpair) ) {
         semaphore |= data->curBlock->green( data->curBlock, True, signalpair );
@@ -218,11 +218,11 @@ Boolean setSignals(iOLcDriver inst, Boolean onEnter ) {
   {
     if( __checkSignalPair(inst, data->next1Route, data->curBlock, data->next1RouteFromTo, &signalpair) ) {
 
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202,
           "setting signalpair[%s] for curBlock", signalpair?"forwards":"reverse");
 
       if( data->next1Route != NULL && data->next1Route->hasThrownSwitch(data->next1Route) ) {
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202,
             "setting signals for curBlock to white: thrown switches in route [%s], reverse[%s]",
             data->next1Route->getId(data->next1Route), data->next1RouteFromTo?"false":"true" );
         semaphore |= data->curBlock->white( data->curBlock, True, signalpair );
@@ -233,7 +233,7 @@ Boolean setSignals(iOLcDriver inst, Boolean onEnter ) {
         }
       }
       else if( data->greenaspect ) {
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202,
             "setting signals for curBlock to green: Use green aspect instead of yellow if next block has red." );
         semaphore |= data->curBlock->green( data->curBlock, True, signalpair );
         semaphore |= data->curBlock->green( data->curBlock, False, signalpair );
@@ -243,16 +243,16 @@ Boolean setSignals(iOLcDriver inst, Boolean onEnter ) {
         }
       }
       else {
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "setting signals for curBlock to yellow." );
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "setting signals for curBlock to yellow." );
         semaphore |= data->curBlock->yellow( data->curBlock, True, signalpair );
         semaphore |= data->curBlock->yellow( data->curBlock, False, signalpair );
         if( data->next1Route != NULL && data->next1Route->isSetCrossingblockSignals(data->next1Route) ) {
           /* Set the crossing block signals */
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "setting signals for crossing to yellow." );
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "setting signals for crossing to yellow." );
           setCrossingblockSignals( inst, data->next1Route, YELLOW_ASPECT, signalpair );
         }
         else {
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "**not** [%d] setting signals for crossing to yellow.", data->next1Route->isSetCrossingblockSignals(data->next1Route) );
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "**not** [%d] setting signals for crossing to yellow.", data->next1Route->isSetCrossingblockSignals(data->next1Route) );
         }
       }
     }
@@ -261,7 +261,7 @@ Boolean setSignals(iOLcDriver inst, Boolean onEnter ) {
   /* no next block available: RED */
   else if( data->curBlock != NULL )
   {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202,
         "setting signals for curBlock to red, reverse[%s]", data->next1RouteFromTo?"false":"true");
     semaphore |= data->curBlock->red( data->curBlock, True, False );
     semaphore |= data->curBlock->red( data->curBlock, False, False );
@@ -277,7 +277,7 @@ Boolean setSignals(iOLcDriver inst, Boolean onEnter ) {
   {
     if( data->next2Route != NULL && data->next2Route->hasThrownSwitch(data->next2Route) ) {
       if( __checkSignalPair(inst, data->next2Route, data->next1Block, data->next2RouteFromTo, &signalpair) ) {
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202,
                    "setting signals for next1Block to white: thrown switches in route [%s]",
                    data->next2Route->getId(data->next2Route) );
         data->next1Block->white( data->next1Block, True, signalpair );
@@ -310,7 +310,7 @@ Boolean setSignals(iOLcDriver inst, Boolean onEnter ) {
 
     if( __checkSignalPair(inst, data->next2Route, data->next1Block, data->next2RouteFromTo, &signalpair) ) {
       if( hasThrownSwitches ) {
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202,
                      "setting signals for next1Block to white: thrown switches in route [%s]",
                      data->next2Route->getId(data->next2Route) );
         data->next1Block->white( data->next1Block, True, signalpair );
@@ -344,7 +344,7 @@ Boolean setSignals(iOLcDriver inst, Boolean onEnter ) {
       }
       else {
         /* staging blocks handle setting to red internally */
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "setSignals[%s] blBaseName=%s name=%s SKIPPED", 
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "setSignals[%s] blBaseName=%s name=%s SKIPPED",
             data->next1Block->base.id(data->next1Block), data->next1Block->base.name(), name );
       }
     }
@@ -356,7 +356,7 @@ Boolean setSignals(iOLcDriver inst, Boolean onEnter ) {
   {
     if( __checkSignalPair(inst, data->next3Route, data->next2Block, data->next3RouteFromTo, &signalpair) ) {
       if( data->next3Route->hasThrownSwitch(data->next3Route) ) {
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202,
                      "setting signals for next2Block to white: thrown switches in route [%s]",
                      data->next3Route->getId(data->next3Route) );
         data->next2Block->white( data->next2Block, True, signalpair );
@@ -382,7 +382,7 @@ Boolean setSignals(iOLcDriver inst, Boolean onEnter ) {
       }
       else {
         /* staging blocks handle setting to red internally */
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "setSignals[%s] blBaseName=%s name=%s SKIPPED", 
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4202, "setSignals[%s] blBaseName=%s name=%s SKIPPED",
             data->next2Block->base.id(data->next2Block), data->next2Block->base.name(), name );
       }
     }

@@ -76,7 +76,7 @@ void statusIdle( iILcDriverInt inst, Boolean reverse ) {
       if( tour != NULL ) {
         iOStrTok tok = StrTokOp.inst(wTour.getschedules(tour), ',');
         int cnt = StrTokOp.countTokens(tok);
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,"tour entries: cnt=%d tourIdx=%d", cnt, data->tourIdx);
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,"tour entries: cnt=%d tourIdx=%d", cnt, data->tourIdx);
         if( cnt > data->tourIdx ) {
           const char* scid = NULL;
           int scidx = 0;
@@ -94,7 +94,7 @@ void statusIdle( iILcDriverInt inst, Boolean reverse ) {
           if( scid != NULL ) {
             iONode schedule = data->model->getSchedule( data->model, scid );
             if( schedule != NULL ) {
-              TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+              TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                   "tour [%s] entry [%d][%s]", wTour.getid(tour), data->tourIdx, scid );
               LcDriverOp.useschedule( inst, wSchedule.getid(schedule) );
               data->tourIdx++;
@@ -102,7 +102,7 @@ void statusIdle( iILcDriverInt inst, Boolean reverse ) {
           }
           else {
             /* tour end */
-            TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999,
+            TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4101,
                 "tour [%s] has unexpectedly ended", wTour.getid(tour));
             data->tour = NULL;
             data->tourIdx = 0;
@@ -112,7 +112,7 @@ void statusIdle( iILcDriverInt inst, Boolean reverse ) {
         }
         else {
           /* tour end */
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,"tour [%s] has ended", wTour.getid(tour));
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,"tour [%s] has ended", wTour.getid(tour));
           data->tourIdx = 0;
           data->state = LC_IDLE;
           if( !wTour.isrecycle(tour) ) {
@@ -120,14 +120,14 @@ void statusIdle( iILcDriverInt inst, Boolean reverse ) {
             data->run = False;
           }
           else {
-            TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,"recycle tour [%s]", wTour.getid(tour));
+            TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,"recycle tour [%s]", wTour.getid(tour));
           }
         }
         StrTokOp.base.del(tok);
       }
     }
 
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                    "Setting state for \"%s\" from LC_IDLE to LC_FINDDEST.",
                    data->loc->getId( data->loc ) );
 
@@ -139,7 +139,7 @@ void statusIdle( iILcDriverInt inst, Boolean reverse ) {
     data->next3Block = NULL;
     data->next3Route = NULL;
 
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
         "Finding destination for \"%s\", current block \"%s\"...",
         data->loc->getId( data->loc ), data->loc->getCurBlock( data->loc ) );
   }
@@ -150,7 +150,7 @@ void statusIdle( iILcDriverInt inst, Boolean reverse ) {
       data->loc->setMode(data->loc, wLoc.mode_wait);
     }
     if( data->reqstop ) {
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,"stop requested");
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,"stop requested");
       data->reqstop = False;
       data->run = False;
       data->warningnodestfound = False;

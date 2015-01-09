@@ -64,14 +64,14 @@ Boolean initializeDestination( iOLcDriver inst, iIBlockBase block, iORoute stree
         if( street->go( street ) ) {
 
           if( data->gotoBlock != NULL && StrOp.equals( data->gotoBlock, block->base.id( block ) ) ) {
-            TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
+            TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4205,
                            "GotoBlock %s found for \"%s\"",
                            data->gotoBlock, data->loc->getId( data->loc ) );
 
             data->gotoBlock = data->loc->getNextGotoBlock( data->loc, data->gotoBlock );
             if( data->gotoBlock == NULL) {
               /* stop after reaching the last gotoBlock */
-              TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "stop after reaching the last gotoBlock");
+              TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4205, "stop after reaching the last gotoBlock");
               data->run = False;
             }
           }
@@ -86,7 +86,7 @@ Boolean initializeDestination( iOLcDriver inst, iIBlockBase block, iORoute stree
           if(grouplocked) {
             unlockBlockGroup(inst, data->blockgroup);
           }
-          TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999, "Could not switch street \"%s\", for \"%s\"...",
+          TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 4004, "Could not switch street \"%s\", for \"%s\"...",
               street->getId( street ), data->loc->getId( data->loc ) );
         }
       }
@@ -95,13 +95,13 @@ Boolean initializeDestination( iOLcDriver inst, iIBlockBase block, iORoute stree
         if(grouplocked) {
           unlockBlockGroup(inst, data->blockgroup);
         }
-        TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "Could not lock route \"%s\", for \"%s\"...",
+        TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4104, "Could not lock route \"%s\", for \"%s\"...",
             street->getId( street ), data->loc->getId( data->loc ) );
       }
 
     }
     else {
-      TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999, "Could not lock block \"%s\", for \"%s\"...",
+      TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 4004, "Could not lock block \"%s\", for \"%s\"...",
           block->base.id( block ), data->loc->getId( data->loc ) );
       if(grouplocked) {
         unlockBlockGroup(inst, data->blockgroup);
@@ -109,7 +109,7 @@ Boolean initializeDestination( iOLcDriver inst, iIBlockBase block, iORoute stree
     }
   }
   else {
-    TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999, "Could not lock route \"%s\", for \"%s\"...",
+    TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 4004, "Could not lock route \"%s\", for \"%s\"...",
         street->base.id( street ), data->loc->getId( data->loc ) );
     if(grouplocked) {
       unlockBlockGroup(inst, data->blockgroup);
@@ -145,7 +145,7 @@ Boolean initializeGroup( iOLcDriver inst, iIBlockBase block, iIBlockBase curBloc
   if( (group != NULL && data->blockgroup != NULL && group != data->blockgroup) ||
       (group == NULL && data->blockgroup != NULL && curgroup != data->blockgroup) ) {
     /* unlock previous group; entering another one */
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "unlock previous blockgroup %s", data->blockgroup );
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4205, "unlock previous blockgroup %s", data->blockgroup );
     unlockBlockGroup(inst, data->blockgroup );
     data->blockgroup = NULL;
   }
@@ -155,7 +155,7 @@ Boolean initializeGroup( iOLcDriver inst, iIBlockBase block, iIBlockBase curBloc
     grouplocked = data->model->lockBlockGroup(data->model, group, block->base.id(block), data->loc->getId( data->loc ) );
 
     if(!grouplocked) {
-      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "unlock blockgroup %s", group );
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4205, "unlock blockgroup %s", group );
       unlockBlockGroup(inst, group);
       return False;
     }
@@ -188,7 +188,7 @@ const char* getBlockV_hint( iILcDriverInt inst, iIBlockBase block, Boolean onexi
       if( StrOp.equals( wBlock.percent, data->V_hint ) ) {
         StrOp.fmtb( data->V_hint, "%d", percent );
       }
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "Route[%s] V_hint [%s]",
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4205, "Route[%s] V_hint [%s]",
           street->getId(street), data->V_hint );
       return data->V_hint;
     }
@@ -209,7 +209,7 @@ const char* getBlockV_hint( iILcDriverInt inst, iIBlockBase block, Boolean onexi
   }
 
 
-  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "Block[%s] V_hint [%s] (%s) %s",
+  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4205, "Block[%s] V_hint [%s] (%s) %s",
       block->base.id(block), data->V_hint, onexit?"on exit":"on enter", reduceSpeed?"(reduced)":"" );
   return data->V_hint;
 }

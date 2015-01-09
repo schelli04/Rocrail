@@ -98,13 +98,13 @@ void eventIn( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolean c
   Boolean newInEvent = False;
 
   if( shortIn && wLoc.isshortin( data->loc->base.properties( data->loc ) ) ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                    "using shortin_block event for \"%s\" from \"%s\"...",
                    data->loc->getId( data->loc ), blockId );
   }
   else if( shortIn ) {
     /* ignore */
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                    "ignoring shortin_block event for \"%s\" from \"%s\"...",
                    data->loc->getId( data->loc ), blockId );
     return;
@@ -122,17 +122,17 @@ void eventIn( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolean c
     newInEvent = True;
   }
   else {
-    TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4101,
                    "Ignoring in_block event from %s; it came within %d ticks!", blockId, data->ignevt );
   }
 
-  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                  "in_block event for \"%s\" from \"%s\"...",
                  data->loc->getId( data->loc ), blockId );
 
   if( data->next1Route == NULL ) {
     /* An unknown loc is comming in!!! Or some feedback noise... */
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                    "Unexpected in_block event for \"%s\" from \"%s\"...",
                    data->loc->getId( data->loc ), blockId );
     /*AppOp.stop(  );*/
@@ -143,27 +143,27 @@ void eventIn( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolean c
       (newInEvent && dstBlockEvent && data->state == LC_RE_ENTERBLOCK) ||
       (newInEvent && dstBlockEvent && data->state == LC_WAIT4EVENT) ) {
     data->state = LC_INBLOCK;
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                    "Setting state for \"%s\" to LC_INBLOCK.",
                    data->loc->getId( data->loc ) );
     data->loc->setMode(data->loc, wLoc.mode_auto);
 
     /* Check wheel counters */
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "wheel count %s[%d], %s[%d] ",
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4201, "wheel count %s[%d], %s[%d] ",
         data->curBlock->base.id( data->curBlock ), data->curBlock->getWheelCount(data->curBlock),
         data->next1Block->base.id( data->next1Block ), data->next1Block->getWheelCount(data->next1Block) );
     if( data->curBlock->getWheelCount(data->curBlock) > 0 && data->next1Block->getWheelCount(data->next1Block) > 0  ) {
       if( data->curBlock->getWheelCount(data->curBlock) <= data->next1Block->getWheelCount(data->next1Block) ) {
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "wheel count match or is more %s<=%s [%d<=%d]",
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201, "wheel count match or is more %s<=%s [%d<=%d]",
             data->curBlock->base.id( data->curBlock ), data->next1Block->base.id( data->next1Block ),
             data->curBlock->getWheelCount(data->curBlock), data->next1Block->getWheelCount(data->next1Block) );
       }
       else {
-        TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999, "wheel count does not match %s[%d] != %s[%d] ",
+        TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 4001, "wheel count does not match %s[%d] != %s[%d] ",
             data->curBlock->base.id( data->curBlock ), data->curBlock->getWheelCount(data->curBlock),
             data->next1Block->base.id( data->next1Block ), data->next1Block->getWheelCount(data->next1Block) );
 
-        TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999,
+        TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4101,
                        "stop auto mode for loco [%s] and close block [%s]",
                        data->loc->getId( data->loc ), data->curBlock->base.id(data->curBlock) );
 
@@ -194,13 +194,13 @@ void eventIn( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolean c
 
       if ( data->next1Route->isSwapPost( data->next1Route ) ) {
         /* swap post route */
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "swap placing post route %s", data->next1Route->getId( data->next1Route ));
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201, "swap placing post route %s", data->next1Route->getId( data->next1Route ));
         data->loc->swapPlacing( data->loc, NULL, False, False );
       }
 
       data->next1Route = data->next2Route;
       data->next2Route = data->next3Route;
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "Setting state for \"%s\" to LC_INBLOCK.", data->loc->getId( data->loc ) );
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201, "Setting state for \"%s\" to LC_INBLOCK.", data->loc->getId( data->loc ) );
 
       /* swap the loc placing to run backwards in the default direction (to use in terminal stations)*/
       if( data->curBlock->isTerminalStation( data->curBlock ) ) {
@@ -210,7 +210,7 @@ void eventIn( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolean c
          if( data->stopnonecommuter && !data->loc->isCommuter( data->loc) ) {
             /* Switch to manual mode: */
             data->loc->stop( data->loc, False );
-            TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
+            TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4201,
                                "stop in terminal for [%s] (not a commuter train)", data->loc->getId( data->loc ));
          }
 
@@ -219,13 +219,13 @@ void eventIn( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolean c
 
   }
   else if(newInEvent && dstBlockEvent && data->state == LC_GO) {
-    TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 4001,
                    "unexpected IN event for [%s], state=[%d] (missing enter event)",
                    data->loc->getId( data->loc ), data->state );
 
     data->state = LC_IDLE;
     data->run = False;
-    TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4101,
                    "Setting state for \"%s\" to LC_IDLE and stop running auto mode.",
                    data->loc->getId( data->loc ) );
     data->loc->setMode(data->loc, wLoc.mode_idle);
@@ -237,7 +237,7 @@ void eventIn( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolean c
       data->next1Block->setGhostDetected(data->next1Block, "-", "-" );
   }
   else {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                    "unexpected IN event for [%s], state=[%d]",
                    data->loc->getId( data->loc ), data->state );
     if( data->next2Block == NULL ) {

@@ -60,7 +60,7 @@ void statusTimer( iILcDriverInt inst, Boolean reverse ) {
   if( data->timer == 0 || !data->run || data->reqstop ) {
 
     if( data->reqstop ) {
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,"stop requested");
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,"stop requested");
       data->reqstop = False;
       data->run = False;
       data->warningnodestfound = False;
@@ -73,13 +73,13 @@ void statusTimer( iILcDriverInt inst, Boolean reverse ) {
                    data->loc->getId( data->loc ) );
 
     if( data->next1Block != NULL )
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "next1Block for [%s] is [%s]",
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201, "next1Block for [%s] is [%s]",
                      data->loc->getId( data->loc ), data->next1Block->base.id(data->next1Block) );
     if( data->next2Block != NULL )
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "next2Block for [%s] is [%s]",
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201, "next2Block for [%s] is [%s]",
                      data->loc->getId( data->loc ), data->next2Block->base.id(data->next2Block) );
     if( data->next3Block != NULL )
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "next3Block for [%s] is [%s]",
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201, "next3Block for [%s] is [%s]",
                      data->loc->getId( data->loc ), data->next3Block->base.id(data->next3Block) );
 
   }

@@ -58,12 +58,12 @@ void eventEnter( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolea
     newEnterEvent = True;
   }
   else {
-    TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4101,
                    "Ignoring enter_block event from %s; it came within %d ticks!", blockId, data->ignevt );
   }
 
   /* Train could have contacted both feedbacks. */
-  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                  "enter_block event for \"%s\" from \"%s\"...",
                  data->loc->getId( data->loc ), blockId );
 
@@ -78,13 +78,13 @@ void eventEnter( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolea
     {
       data->state = LC_ENTERBLOCK;
       data->loc->setMode(data->loc, wLoc.mode_auto);
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                      "Setting state for \"%s\" to LC_ENTERBLOCK.",
                      data->loc->getId( data->loc ) );
     }
     else if( dstBlockEvent && data->state != LC_IDLE ) {
       /* Could be dirty wheels or a big gap between wheels. */
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                      "Unexpected enter_block event for [%s] in [%s] with state [%d]...",
                      data->loc->getId( data->loc ), blockId, data->state );
     }
@@ -97,7 +97,7 @@ void eventEnter( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolea
       data->useCurBlock4Signals = True;
       data->curBlock4Signals = data->curBlock;
       if( !data->didFree ) {
-        TraceOp.trc(name, TRCLEVEL_USER1, __LINE__, 9999,
+        TraceOp.trc(name, TRCLEVEL_USER1, __LINE__, 4201,
             "Free previous block on enter for [%s] in [%s] with state [%d]", data->loc->getId(data->loc), blockId, data->state);
 
         freePrevBlock(inst, block);
@@ -117,23 +117,23 @@ void eventEnter( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolea
   else {
     /* Exception! */
     /* ToDo: Could also happen when wagon wheels are dirty. */
-    TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4101,
                    "Unexpected (state=%d) enter_block event for \"%s\" from \"%s\"...",
                    data->state, data->loc->getId( data->loc ), blockId );
 
     if( curBlockEvent ) {
       /* An unknown loc is comming in!!! (Or train too long??!!)*/
-      TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999,
+      TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4101,
                      "Unexpected enter_block event for \"%s\" from \"%s\"...",
                      data->loc->getId( data->loc ), blockId );
       if( newEnterEvent ) {
-        TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999,
+        TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 4001,
                        "Stopping because a new enter_block event came after more than a second! loc=\"%s\" block=\"%s\"...",
                        data->loc->getId( data->loc ), blockId );
         data->model->stop( data->model );
       }
       else {
-        TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999,
+        TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4101,
                        "Not Stopping because a new enter_block event came within a second! loc=\"%s\" block=\"%s\"...",
                        data->loc->getId( data->loc ), blockId );
       }

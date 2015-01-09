@@ -85,33 +85,33 @@ void statusCheckRoute( iILcDriverInt inst ) {
       if( data->loc->getV( data->loc ) == 0 ) {
         /* delay only if the loc is not running */
         if(semaphore) {
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
               "give the semaphore %dms time to get in position...", data->semaphoreWait );
           /* give the semaphore some time to get in position... */
           ThreadOp.sleep(data->semaphoreWait);
         }
         else if(data->signalWait > 0){
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
               "give the signal %dms time to set another aspect...", data->signalWait );
           ThreadOp.sleep(data->signalWait);
         }
 
         if( data->curBlock == NULL ) {
           /* loco was reset by user... */
-          TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "curBlock is not set..." );
+          TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4101, "curBlock is not set..." );
           return;
         }
 
         /* wait for departdelay if set for the current block*/
         departdelay = data->curBlock->getDepartDelay( data->curBlock ) ;
         if( wLoc.isusedepartdelay(lcprops) && departdelay > 0 ) {
-          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "delay departure for departdelay [%d] sec of block [%s].",
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201, "delay departure for departdelay [%d] sec of block [%s].",
                          departdelay, data->loc->getCurBlock( data->loc) );
           ThreadOp.sleep(departdelay * 1000);
         }
       }
 
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                      "Setting direction for [%s] to [%s] at velocity [%s].",
                      data->loc->getId( data->loc ), dir?"forwards":"reverse",
                      wLoc.getV_hint(cmd) );
@@ -123,7 +123,7 @@ void statusCheckRoute( iILcDriverInt inst ) {
     data->state = LC_PRE2GO;
     data->eventTimeout = 0;
     data->signalReset  = 0;
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                    "Setting state for \"%s\" from LC_CHECKROUTE to LC_PRE2GO.",
                    data->loc->getId( data->loc ) );
   }

@@ -141,7 +141,7 @@ static void __blockEvent( iOLcDriver inst, obj emitter, int event ) {
       dstBlockEvent = True;
   }
 
-  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200,
                  "Block event[%d] from \"%s\". (cur=[%s,%s], dst=[%s,%s])",
                  event, blockId,
                  curBlockEvent?"True":"False", curBlockId,
@@ -152,11 +152,11 @@ static void __blockEvent( iOLcDriver inst, obj emitter, int event ) {
   /*---------- TAKEOVER ----------*/
   case takeover_event:
     data->state = LC_MANAGED;
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "switch into managed mode");
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "switch into managed mode");
     break;
   case release_event:
     data->state = LC_IDLE;
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "released from managed mode");
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "released from managed mode");
     break;
 
 
@@ -210,7 +210,7 @@ static void __checkEventTimeout( iILcDriverInt inst ) {
     data->eventTimeout++;
     if( data->eventTimeout >= data->eventTimeoutTime ) {
       /* warning */
-      TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999,
+      TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 4000,
                    "Event timeout for [%s]", data->loc->getId( data->loc ) );
       data->loc->event( data->loc, (obj)inst, 0, 0, False, "eventtimeout" );
       data->eventTimeout = 0;
@@ -226,7 +226,7 @@ static void __checkSignalReset( iILcDriverInt inst ) {
     data->signalReset++;
     if( data->signalReset >= data->signalResetTime ) {
       /* TODO: reset signal to red */
-      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4200,
                    "signalReset timeout for [%s]", data->loc->getId( data->loc ) );
       resetSignals((iOLcDriver)inst);
     }
@@ -244,7 +244,7 @@ static void _drive( iILcDriverInt inst, obj emitter, int event ) {
   Boolean reverse = False; /* TODO: set the correct reverse value */
 
   if( event > 0 )
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "lcdriver event=%d", event );
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "lcdriver event=%d", event );
 
   if( emitter != NULL ) {
     __blockEvent( (iOLcDriver)inst, emitter, event );
@@ -354,7 +354,7 @@ static void _goNet( iILcDriverInt inst, Boolean gomanual, const char* curblock, 
   data->curBlock   = data->model->getBlock( data->model, curblock );
   data->next1Block = data->model->getBlock( data->model, nextblock );
   data->next1Route = data->model->getRoute( data->model, nextroute );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "goNet: curblock=%s nextblock=%s nextroute=%s", curblock, nextblock, nextroute );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4200, "goNet: curblock=%s nextblock=%s nextroute=%s", curblock, nextblock, nextroute );
 }
 
 
@@ -416,19 +416,19 @@ static const char* __getStateName(int state) {
 static Boolean _stepvirtual( iILcDriverInt inst ) {
   iOLcDriverData data = Data(inst);
   Boolean rc = True;
-  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "step virtual [%s] state=[%s]...", data->loc->getId(data->loc), __getStateName(data->state) );
+  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "step virtual [%s] state=[%s]...", data->loc->getId(data->loc), __getStateName(data->state) );
   if( data->state == LC_GO ) {
     if( data->next1Block != NULL ) {
       if( __isVirtualSupported( data->next1Block) ) {
         iONode fbevt = NodeOp.inst(wFeedbackEvent.name(), NULL, ELEMENT_NODE );
         wFeedbackEvent.setid(fbevt, data->loc->getId(data->loc));
         wFeedbackEvent.setaction(fbevt, wFeedbackEvent.enter2in_event);
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "send virtual event to [%s][%s]", data->next1Block->base.name(), data->next1Block->base.id(data->next1Block) );
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "send virtual event to [%s][%s]", data->next1Block->base.name(), data->next1Block->base.id(data->next1Block) );
         data->next1Block->event(data->next1Block, True, "enter", NULL, NULL, NULL, NULL, 0, 0, fbevt, True );
         NodeOp.base.del(fbevt);
       }
       else {
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "block type [%s][%s] is not supported in virtual mode", data->next1Block->base.name(), data->next1Block->base.id(data->next1Block) );
+        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "block type [%s][%s] is not supported in virtual mode", data->next1Block->base.name(), data->next1Block->base.id(data->next1Block) );
         rc = False;
       }
     }
@@ -440,12 +440,12 @@ static Boolean _stepvirtual( iILcDriverInt inst ) {
 static void _gogo( iILcDriverInt inst ) {
   iOLcDriverData data = Data(inst);
   if( data->timer > 0 ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "reset wait timer for %s from %d to 0", data->loc->getId(data->loc), data->timer );
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "reset wait timer for %s from %d to 0", data->loc->getId(data->loc), data->timer );
     data->timer = 0;
     data->forceDeparture = True;
   }
   if( data->reqstop ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "reset stop request for %s", data->loc->getId(data->loc) );
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "reset stop request for %s", data->loc->getId(data->loc) );
     data->reqstop = False;
   }
 }
@@ -471,7 +471,7 @@ static void _stop( iILcDriverInt inst ) {
   iOLcDriverData data = Data(inst);
   if( data->run ) {
     data->reqstop = True;
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4200,
                    "stop event for \"%s\"...",
                    data->loc->getId( data->loc ) );
   }
@@ -487,7 +487,7 @@ static void _stopNet( iILcDriverInt inst ) {
   data->run = False;
   data->loc->setMode(data->loc, wLoc.mode_idle);
 
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4200,
                    "stopNet event for [%s]; **IDLE**",
                    data->loc->getId( data->loc ) );
 }
@@ -502,7 +502,7 @@ static void _brake( iILcDriverInt inst ) {
   iONode cmd = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE );
   data->brake = True;
   wLoc.setV( cmd, 0 );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "brake event for \"%s\"...", data->loc->getId( data->loc ) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4200, "brake event for \"%s\"...", data->loc->getId( data->loc ) );
   data->loc->cmd( data->loc, cmd );
 }
 
@@ -514,49 +514,49 @@ static void _reset( iILcDriverInt inst, Boolean saveCurBlock ) {
   data->state = LC_IDLE;
   data->loc->setMode(data->loc, wLoc.mode_idle);
   LcDriverOp.brake( inst );
-  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200,
                  "reset event for [%s], unlocking groups and routes...",
                  data->loc->getId( data->loc ) );
   /* unlock routes */
   if( data->blockgroup != NULL ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "unlocking blockgroup for %s...", data->loc->getId( data->loc ));
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "unlocking blockgroup for %s...", data->loc->getId( data->loc ));
     unlockBlockGroup( (iOLcDriver)inst, data->blockgroup );
   }
 
   if( data->next1Route != NULL ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "unlocking next1Route for %s...", data->loc->getId( data->loc ));
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "unlocking next1Route for %s...", data->loc->getId( data->loc ));
     data->next1Route->unLock( data->next1Route, data->loc->getId( data->loc ), NULL, True, False );
   }
   if( data->next2Route != NULL ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "unlocking next2Route for %s...", data->loc->getId( data->loc ));
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "unlocking next2Route for %s...", data->loc->getId( data->loc ));
     data->next2Route->unLock( data->next2Route, data->loc->getId( data->loc ), NULL, True, False );
 }
   if( data->next3Route != NULL ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "unlocking next3Route for %s...", data->loc->getId( data->loc ));
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "unlocking next3Route for %s...", data->loc->getId( data->loc ));
     data->next3Route->unLock( data->next3Route, data->loc->getId( data->loc ), NULL, True, False );
   }
 
   if( data->curBlock == NULL ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "getting curBlock for %s...", data->loc->getId( data->loc ));
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "getting curBlock for %s...", data->loc->getId( data->loc ));
     data->curBlock = data->model->getBlock( data->model, data->loc->getCurBlock( data->loc ) );
   }
 
 
   if( data->prevBlock != NULL && data->prevBlock != data->curBlock ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "unlocking prevBlock for %s...", data->loc->getId( data->loc ));
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "unlocking prevBlock for %s...", data->loc->getId( data->loc ));
     data->prevBlock->unLock( data->prevBlock, data->loc->getId( data->loc ), NULL );
   }
 
   if( data->next1Block != NULL && data->next1Block != data->curBlock ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "unlocking next1Block for %s...", data->loc->getId( data->loc ));
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "unlocking next1Block for %s...", data->loc->getId( data->loc ));
     data->next1Block->unLock( data->next1Block, data->loc->getId( data->loc ), NULL );
   }
   if( data->next2Block != NULL && data->next2Block != data->curBlock ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "unlocking next2Block for %s...", data->loc->getId( data->loc ));
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "unlocking next2Block for %s...", data->loc->getId( data->loc ));
     data->next2Block->unLock( data->next2Block, data->loc->getId( data->loc ), NULL );
   }
   if( data->next3Block != NULL && data->next3Block != data->curBlock ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "unlocking next3Block for %s...", data->loc->getId( data->loc ));
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "unlocking next3Block for %s...", data->loc->getId( data->loc ));
     data->next3Block->unLock( data->next3Block, data->loc->getId( data->loc ), NULL );
   }
 
@@ -569,7 +569,7 @@ static void _reset( iILcDriverInt inst, Boolean saveCurBlock ) {
   data->next3Block = NULL;
 
   if( data->curBlock != NULL && !saveCurBlock ) {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "unlocking curBlock for %s...", data->loc->getId( data->loc ));
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4200, "unlocking curBlock for %s...", data->loc->getId( data->loc ));
     data->curBlock->unLock( data->curBlock, data->loc->getId( data->loc ), NULL );
     data->curBlock = NULL;
     data->loc->setCurBlock( data->loc, NULL );
@@ -599,7 +599,7 @@ static void _gotoblock( iILcDriverInt inst, const char* blockid ) {
   iOLcDriverData data = Data(inst);
   data->gotoBlock = blockid;
   data->schedule = NULL;
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4200,
                  "gotoblock \"%s\" for \"%s\"...",
                  blockid,
                  data->loc->getId( data->loc ) );
@@ -629,7 +629,7 @@ static void _useschedule( iILcDriverInt inst, const char* scheduleid ) {
   /* init schedule index in case the train is not placed in the first entry: */
   data->scheduleIdx = data->model->getScheduleIndex( data->model, data->schedule, data->loc->getCurBlock( data->loc ), data->loc );
 
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4200,
                  "use schedule [%s] for [%s] with index=%d...",
                  scheduleid, data->loc->getId( data->loc ), data->scheduleIdx );
 }
@@ -657,7 +657,7 @@ static void _usetour( iILcDriverInt inst, const char* tourid ) {
       data->scheduleended = True;
     }
   }
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4200,
                  "use tour [%s][%d] for loco [%s]",
                  tourid, data->tourIdx, data->loc->getId( data->loc ) );
 }

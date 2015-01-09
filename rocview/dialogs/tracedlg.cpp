@@ -196,13 +196,17 @@ void TraceDlg::onSearch( wxCommandEvent& event ) {
 
 void TraceDlg::addLine(const char* buffer) {
   TraceOp.trc( "tracedlg", TRCLEVEL_DEBUG, __LINE__, 9999, "add line [%s]", buffer );
-  if( m_ID->GetValue() > 0 ) {
-    int lineID = (buffer[21] - '0') * 1000;
-    lineID += (buffer[22] - '0') * 100;
-    lineID += (buffer[23] - '0') * 10;
-    lineID += (buffer[24] - '0');
-    if( lineID != m_ID->GetValue() )
-      return;
+  if( m_ID->GetValue().Len() > 0 ) {
+    char* idFilter = StrOp.dup((const char*)m_ID->GetValue().mb_str(wxConvUTF8));
+    int len = StrOp.len(idFilter);
+    TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "ID filter [%s]", idFilter );
+    for( int i = 0; i < len; i++) {
+      if( idFilter[i] != '*' && idFilter[i] != buffer[21+i]) {
+        StrOp.free(idFilter);
+        return;
+      }
+    }
+    StrOp.free(idFilter);
   }
   if( m_SearchText->GetValue().Len() > 0 ) {
     if( StrOp.find(buffer, m_SearchText->GetValue().mb_str(wxConvUTF8) ) == NULL )

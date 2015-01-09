@@ -44,7 +44,7 @@ void eventFree( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolean
     if( (dstBlockEvent && data->state == LC_EXITBLOCK) || (dstBlockEvent && data->state == LC_OUTBLOCK) || (dstBlockEvent && dontcare) )
     {
       if( !data->didFree ) {
-        TraceOp.trc(name, TRCLEVEL_USER1, __LINE__, 9999,
+        TraceOp.trc(name, TRCLEVEL_USER1, __LINE__, 4201,
             "Free previous block on free for [%s] in [%s] with state [%d]", data->loc->getId(data->loc), blockId, data->state);
         freePrevBlock(inst, block);
         data->didFree = True;
