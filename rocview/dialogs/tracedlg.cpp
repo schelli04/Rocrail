@@ -280,7 +280,11 @@ void TraceDlg::traceEvent(iONode node) {
     if( direntry != NULL ) {
       iONode fileentry = wDirEntry.getfileentry(direntry);
       while( fileentry != NULL ) {
-        m_ServerTraces->Append( wxString::Format(wxT("%s, %ld bytes, %s"), wFileEntry.getfname(fileentry), wFileEntry.getsize(fileentry), wFileEntry.gettime(fileentry) ));
+        char* entry = StrOp.fmt("%s, %ld bytes, %s", wFileEntry.getfname(fileentry), wFileEntry.getsize(fileentry), wFileEntry.gettime(fileentry));
+        StrOp.replaceAll(entry, '\n', '\0');
+        StrOp.replaceAll(entry, '\r', '\0');
+        m_ServerTraces->Append( wxString(entry, wxConvUTF8));
+        StrOp.free(entry);
         fileentry = wDirEntry.nextfileentry(direntry, fileentry);
       }
     }
