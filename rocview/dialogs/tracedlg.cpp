@@ -71,6 +71,13 @@ TraceDlg::~TraceDlg() {
 void TraceDlg::initLabels() {
   SetTitle(wxGetApp().getMsg( "trace" ));
 
+  m_Level->Append(wxT("All"));
+  m_Level->Append(wxT("Exception"));
+  m_Level->Append(wxT("Warning"));
+  m_Level->Append(wxT("Automatic"));
+  m_Level->Append(wxT("Calculation"));
+  m_Level->SetSelection(0);
+
   m_ObjectType->Append(wxT(""));
   m_ObjectType->Append(wxT("OAction"));
   m_ObjectType->Append(wxT("OBlock"));
@@ -91,6 +98,7 @@ void TraceDlg::initLabels() {
   m_ObjectType->Append(wxT("OWeather"));
 
 
+  m_labLevel->SetLabel( wxGetApp().getMsg( "level" ) );
   m_labType->SetLabel( wxGetApp().getMsg( "type" ) );
   m_labID->SetLabel( wxGetApp().getMsg( "id" ) );
   m_Open->SetLabel( wxGetApp().getMsg( "open" ) + wxT("...") );
@@ -139,7 +147,11 @@ void TraceDlg::onOpen( wxCommandEvent& event )
 }
 
 void TraceDlg::onObjectType( wxCommandEvent& event ) {
-  event.Skip();
+  onSearch(event);
+}
+
+void TraceDlg::onLevel( wxCommandEvent& event ) {
+  onSearch(event);
 }
 
 void TraceDlg::onSearch( wxCommandEvent& event ) {
@@ -174,6 +186,17 @@ void TraceDlg::addLine(const char* buffer) {
   }
   if( m_ObjectType->GetSelection() > 0 ) {
     if( StrOp.find(buffer, m_ObjectType->GetStringSelection().mb_str(wxConvUTF8) ) == NULL )
+      return;
+  }
+  if( m_Level->GetSelection() > 0 ) {
+    int level = m_Level->GetSelection();
+    if( level == 1 && buffer[25] != 'E' )
+      return;
+    if( level == 2 && buffer[25] != 'W' )
+      return;
+    if( level == 3 && buffer[25] != 'a' )
+      return;
+    if( level == 4 && buffer[25] != 'v' )
       return;
   }
   if( buffer[25] == 'E' )
