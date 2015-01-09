@@ -59,6 +59,8 @@ TraceDlg::TraceDlg( wxWindow* parent ):TraceDlgGen( parent )
     wDataReq.setcmd( cmd, wDataReq.gettracedir );
     wxGetApp().sendToRocrail( cmd );
     cmd->base.del(cmd);
+
+    m_Status->SetLabel(wxT("Waiting for data of the server..."));
     m_Open->Enable(false);
   }
 }
@@ -106,6 +108,7 @@ void TraceDlg::initLabels() {
   m_Open->SetLabel( wxGetApp().getMsg( "open" ) + wxT("...") );
   m_labRemote->SetLabel( wxGetApp().getMsg( "server" ) + wxT(":") );
   m_Search->SetLabel( wxGetApp().getMsg( "search" ) );
+  m_labStatus->SetLabel( wxGetApp().getMsg( "state" ) + wxT(":") );
 
   // Buttons
   m_stdButtonOK->SetLabel( wxGetApp().getMsg( "ok" ) );
@@ -122,6 +125,7 @@ void TraceDlg::onOpen( wxCommandEvent& event )
 {
   if(!m_ServerTraces->GetStringSelection().empty()) {
     if( !wxGetApp().isStayOffline() ) {
+      m_Status->SetLabel(wxT("Waiting for data of the server..."));
       /* Request the Rocrail server the current trace. */
       iONode cmd = NodeOp.inst( wDataReq.name(), NULL, ELEMENT_NODE );
       wDataReq.setcmd( cmd, wDataReq.gettracefile );
@@ -228,6 +232,7 @@ void TraceDlg::addLine(const char* buffer) {
 void TraceDlg::traceEvent(iONode node) {
   if( wDataReq.getcmd(node) == wDataReq.gettracefile ) {
     SetTitle(wxGetApp().getMsg( "trace" ) + wxT(": ") + wxString(wDataReq.getfilename(node),wxConvUTF8) );
+    m_Status->SetLabel(wxT("Trace file from server received."));
 
     if( m_TraceFile != NULL) {
       StrOp.free(m_TraceFile);
@@ -255,6 +260,7 @@ void TraceDlg::traceEvent(iONode node) {
 
   }
   else if( wDataReq.getcmd(node) == wDataReq.gettracedir ) {
+    m_Status->SetLabel(wxT("Trace directory from server received."));
     m_ServerTraces->Clear();
     m_ServerTraces->Append( wxT("") );
     iONode direntry = wDataReq.getdirentry(node);
