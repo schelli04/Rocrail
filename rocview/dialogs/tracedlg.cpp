@@ -29,6 +29,7 @@
 #include "rocs/public/system.h"
 #include "rocs/public/file.h"
 #include "rocs/public/trace.h"
+#include "rocs/public/strtok.h"
 
 #include "rocrail/wrapper/public/DataReq.h"
 #include "rocrail/wrapper/public/DirEntry.h"
@@ -117,7 +118,9 @@ void TraceDlg::onOpen( wxCommandEvent& event )
       /* Request the Rocrail server the current trace. */
       iONode cmd = NodeOp.inst( wDataReq.name(), NULL, ELEMENT_NODE );
       wDataReq.setcmd( cmd, wDataReq.gettracefile );
-      wDataReq.setfilename( cmd, m_ServerTraces->GetStringSelection().mb_str(wxConvUTF8) );
+      iOStrTok tok = StrTokOp.inst( m_ServerTraces->GetStringSelection().mb_str(wxConvUTF8), ',' );
+      wDataReq.setfilename( cmd, StrTokOp.nextToken( tok ) );
+      StrTokOp.base.del(tok);
       wxGetApp().sendToRocrail( cmd );
       cmd->base.del(cmd);
     }
@@ -248,7 +251,7 @@ void TraceDlg::traceEvent(iONode node) {
     if( direntry != NULL ) {
       iONode fileentry = wDirEntry.getfileentry(direntry);
       while( fileentry != NULL ) {
-        m_ServerTraces->Append( wxString::Format(wxT("%s"), wFileEntry.getfname(fileentry) ));
+        m_ServerTraces->Append( wxString::Format(wxT("%s, %ld bytes, %s"), wFileEntry.getfname(fileentry), wFileEntry.getsize(fileentry), wFileEntry.gettime(fileentry) ));
         fileentry = wDirEntry.nextfileentry(direntry, fileentry);
       }
     }
