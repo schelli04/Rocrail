@@ -1666,7 +1666,7 @@ void RocGuiFrame::UpdateActiveLocs( wxCommandEvent& event ) {
 
         }
         else if(wLoc.getblockid( node ) != NULL) {
-          m_ActiveLocs->SetCellValue( i, LOC_COL_BLOCK, wxString(wLoc.getblockid( node ),wxConvUTF8) );
+          m_ActiveLocs->SetCellValue( i, LOC_COL_BLOCK, (wLoc.isblockenterside(node)?_T(""):_T("-")) + wxString(wLoc.getblockid( node ),wxConvUTF8) );
         }
         else {
           m_ActiveLocs->SetCellValue( i, LOC_COL_BLOCK, wxT("") );
