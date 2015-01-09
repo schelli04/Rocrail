@@ -3247,8 +3247,14 @@ void Symbol::modelEvent( iONode node, bool oncreate ) {
               TraceOp.trc( "item", TRCLEVEL_DEBUG, __LINE__, 9999, "(update) locoid=[%s] enterside=[%c]", locoid, m_RotateSym?'+':'-' );
             }
 
+            // adjust destination block enterside on update
+            else if( (occupied == 1 || occupied == 3) && (wLoc.getdestblockid(loc) == NULL || StrOp.len(wLoc.getdestblockid(loc)) == 0) ) {
+              m_RotateSym = wLoc.isblockenterside( loc);
+              TraceOp.trc( "item", TRCLEVEL_DEBUG, __LINE__, 9999, "(update) locoid=[%s] enterside=[%c]", locoid, m_RotateSym?'+':'-' );
+            }
+
             // loco is set manually in this block
-            if( wBlock.getcmd(node) != NULL && StrOp.equals(wBlock.loc, wBlock.getcmd(node) ) ) {
+            else if( wBlock.getcmd(node) != NULL && StrOp.equals(wBlock.loc, wBlock.getcmd(node) ) ) {
               m_RotateSym = wLoc.isblockenterside( loc);
               TraceOp.trc( "item", TRCLEVEL_DEBUG, __LINE__, 9999, "(set) locoid=[%s] enterside=[%c]", locoid, m_RotateSym?'+':'-' );
             }
