@@ -35,6 +35,7 @@
 #include "rocrail/wrapper/public/FileEntry.h"
 
 #include "rocview/public/guiapp.h"
+#include "rocview/public/base.h"
 #include "rocview/wrapper/public/Gui.h"
 
 
@@ -71,13 +72,24 @@ void TraceDlg::initLabels() {
   SetTitle(wxGetApp().getMsg( "trace" ));
 
   m_ObjectType->Append(wxT(""));
-  m_ObjectType->Append(wxT("OLoc"));
+  m_ObjectType->Append(wxT("OAction"));
   m_ObjectType->Append(wxT("OBlock"));
+  m_ObjectType->Append(wxT("OCar"));
+  m_ObjectType->Append(wxT("OFBack"));
+  m_ObjectType->Append(wxT("OLoc"));
+  m_ObjectType->Append(wxT("OModel"));
+  m_ObjectType->Append(wxT("OOperator"));
+  m_ObjectType->Append(wxT("OOutput"));
+  m_ObjectType->Append(wxT("OPowerMan"));
+  m_ObjectType->Append(wxT("ORoute"));
+  m_ObjectType->Append(wxT("OSelTab"));
+  m_ObjectType->Append(wxT("OSignal"));
   m_ObjectType->Append(wxT("OStage"));
   m_ObjectType->Append(wxT("OSwitch"));
-  m_ObjectType->Append(wxT("OSignal"));
-  m_ObjectType->Append(wxT("OOutput"));
-  m_ObjectType->Append(wxT("ORoute"));
+  m_ObjectType->Append(wxT("OText"));
+  m_ObjectType->Append(wxT("OTT"));
+  m_ObjectType->Append(wxT("OWeather"));
+
 
   m_labType->SetLabel( wxGetApp().getMsg( "type" ) );
   m_labID->SetLabel( wxGetApp().getMsg( "id" ) );
@@ -165,13 +177,15 @@ void TraceDlg::addLine(const char* buffer) {
       return;
   }
   if( buffer[25] == 'E' )
-    m_Trace->SetDefaultStyle(wxTextAttr(*wxRED));
+    m_Trace->SetDefaultStyle(wxTextAttr(*wxBLACK, Base::getRed()));
   else if( buffer[25] == 'W' )
-    m_Trace->SetDefaultStyle(wxTextAttr(*wxBLUE));
+    m_Trace->SetDefaultStyle(wxTextAttr(*wxBLACK, Base::getYellow2()));
+  else if( buffer[25] == 'a' )
+    m_Trace->SetDefaultStyle(wxTextAttr(*wxBLACK, Base::getGreen()));
   else if( buffer[25] == 'v' )
-    m_Trace->SetDefaultStyle(wxTextAttr(*wxGREEN));
+    m_Trace->SetDefaultStyle(wxTextAttr(*wxBLACK, Base::getBlue()));
   else
-    m_Trace->SetDefaultStyle(wxTextAttr(*wxBLACK));
+    m_Trace->SetDefaultStyle(wxTextAttr(*wxBLACK, *wxWHITE));
 
   m_Trace->AppendText(wxString(buffer,wxConvUTF8) + wxT("\n"));
 }
