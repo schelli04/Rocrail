@@ -44,9 +44,12 @@ TraceDlg::TraceDlg( wxWindow* parent ):TraceDlgGen( parent )
 {
   m_TraceFile = NULL;
   m_Text = NULL;
+  m_FormatThread = NULL;
   initLabels();
   GetSizer()->Fit(this);
   GetSizer()->SetSizeHints(this);
+
+  Connect( 4711, wxCommandEventHandler( TraceDlg::doLine ) );
 
   if( !wxGetApp().isStayOffline() ) {
     /* Request the Rocrail server the current trace. */
@@ -66,9 +69,12 @@ TraceDlg::TraceDlg( wxWindow* parent ):TraceDlgGen( parent )
 }
 
 TraceDlg::~TraceDlg() {
-  if( m_TraceFile != NULL) {
+  if( m_TraceFile != NULL)
     StrOp.free(m_TraceFile);
-  }
+  if( m_Text != NULL )
+    StrOp.free(m_Text);
+
+  Disconnect( 4711, wxCommandEventHandler( TraceDlg::doLine ) );
 }
 
 
@@ -170,28 +176,75 @@ void TraceDlg::onLevel( wxCommandEvent& event ) {
   onSearch(event);
 }
 
-void TraceDlg::onSearch( wxCommandEvent& event ) {
-  if( m_TraceFile != NULL) {
-    m_Trace->Clear();
-    iOFile f = FileOp.inst( m_TraceFile, OPEN_READONLY );
+
+static void formatRunner( void* threadinst ) {
+  iOThread th = (iOThread)threadinst;
+  TraceDlg* dlg = (TraceDlg*)ThreadOp.getParm( th );
+
+  TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "formatRunner started");
+
+
+  if( dlg->m_TraceFile != NULL) {
+    iOFile f = FileOp.inst( dlg->m_TraceFile, OPEN_READONLY );
     char* buffer = (char*)allocMem( FileOp.size( f ) +1 );
+    int lineIdx = 0;
     while( FileOp.readStr(f, buffer)) {
-      addLine(buffer);
+      wxCommandEvent doEvent( 4711 );
+      doEvent.SetClientData( buffer );
+      wxPostEvent( dlg, doEvent );
+      lineIdx++;
+      if( lineIdx % 2 == 0 )
+        ThreadOp.sleep(10);
+      else
+        ThreadOp.sleep(0);
     }
     FileOp.base.del( f );
-    m_Trace->ShowPosition(0);
   }
-  else if(m_Text != NULL) {
-    m_Trace->Clear();
+  else if(dlg->m_Text != NULL) {
     int lineIdx = 0;
-    char* textline = StrOp.getLine( m_Text, lineIdx );
+    char* textline = StrOp.getLine( dlg->m_Text, lineIdx );
     while( textline != NULL ) {
-      addLine(textline);
+      wxCommandEvent doEvent( 4711 );
+      doEvent.SetClientData( textline );
+      wxPostEvent( dlg, doEvent );
+      if( lineIdx % 2 == 0 )
+        ThreadOp.sleep(10);
+      else
+        ThreadOp.sleep(0);
       lineIdx++;
-      textline = StrOp.getLine( m_Text, lineIdx );
+      textline = StrOp.getLine( dlg->m_Text, lineIdx );
     }
+  }
+
+  wxCommandEvent doEvent( 4711 );
+  doEvent.SetClientData( NULL );
+  wxPostEvent( dlg, doEvent );
+
+  TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "formatRunner ended");
+  ThreadOp.base.del(dlg->m_FormatThread);
+  dlg->m_FormatThread = NULL;
+}
+
+
+void TraceDlg::doLine( wxCommandEvent& event ) {
+  const char* textline = (const char*)event.GetClientData();
+  if( textline != NULL )
+    addLine(textline);
+  else {
+    m_Status->SetLabel(wxT("Ready."));
+    m_Search->Enable(true);
     m_Trace->ShowPosition(0);
   }
+}
+
+void TraceDlg::onSearch( wxCommandEvent& event ) {
+  m_Trace->Clear();
+  m_Status->SetLabel(wxT("Formatting trace lines..."));
+  m_Search->Enable(false);
+
+  m_FormatThread = ThreadOp.inst( NULL, &formatRunner, this );
+  ThreadOp.start( m_FormatThread );
+
 }
 
 void TraceDlg::addLine(const char* buffer) {
@@ -260,15 +313,10 @@ void TraceDlg::traceEvent(iONode node) {
       m_Text = StrOp.dup(text);
     }
     TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "trace file [%s] len=%d", wDataReq.getfilename(node), StrOp.len(text) );
-    int lineIdx = 0;
-    char* textline = StrOp.getLine( m_Text, lineIdx );
-    while( textline != NULL ) {
-      addLine(textline);
-      lineIdx++;
-      textline = StrOp.getLine( m_Text, lineIdx );
-    }
 
-    m_Trace->ShowPosition(0);
+    wxCommandEvent event;
+    onSearch(event);
+
     m_Open->Enable(true);
 
   }
@@ -307,3 +355,9 @@ void TraceDlg::onClose( wxCloseEvent& event ) {
   wxGetApp().getFrame()->resetTraceRef();
   Destroy();
 }
+
+void TraceDlg::onID( wxCommandEvent& event ) {
+  onSearch(event);
+}
+
+
