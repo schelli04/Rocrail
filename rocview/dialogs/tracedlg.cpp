@@ -234,7 +234,6 @@ void TraceDlg::doLine( wxCommandEvent& event ) {
   else {
     m_Status->SetLabel(wxT("Ready."));
     m_Search->Enable(true);
-    m_Trace->ShowPosition(0);
   }
 }
 
