@@ -1676,6 +1676,8 @@ static void __theSwap(iOLoc loc, Boolean swap, Boolean consist, iONode cmd) {
     wLoc.setdir( cmd, wLoc.isdir(data->props) );
     LocOp.cmd(loc, cmd);
   }
+  __broadcastLocoProps( loc, NULL, NULL, NULL );
+
 }
 
 
@@ -1923,9 +1925,7 @@ static void __runner( void* threadinst ) {
 
     /* BBT 10ms cycle */
     if( !data->gomanual && wLoc.isusebbt(data->props) ) {
-      if( (StrOp.equals( wLoc.mode_wait, wLoc.getmode(data->props) ) || StrOp.equals( wLoc.mode_idle, wLoc.getmode(data->props) ) )
-          && !data->bbtExternalStop )
-      {
+      if( StrOp.equals( wLoc.mode_wait, wLoc.getmode(data->props) )  && !data->bbtExternalStop ) {
         __BBT(loc);
       }
       ThreadOp.sleep( RUNNERBBTTICK );
@@ -3859,10 +3859,10 @@ static void _setBlockEnterSide( iOLoc loc, Boolean enterside, const char* blockI
   /* Broadcast to clients. */
   if( blockId != NULL )
     __broadcastLocoProps( loc, NULL, NULL, blockId );
-  else
-    __broadcastLocoProps( loc, NULL, NULL, NULL );
-    /*__broadcastLocoProps( loc, NULL, NULL, data->curBlock );*/
-
+  else {
+    /*__broadcastLocoProps( loc, NULL, NULL, NULL );*/
+    __broadcastLocoProps( loc, NULL, NULL, data->curBlock );
+  }
 }
 
 
