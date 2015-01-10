@@ -612,11 +612,21 @@ static char* __getTrcFile( iOControl inst, const char* fileName ) {
 
   if( FileOp.exist(realpath) ) {
     iOFile file = FileOp.inst( realpath, OPEN_READONLY );
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "read trace file [%s] size=%ld", realpath, FileOp.size( file ) );
-    text = allocMem( FileOp.size( file ) + 1 );
-    FileOp.read( file, text, FileOp.size( file ) );
-    FileOp.close( file );
-    FileOp.base.del( file );
+    if( file != NULL ) {
+      if( FileOp.size( file ) > 110 * 1024 ) {
+        TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "trace file [%s] exeeds the 100KB limit; size=%ld", realpath, FileOp.size( file ) );
+        text = allocMem( 1024 );
+        StrOp.fmtb(text, "trace file [%s] exeeds the 100KB limit; size=%ld", realpath, FileOp.size( file ));
+      }
+      else {
+        TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "read trace file [%s] size=%ld", realpath, FileOp.size( file ) );
+        text = allocMem( FileOp.size( file ) + 1 );
+        FileOp.read( file, text, FileOp.size( file ) );
+      }
+
+      FileOp.close( file );
+      FileOp.base.del( file );
+    }
   }
   else {
     TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "trace file [%s] not found", realpath );
