@@ -361,3 +361,7 @@ void TraceDlg::onID( wxCommandEvent& event ) {
 }
 
 
+void TraceDlg::onText( wxCommandEvent& event ) {
+  onSearch(event);
+}
+

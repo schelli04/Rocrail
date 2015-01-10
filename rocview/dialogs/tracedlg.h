@@ -53,6 +53,7 @@ class TraceDlg : public TraceDlgGen
     void onLevel( wxCommandEvent& event );
     void onServerTraces( wxCommandEvent& event );
     void onID( wxCommandEvent& event );
+    void onText( wxCommandEvent& event );
     void doLine( wxCommandEvent& event );
 
 	public:
