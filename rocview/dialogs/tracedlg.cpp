@@ -51,7 +51,7 @@ TraceDlg::TraceDlg( wxWindow* parent ):TraceDlgGen( parent )
 
   Connect( 4711, wxCommandEventHandler( TraceDlg::doLine ) );
 
-  if( !wxGetApp().isStayOffline() ) {
+  if( !wxGetApp().isStayOffline() && !wxGetApp().isOffline() ) {
     /* Request the Rocrail server the current trace. */
     iONode cmd = NodeOp.inst( wDataReq.name(), NULL, ELEMENT_NODE );
     wDataReq.setcmd( cmd, wDataReq.gettracefile );
