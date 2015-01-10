@@ -86,6 +86,7 @@ void TraceDlg::initLabels() {
   m_Level->Append(wxT("Warning"));
   m_Level->Append(wxT("Automatic"));
   m_Level->Append(wxT("Calculation"));
+  m_Level->Append(wxT("Monitor"));
   m_Level->SetSelection(0);
 
   m_ObjectType->Append(wxT(""));
@@ -278,6 +279,8 @@ void TraceDlg::addLine(const char* buffer) {
     if( level == 3 && buffer[25] != 'a' )
       return;
     if( level == 4 && buffer[25] != 'v' )
+      return;
+    if( level == 5 && buffer[25] != 'c' )
       return;
   }
   if( buffer[25] == 'E' )
