@@ -739,6 +739,10 @@ static void* __event( void* inst, const void* evt ) {
     return NULL;
   }
 
+  if( wLoc.getaddr(evtNode) == 0 ) {
+    wLoc.setaddr(evtNode, wLoc.getaddr(data->props));
+  }
+
   if( StrOp.equals( wLoc.name(), NodeOp.getName(evtNode) ) && wLoc.getaddr( evtNode ) != wLoc.getsecaddr( data->props ) ) {
     int V = __getVfromRaw(inst, evtNode);
     int spcnt = wLoc.getspcnt( data->props );
@@ -782,7 +786,8 @@ static void* __event( void* inst, const void* evt ) {
     }
 
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "lc=%s V_raw=%d V=%d fn=%d dir=%s throttleID=%s",
-        wLoc.getid(data->props), V_raw, V, wLoc.isfn(data->props), wLoc.isdir(data->props)?"Forwards":"Reverse", wLoc.getthrottleid(data->props) );
+        wLoc.getid(data->props), V_raw, V, wLoc.isfn(data->props), wLoc.isdir(data->props)?"Forwards":"Reverse",
+        wLoc.getthrottleid(data->props)!=NULL?wLoc.getthrottleid(data->props):"-" );
     /* Broadcast to clients. */
     if( broadcast ) {
       __broadcastLocoProps(inst, NULL, NULL, NULL);
@@ -800,7 +805,7 @@ static void* __event( void* inst, const void* evt ) {
       wLoc.setthrottleid( data->props, wLoc.getthrottleid(evtNode) );
       if( SystemOp.getTick() - data->lastfncmd > 100 ) {
         TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "trigger sound for external throttle lc=%s throttleid=%s",
-            wLoc.getid( data->props ), wLoc.getthrottleid( data->props));
+            wLoc.getid( data->props ), wLoc.getthrottleid(data->props)!=NULL?wLoc.getthrottleid(data->props):"-");
         __doSound( inst, evtNode );
       }
       __checkConsist(inst, evtNode, True);
