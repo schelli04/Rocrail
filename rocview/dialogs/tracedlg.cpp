@@ -303,6 +303,7 @@ void TraceDlg::addLine(const char* buffer) {
 
 void TraceDlg::traceEvent(iONode node) {
   if( wDataReq.getcmd(node) == wDataReq.gettracefile ) {
+    TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "trace file [%s] received", wDataReq.getfilename(node) );
     SetTitle(wxGetApp().getMsg( "trace" ) + wxT(": ") + wxString(wDataReq.getfilename(node),wxConvUTF8) );
     m_Status->SetLabel(wxT("Trace file from server received."));
 
@@ -318,7 +319,7 @@ void TraceDlg::traceEvent(iONode node) {
         StrOp.free(m_Text);
       m_Text = StrOp.dup(text);
     }
-    TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "trace file [%s] len=%d", wDataReq.getfilename(node), StrOp.len(text) );
+    TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "trace text [%s] length=%d", wDataReq.getfilename(node), StrOp.len(text) );
 
     wxCommandEvent event;
     onSearch(event);
@@ -327,6 +328,7 @@ void TraceDlg::traceEvent(iONode node) {
 
   }
   else if( wDataReq.getcmd(node) == wDataReq.gettracedir ) {
+    TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "Trace directory from server received." );
     m_Status->SetLabel(wxT("Trace directory from server received."));
     m_ServerTraces->Clear();
     m_ServerTraces->Append( wxT("") );
@@ -335,6 +337,7 @@ void TraceDlg::traceEvent(iONode node) {
       iONode fileentry = wDirEntry.getfileentry(direntry);
       while( fileentry != NULL ) {
         char* entry = StrOp.fmt("%s, %ld bytes, %s", wFileEntry.getfname(fileentry), wFileEntry.getsize(fileentry), wFileEntry.gettime(fileentry));
+        TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "Server trace file: [%s].", entry );
         StrOp.replaceAll(entry, '\n', '\0');
         StrOp.replaceAll(entry, '\r', '\0');
         m_ServerTraces->Append( wxString(entry, wxConvUTF8));
