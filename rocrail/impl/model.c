@@ -3038,7 +3038,7 @@ static iOLoc _getLocByAddress( iOModel inst, int addr, const char* iid ) {
 
   for( i = 0; i < cnt; i++ ) {
     iOLoc loc = (iOLoc)ListOp.get( o->locList, i );
-    if( LocOp.getAddress(loc) == addr || LocOp.getSecAddress(loc) == addr ) {
+    if( LocOp.getAddress(loc) == addr || (addr > 0 && LocOp.getSecAddress(loc) == addr) ) {
       if( iid != NULL && StrOp.len(iid) > 0 ) {
         const char* lciid = wLoc.getiid(LocOp.base.properties(loc));
         if( lciid != NULL && StrOp.len(lciid) > 0 ) {
@@ -3969,12 +3969,13 @@ static void _event( iOModel inst, iONode nodeC ) {
     const char* ident = wLoc.getidentifier( nodeC );
     const char* cmd = wLoc.getcmd( nodeC );
 
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "Loco/Car event: %d", addr);
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "Loco/Car event with address %d", addr);
 
     iOLoc lc = ModelOp.getLocByAddress(inst, addr, iid);
 
     /* check if the loco ID ist set if not found by address */
     if( lc == NULL && id != NULL && StrOp.len(id) > 0 ) {
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "get loco by id: %s", id);
       lc = ModelOp.getLoc(inst, id, NULL, False);
     }
 

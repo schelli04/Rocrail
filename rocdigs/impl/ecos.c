@@ -1610,7 +1610,7 @@ static void __processLocoEvents( iOECoS inst, iONode node ) {
         if ( ( velocityVal != -1) && ( velocityVal <= 127)) {
           iONode nodeC = NULL;
 
-          TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "velocity [%s,%s,%d]", ecosLocoNameStr, rrLocoNameStr, velocityVal);
+          TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "velocity [%s,%s,%d]", ecosLocoNameStr, rrLocoNameStr, velocityVal);
 
           nodeC = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE);
           if( data->iid != NULL)
@@ -1632,7 +1632,7 @@ static void __processLocoEvents( iOECoS inst, iONode node ) {
         if ( ( directionVal != -1) && ( directionVal <= 1)) {
           iONode nodeC = NULL;
 
-          TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "direction [%s,%s,%d]", ecosLocoNameStr, rrLocoNameStr, directionVal);
+          TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "direction [%s,%s,%d]", ecosLocoNameStr, rrLocoNameStr, directionVal);
 
           nodeC = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE);
           if( data->iid != NULL)
@@ -1654,7 +1654,7 @@ static void __processLocoEvents( iOECoS inst, iONode node ) {
 
         if ( ( functionNumber != -1) && ( functionNumber <= 28) && ( functionVal != -1) && ( functionVal <= 1)) {
 
-          TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "function [%s,%s,%d]", ecosLocoNameStr, rrLocoNameStr, functionVal);
+          TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "function [%s,%s,%d]", ecosLocoNameStr, rrLocoNameStr, functionVal);
 
           if ( functionNumber == 0) {
             iONode nodeC = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE);
