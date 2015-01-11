@@ -40,6 +40,7 @@ class TraceDlg : public TraceDlgGen
     void initLabels();
     char* m_Text;
     iOThread m_FormatThread;
+    int m_iLine;
 
 	protected:
 		// Handlers for TraceDlgGen events.

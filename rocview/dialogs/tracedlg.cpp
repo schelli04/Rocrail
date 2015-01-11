@@ -184,12 +184,14 @@ static void formatRunner( void* threadinst ) {
 
   TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "formatRunner started");
 
+  dlg->m_iLine = 0;
 
   if( dlg->m_TraceFile != NULL) {
     iOFile f = FileOp.inst( dlg->m_TraceFile, OPEN_READONLY );
     char* buffer = (char*)allocMem( FileOp.size( f ) +1 );
     int lineIdx = 0;
     while( FileOp.readStr(f, buffer)) {
+      dlg->m_iLine++;
       wxCommandEvent doEvent( 4711 );
       doEvent.SetClientData( buffer );
       wxPostEvent( dlg, doEvent );
@@ -205,6 +207,7 @@ static void formatRunner( void* threadinst ) {
     int lineIdx = 0;
     char* textline = StrOp.getLine( dlg->m_Text, lineIdx );
     while( textline != NULL ) {
+      dlg->m_iLine++;
       wxCommandEvent doEvent( 4711 );
       doEvent.SetClientData( textline );
       wxPostEvent( dlg, doEvent );
@@ -248,6 +251,7 @@ void TraceDlg::onSearch( wxCommandEvent& event ) {
 }
 
 void TraceDlg::addLine(const char* buffer) {
+  m_Status->SetLabel(wxString::Format(wxT("Formatting trace line %d..."), m_iLine) );
   TraceOp.trc( "tracedlg", TRCLEVEL_DEBUG, __LINE__, 9999, "add line [%s]", buffer );
   if( m_ID->GetValue().Len() > 0 ) {
     char* idFilter = StrOp.dup((const char*)m_ID->GetValue().mb_str(wxConvUTF8));
