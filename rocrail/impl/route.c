@@ -62,6 +62,7 @@
 #include "rocrail/wrapper/public/Feedback.h"
 #include "rocrail/wrapper/public/Item.h"
 #include "rocrail/wrapper/public/Block.h"
+#include "rocrail/wrapper/public/ModelCmd.h"
 
 static int instCnt = 0;
 static iOMutex __routeSem = NULL;
@@ -1446,6 +1447,7 @@ static Boolean _unLink( iORoute inst ) {
 static void _modify( iORoute inst, iONode props ) {
   iORouteData data = Data(inst);
   int cnt = NodeOp.getAttrCnt( props );
+  Boolean move = StrOp.equals( wModelCmd.getcmd( props ), wModelCmd.move );
   int i = 0;
 
   __initCTC(inst, True);
@@ -1461,19 +1463,24 @@ static void _modify( iORoute inst, iONode props ) {
     NodeOp.setStr( data->props, name, value );
   }
 
-  cnt = NodeOp.getChildCnt( data->props );
-  while( cnt > 0 ) {
-    iONode child = NodeOp.getChild( data->props, 0 );
-    iONode removedChild = NodeOp.removeChild( data->props, child );
-    if( removedChild != NULL) {
-      NodeOp.base.del(removedChild);
-    }
+  if( !move ) {
     cnt = NodeOp.getChildCnt( data->props );
+    while( cnt > 0 ) {
+      iONode child = NodeOp.getChild( data->props, 0 );
+      iONode removedChild = NodeOp.removeChild( data->props, child );
+      if( removedChild != NULL) {
+        NodeOp.base.del(removedChild);
+      }
+      cnt = NodeOp.getChildCnt( data->props );
+    }
+    cnt = NodeOp.getChildCnt( props );
+    for( i = 0; i < cnt; i++ ) {
+      iONode child = NodeOp.getChild( props, i );
+      NodeOp.addChild( data->props, (iONode)NodeOp.base.clone(child) );
+    }
   }
-  cnt = NodeOp.getChildCnt( props );
-  for( i = 0; i < cnt; i++ ) {
-    iONode child = NodeOp.getChild( props, i );
-    NodeOp.addChild( data->props, (iONode)NodeOp.base.clone(child) );
+  else {
+    NodeOp.removeAttrByName(data->props, "cmd");
   }
 
   StrOp.free(data->routeLockId);
