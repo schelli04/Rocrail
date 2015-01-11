@@ -755,6 +755,7 @@ static iONode __mergeModule( iOModPlanData data, iONode model, iONode module, in
     _mergeList(wActionList.name()   , model, moduleRoot, level, r, cx, cy, informClients);
     _mergeList(wLocationList.name() , model, moduleRoot, level, r, cx, cy, informClients);
     _mergeList(wBoosterList.name()  , model, moduleRoot, level, r, cx, cy, informClients);
+    _mergeList(wVariableList.name() , model, moduleRoot, level, r, cx, cy, informClients);
 
     __resolveRoutes( data, model, module, moduleRoot, level );
 
