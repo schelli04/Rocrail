@@ -225,8 +225,7 @@ static void formatRunner( void* threadinst ) {
   wxPostEvent( dlg, doEvent );
 
   TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "formatRunner ended");
-  ThreadOp.base.del(dlg->m_FormatThread);
-  dlg->m_FormatThread = NULL;
+  ThreadOp.base.del(th);
 }
 
 
