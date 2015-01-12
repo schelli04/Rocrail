@@ -29364,4 +29364,7 @@
   <Msg id="shutdownonexit">
     <en txt="Shutdown on exit"/>
   </Msg>
+  <Msg id="milliseconds">
+    <en txt="ms"/>
+  </Msg>
 </Messages>

@@ -7679,3 +7679,9 @@ msgstr ""
 msgid "Shutdown on exit"
 msgstr ""
 
+#. 
+# id="milliseconds"
+#, c-format
+msgid "ms"
+msgstr ""
+
