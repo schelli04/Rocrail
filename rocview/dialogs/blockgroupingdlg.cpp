@@ -761,7 +761,8 @@ void BlockGroupingDialog::OnComboboxLinkMainSelected( wxCommandEvent& event )
 
 void BlockGroupingDialog::OnButtonLinkAddClick( wxCommandEvent& event )
 {
-  m_BlockList->Append( m_AddBlockList->GetStringSelection() );
+  if( !m_AddBlockList->GetStringSelection().IsEmpty() )
+    m_BlockList->Append( m_AddBlockList->GetStringSelection() );
 }
 
 
