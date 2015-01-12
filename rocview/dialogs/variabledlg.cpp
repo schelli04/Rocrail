@@ -80,6 +80,12 @@ void VariableDlg::initLabels() {
   m_labText->SetLabel( wxGetApp().getMsg( "text" ) );
   m_labValue->SetLabel( wxGetApp().getMsg( "value" ) );
   m_Actions->SetLabel( wxGetApp().getMsg( "actions" )+_T("...") );
+
+  // Buttons
+  m_StandardButtonsOK->SetLabel( wxGetApp().getMsg( "ok" ) );
+  m_StandardButtonsCancel->SetLabel( wxGetApp().getMsg( "cancel" ) );
+  m_StandardButtonsApply->SetLabel( wxGetApp().getMsg( "apply" ) );
+  m_StandardButtonsHelp->SetLabel( wxGetApp().getMsg( "help" ) );
 }
 
 void VariableDlg::onListSelected( wxListEvent& event ) {

@@ -259,6 +259,7 @@ void CarDlg::initLabels() {
   m_stdButtonOK->SetLabel( wxGetApp().getMsg( "ok" ) );
   m_stdButtonCancel->SetLabel( wxGetApp().getMsg( "cancel" ) );
   m_stdButtonApply->SetLabel( wxGetApp().getMsg( "apply" ) );
+  m_stdButtonHelp->SetLabel( wxGetApp().getMsg( "help" ) );
   m_stdButtonApply->Enable( m_bSave );
 }
 
