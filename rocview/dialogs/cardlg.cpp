@@ -763,6 +763,10 @@ bool CarDlg::evaluate(){
 }
 
 
+void CarDlg::onImageChooser( wxCommandEvent& event ) {
+  onCarImage(event);
+}
+
 void CarDlg::onCarImage( wxCommandEvent& event ){
   if( m_Props == NULL )
     return;
