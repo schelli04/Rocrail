@@ -5128,7 +5128,7 @@ void RocGuiFrame::OnCellLeftClick( wxGridEvent& event ){
     // TODO: Block if the event is not initiated from the mouse.
     //else if( event.GetCol() == LOC_COL_ID && event.GetEventType() == wxEVT_LEFT_DOWN  ) {
     // 10217 seems to be the mouse event
-    else if( !m_FakeLeftClick && event.GetCol() == LOC_COL_ID && lc != NULL ) {
+    else if( !m_FakeLeftClick && (event.GetCol() == LOC_COL_ID || event.GetCol() == LOC_COL_CONSIST || event.GetCol() == LOC_COL_IMAGE) && lc != NULL ) {
       TraceOp.trc( "frame", TRCLEVEL_INFO, __LINE__, 9999, "D&D eventtype [%d]", event.GetEventType() );
 
       wxString my_text = _T("moveto:")+wxString(wLoc.getid(lc),wxConvUTF8)+_T("::");
