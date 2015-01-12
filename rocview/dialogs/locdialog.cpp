@@ -142,6 +142,7 @@ BEGIN_EVENT_TABLE( LocDialog, wxDialog )
     EVT_BUTTON( ID_BUTTON_LC_CV_DESC, LocDialog::OnButtonLcCvDescClick )
 
     EVT_LIST_ITEM_SELECTED( ID_LOC_BBTLIST2, LocDialog::OnLocBbtlist2Selected )
+    EVT_LIST_COL_CLICK( ID_LOC_BBTLIST2, LocDialog::OnLocBbtlist2ColLeftClick )
 
     EVT_BUTTON( ID_BBT_MODIFY, LocDialog::OnBbtModifyClick )
 
@@ -165,6 +166,8 @@ END_EVENT_TABLE()
 /*!
  * LocDialog constructors
  */
+
+static bool ms_BBTSort = true;
 
 LocDialog::LocDialog(  wxWindow* parent, iONode p_Props, bool save )
 {
@@ -3620,11 +3623,107 @@ void LocDialog::OnLocBbtlist2Selected( wxListEvent& event )
   }
 }
 
+
+static int __sortBBTFromBlock(obj* _a, obj* _b)
+{
+    iONode a = (iONode)*_a;
+    iONode b = (iONode)*_b;
+    const char* idA = wBBT.getfrombk( a );
+    const char* idB = wBBT.getfrombk( b );
+    return ms_BBTSort ? strcmp( idA, idB ):strcmp( idB, idA );
+}
+
+
+static int __sortBBTBlock(obj* _a, obj* _b)
+{
+    iONode a = (iONode)*_a;
+    iONode b = (iONode)*_b;
+    const char* idA = wBBT.getbk( a );
+    const char* idB = wBBT.getbk( b );
+    return ms_BBTSort ? strcmp( idA, idB ):strcmp( idB, idA );
+}
+
+
+static int __sortBBTInterval(obj* _a, obj* _b)
+{
+    iONode a = (iONode)*_a;
+    iONode b = (iONode)*_b;
+    if( wBBT.getinterval(a) > wBBT.getinterval(b) )
+      return ms_BBTSort ? 1:-1;
+    if( wBBT.getinterval(a) < wBBT.getinterval(b) )
+      return ms_BBTSort ? -1:1;
+    return 0;
+}
+
+
+static int __sortBBTSteps(obj* _a, obj* _b)
+{
+    iONode a = (iONode)*_a;
+    iONode b = (iONode)*_b;
+    if( wBBT.getsteps(a) > wBBT.getsteps(b) )
+      return ms_BBTSort ? 1:-1;
+    if( wBBT.getsteps(a) < wBBT.getsteps(b) )
+      return ms_BBTSort ? -1:1;
+    return 0;
+}
+
+
+static int __sortBBTCount(obj* _a, obj* _b)
+{
+    iONode a = (iONode)*_a;
+    iONode b = (iONode)*_b;
+    if( wBBT.getcount(a) > wBBT.getcount(b) )
+      return ms_BBTSort ? 1:-1;
+    if( wBBT.getcount(a) < wBBT.getcount(b) )
+      return ms_BBTSort ? -1:1;
+    return 0;
+}
+
+
+static int __sortBBTFixed(obj* _a, obj* _b)
+{
+    iONode a = (iONode)*_a;
+    iONode b = (iONode)*_b;
+    if( wBBT.isfixed(a) > wBBT.isfixed(b) )
+      return ms_BBTSort ? 1:-1;
+    if( wBBT.isfixed(a) < wBBT.isfixed(b) )
+      return ms_BBTSort ? -1:1;
+    return 0;
+}
+
+
 void LocDialog::initBBT() {
   m_BBTList2->DeleteAllItems();
+  iOList list = ListOp.inst();
   iONode bbt = wLoc.getbbt( m_Props );
-  int i = 0;
+
   while( bbt != NULL ) {
+    ListOp.add(list, (obj)bbt);
+    bbt = wLoc.nextbbt( m_Props, bbt );
+  };
+
+  if( m_BBTSortCol == 1 ) {
+    ListOp.sort(list, &__sortBBTBlock);
+  }
+  else if( m_BBTSortCol == 2 ) {
+    ListOp.sort(list, &__sortBBTInterval);
+  }
+  else if( m_BBTSortCol == 3 ) {
+    ListOp.sort(list, &__sortBBTSteps);
+  }
+  else if( m_BBTSortCol == 4 ) {
+    ListOp.sort(list, &__sortBBTCount);
+  }
+  else if( m_BBTSortCol == 5 ) {
+    ListOp.sort(list, &__sortBBTFixed);
+  }
+  else {
+    ListOp.sort(list, &__sortBBTFromBlock);
+  }
+
+  int cnt = ListOp.size(list);
+  for( int i = 0; i < cnt; i++ ) {
+    bbt = (iONode)ListOp.get(list, i);
     m_BBTList2->InsertItem( i, wLoc.isbbtusefromblock(m_Props) ? wxString(wBBT.getfrombk(bbt),wxConvUTF8):wxT("-") );
     m_BBTList2->SetItem( i, 1, wxString(wBBT.getbk(bbt), wxConvUTF8) );
     m_BBTList2->SetItem( i, 2, wxString::Format(wxT("%d"), wBBT.getinterval(bbt)) );
@@ -3633,10 +3732,9 @@ void LocDialog::initBBT() {
     m_BBTList2->SetItem( i, 5, wBBT.isfixed(bbt) ? wxGetApp().getMsg("yes"):wxGetApp().getMsg("no") );
     m_BBTList2->SetItemPtrData(i, (wxUIntPtr)bbt);
     TraceOp.trc( "locdlg", TRCLEVEL_INFO, __LINE__, 9999, "bbt[%d]=%lx", i, bbt );
+  }
+  ListOp.base.del(list);
 
-    i++;
-    bbt = wLoc.nextbbt( m_Props, bbt );
-  };
   // resize
   for( int n = 0; n < 6; n++ ) {
     m_BBTList2->SetColumnWidth(n, wxLIST_AUTOSIZE_USEHEADER);
@@ -3851,5 +3949,21 @@ void LocDialog::OnLocManuallyClick( wxCommandEvent& event )
 void LocDialog::OnSelectLocoimage( wxCommandEvent& event )
 {
   OnBitmapbuttonClick(event);
+}
+
+
+/*!
+ * wxEVT_COMMAND_LIST_COL_CLICK event handler for ID_LOC_BBTLIST2
+ */
+
+void LocDialog::OnLocBbtlist2ColLeftClick( wxListEvent& event )
+{
+  if(m_BBTSortCol == event.GetColumn())
+    ms_BBTSort = !ms_BBTSort;
+  else
+    ms_BBTSort = true;
+
+  m_BBTSortCol = event.GetColumn();
+  initBBT();
 }
 

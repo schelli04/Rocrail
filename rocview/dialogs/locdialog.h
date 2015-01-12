@@ -202,6 +202,7 @@ class LocDialog: public wxDialog, public BaseDialog
   int m_iSelectedCV;
   iONode m_CVNodes[1024];
   int m_iFunGroup;
+  int m_BBTSortCol;
 
 public:
     /// Constructors
@@ -342,6 +343,9 @@ public:
 
     /// wxEVT_COMMAND_LIST_ITEM_SELECTED event handler for ID_LOC_BBTLIST2
     void OnLocBbtlist2Selected( wxListEvent& event );
+
+    /// wxEVT_COMMAND_LIST_COL_CLICK event handler for ID_LOC_BBTLIST2
+    void OnLocBbtlist2ColLeftClick( wxListEvent& event );
 
     /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_BBT_MODIFY
     void OnBbtModifyClick( wxCommandEvent& event );
