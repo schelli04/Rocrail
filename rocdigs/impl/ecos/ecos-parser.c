@@ -457,21 +457,17 @@ static void __parseRow( iONode node, const char* p_replyline ) {
         /* Check for empty string after name */
 
       if ( val == NULL ) {
-
-          /* unexpected */
-
-        TraceOp.trc( "ecosparser", TRCLEVEL_EXCEPTION, __LINE__, 9999, "not well formed, ends with '['" );
-        return;
+        val="";
       }
-
+      else {
         /* determine attribute value */
-
-      len = StrOp.len( val );
-      for ( i = 0; i < len; i++ ) {
-        if ( val[ i ] == ']' ) {
-          val[ i ] = '\0';         /* end attribute value */
-          lastattr  = val + i + 1;
-          break;
+        len = StrOp.len( val );
+        for ( i = 0; i < len; i++ ) {
+          if ( val[ i ] == ']' ) {
+            val[ i ] = '\0';         /* end attribute value */
+            lastattr  = val + i + 1;
+            break;
+          }
         }
       }
 

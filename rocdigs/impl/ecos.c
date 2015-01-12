@@ -1957,9 +1957,16 @@ static void __processSystemEvents( iOECoS inst, iONode node ) {
   if( cnt > 0 ) {
     iONode child = NodeOp.getChild(node, 0);
     const char* status = NodeOp.getStr(child, "status", "?");
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "system status is [%s]", status );
-    data->power = StrOp.equals("GO", status);
-    __reportState(inst);
+    if( StrOp.equals("?", status ) ) {
+      char* xml = NodeOp.base.toString(node);
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Unhandled: %s", xml );
+      StrOp.free(xml);
+    }
+    else {
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "system status is [%s]", status );
+      data->power = StrOp.equals("GO", status);
+      __reportState(inst);
+    }
   }
 }
 
