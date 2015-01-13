@@ -7299,7 +7299,7 @@
     <fi txt="Zoomaus" tip="Ratasuunnitelman koko."/>
   </Msg>
   <Msg id="trace">
-    <de txt="Fehlerprotokoll"/>
+    <de txt="Trace"/>
     <en txt="Trace"/>
     <nl txt="Trace"/>
     <sv txt="Logg"/>
@@ -7331,7 +7331,7 @@
     <pl txt="Logowanie"/>
   </Msg>
   <Msg id="tracefile">
-    <de txt="Log Datei"/>
+    <de txt="Trace-Datei"/>
     <en txt="Trace file"/>
     <nl txt="Trace bestand"/>
     <sv txt="Loggfil"/>
@@ -7362,7 +7362,7 @@
     <fi txt="Jäljitystiedosto"/>
   </Msg>
   <Msg id="tracelevel">
-    <de txt="Log Protokoll Intensität"/>
+    <de txt="Trace-Ebene"/>
     <en txt="Trace level"/>
     <nl txt="Trace nivo"/>
     <sv txt="Loggnivå"/>
@@ -10597,7 +10597,7 @@
     <de txt="WebClient"/>
     <en txt="WebClient"/>
     <nl txt="WebClient"/>
-    <sv txt="WebClient"/>
+    <sv txt="WebKlient"/>
     <fr txt="Client web"/>
     <tr txt="WebClient"/>
     <es txt="WebClient"/>
@@ -13620,7 +13620,7 @@
     <pl txt="Katalog aktualizacji"/>
   </Msg>
   <Msg id="errorondownloading">
-    <de txt="Fehler beim Herunterladen! Details finden Sie im Logfile."/>
+    <de txt="Fehler beim Herunterladen! Für Einzelheiten Trace-Datei prüfen."/>
     <en txt="Error on downloading! Check trace for details."/>
     <nl txt="Fout bij het downloaden! Kijk in het logbestand voor details."/>
     <sv txt="Nedladdningsfel! Se logg för detaljer."/>
@@ -16465,7 +16465,7 @@
     <de txt="Nur erster Client kann bedienen"/>
     <en txt="Only first can control"/>
     <nl txt="Alleen de eerste kan bedienen"/>
-    <sv txt="Only first can control"/>
+    <sv txt="Endast först anslutna kan kontrollera"/>
     <fr txt="Seul le premier peut prendre le contrôle"/>
     <tr txt="Only first can control"/>
     <es txt="Only first can control"/>
@@ -20299,7 +20299,7 @@
     <cs txt="Zasílat všechny serverové vlakové cesty Rocview"/>
     <da txt="Send alle serverspor til Rocview"/>
     <nl txt="Stuur alle server meldingen naar Rocview"/>
-    <de txt="Senden aller Server Logs an Rocview"/>
+    <de txt="Senden aller Server-Traces an Rocview"/>
     <it txt="Invia tutti i messaggi del server a Rocview"/>
     <pt txt="Enviar todos os traços do servidor ao Rocview"/>
     <ru txt="Послать все трейсы сервера в Rocview"/>
@@ -21888,7 +21888,7 @@
     <sr_latin txt="Analiza" tip="Analiziraj plan pruga za određivanje ruta."/>
     <ja txt="解析"/>
     <cs txt="Analyzovat" tip="Analyzovat plán trati pro vytváření cest"/>
-    <sv txt="Analysera." tip="Analysera spårplan för att generera tågvägar."/>
+    <sv txt="Analysera." tip="Analysera spårplan för att generera rutter"/>
     <zh_CN txt="分析" tip="从铁路线模拟图进行分析生成路径"/>
     <sl txt="Analiziraj" tip="Analiziraj tirni načrt za generiranje smeri"/>
     <en_GB txt="Analyse" tip="Analyse track plan for generating routes."/>
@@ -24061,6 +24061,7 @@
     <en_CA txt="Close on no events"/>
     <pl txt="Zamknij bloki jeśli nie ma żadnych zdarzeń"/>
     <fr txt="Fermer si pas d'évènement"/>
+    <sv txt="Stäng block om ingen händelse är vald"/>
   </Msg>
   <Msg id="every">
     <en txt="every"/>
@@ -24428,7 +24429,7 @@
     <ru txt="Issue" tip="Create a server issue context."/>
     <pt_BR txt="Incidente" tip="Criar um contexto de incidente do servidor."/>
     <en_GB txt="Issue" tip="Create a server issue context."/>
-    <sv txt="Ärende"/>
+    <sv txt="Ärende" tip="Skapa en sammanfattning av serverproblem"/>
     <fi txt="Tapaus" tip="Luo palvelimen ongelmatapaus."/>
     <en_AU txt="Issue" tip="Create a server issue context."/>
     <en_CA txt="Issue" tip="Create a server issue context."/>
@@ -24451,6 +24452,7 @@
     <pl txt="Katalog zgłoszeń"/>
     <es txt="Ruta del problema"/>
     <fr txt="Répertoire des problèmes"/>
+    <sv txt="Problemsökväg"/>
   </Msg>
   <Msg id="reconnectafterservershutdown">
     <en txt="Reconnect after server shutdown"/>
@@ -25318,6 +25320,7 @@
     <en_CA txt="Basic checks on all items"/>
     <pl txt="Podstawowa kontrola wszystkich elementów"/>
     <fr txt="Vérification basique de tous les éléments"/>
+    <sv txt="Grundläggande kontroll av alla enheter"/>
   </Msg>
   <Msg id="ana_blockCheck">
     <en txt="Checks concerning blocks"/>
@@ -27651,6 +27654,7 @@
     <pl txt="Symetryczne"/>
     <fr txt="Centre"/>
     <ru txt="По центру"/>
+    <sv txt="Mitten"/>
   </Msg>
   <Msg id="mainline">
     <en txt="Mainline"/>
@@ -27716,6 +27720,7 @@
     <en_CA txt="Disable block wait for half automatic"/>
     <pl txt="Wyłącz oczekiwanie w bloku półautomatycznym"/>
     <fr txt="Désactiver attente en mode semi-auto."/>
+    <sv txt="Använd inte blockväntetid i manuellt läge"/>
   </Msg>
   <Msg id="simulatesensors">
     <en txt="Simulate sensors"/>
@@ -27852,6 +27857,7 @@
     <pt_BR txt="Limite mínimo"/>
     <zh_CN txt="阈值"/>
     <fr txt="Seuil Min."/>
+    <sv txt="Tröskelvärde"/>
   </Msg>
   <Msg id="monitordontwrap">
     <en txt="Monitor don't wrap"/>
@@ -28023,6 +28029,7 @@
     <fr txt="Envoyer l'ordre de vitesse nulle à la mise sous tension"/>
     <zh_CN txt="在电源开启时发送零速度指令"/>
     <fi txt="Lähetä nollanopeuskomentoa käynnistyessä"/>
+    <sv txt="Sänd hastighetskommando \&quot;0\&quot; vid ström på"/>
   </Msg>
   <Msg id="useonlyfirstident">
     <en txt="Use only the first identifier"/>
@@ -28037,6 +28044,7 @@
     <zh_CN txt="仅用第一标识"/>
     <ru txt="Использовать только первый Идентификатор"/>
     <fi txt="Käytä vain ensimmäistä identifieriä"/>
+    <sv txt="Använd endast första identifieraren"/>
   </Msg>
   <Msg id="useident">
     <en txt="Use identifier to set in block"/>
@@ -28050,6 +28058,7 @@
     <zh_CN txt="使用标识设置区段"/>
     <fr txt="Utiliser l'identifieur pour mettre dans le bloc"/>
     <fi txt="Käytä identifieriä asettaaksesi raideosuudelle"/>
+    <sv txt="Använd identifierare till block"/>
   </Msg>
   <Msg id="stagetable" dialog="true">
     <en txt="Staging block table" alttxt="Staging Blocks" tip="Staging block table"/>
@@ -28077,6 +28086,7 @@
     <fr txt="Autres"/>
     <zh_CN txt="其他"/>
     <fi txt="Muut"/>
+    <sv txt="Övriga"/>
   </Msg>
   <Msg id="nrtracefiles">
     <en txt="Number of trace files"/>
@@ -28084,7 +28094,7 @@
     <sr_latin txt="Broj trejs fajlova"/>
     <nl txt="Aantal trace bestanden"/>
     <pt_BR txt="Número de arquivos de rastreamento"/>
-    <de txt="Anzahl Log-Dateien"/>
+    <de txt="Anzahl Trace-Dateien"/>
     <sl txt="Število datotek sledenja"/>
     <en_GB txt="Number of trace files"/>
     <sv txt="Antal \&quot;trace\&quot; filer"/>
@@ -28099,13 +28109,14 @@
     <sr_latin txt="Veličina trejs fajla u KB"/>
     <nl txt="Trace bestand grootte"/>
     <pt_BR txt="Tamanho do arquivo de rastreamento em KB"/>
-    <de txt="Log-Datei-Größe in kB"/>
+    <de txt="Trace-Datei-Größe in kB"/>
     <sl txt="Velikost datoteke sledenja v kB"/>
     <en_GB txt="Trace file size in KB"/>
     <fr txt="Taille du ficher Trace en KB"/>
     <zh_CN txt="跟踪文件大小（KB）"/>
     <fi txt="Jäljitystiedoston koko kilotavuissa"/>
     <ru txt="Размер tarce файла в кБ"/>
+    <sv txt="Spårningsfil storlek i KB"/>
   </Msg>
   <Msg id="recording">
     <en txt="Recording"/>
@@ -28177,7 +28188,7 @@
     <it txt="Chiudere anche il server Rocrail?"/>
     <en_GB txt="Shutdown the Rocrail server too?"/>
     <fr txt="Eteindre également le serveur RocRail ?"/>
-    <sv txt="Avsluta Rocrailservern med?"/>
+    <sv txt="Vill du även avsluta Rocrailservern?"/>
     <zh_CN txt="关闭rocrail服务器吗?"/>
     <ru txt="Выключить и Rocrail сервер?"/>
     <fi txt="Sammuta myös Rocrail-palvelin?"/>
@@ -28237,6 +28248,7 @@
     <zh_CN txt="速度表"/>
     <ru txt="Спидометр"/>
     <fi txt="Nopeusmittari"/>
+    <sv txt="Hastighetsmätare"/>
   </Msg>
   <Msg id="backlight">
     <en txt="Backlight"/>
@@ -28332,6 +28344,7 @@
     <en_GB txt="The changes will be saved."/>
     <ru txt="Изменения будут сохранены."/>
     <fi txt="Muutokset tallennetaan."/>
+    <sv txt="Ändringen kommer att sparas"/>
   </Msg>
   <Msg id="swapped">
     <en txt="Swapped"/>
@@ -28345,6 +28358,7 @@
     <en_GB txt="Swapped"/>
     <ru txt="Развернуть"/>
     <fi txt="Vaihdettu"/>
+    <sv txt="Bytt"/>
   </Msg>
   <Msg id="locoimagecolumn">
     <en txt="Loco image column"/>
@@ -28383,6 +28397,7 @@
     <sl txt="Ravni tir"/>
     <sr_latin txt="Prava šina"/>
     <fi txt="Suora rata"/>
+    <sv txt="Rak räls"/>
   </Msg>
   <Msg id="track_curve">
     <en txt="Curved track"/>
@@ -28396,6 +28411,7 @@
     <sl txt="Zavoj"/>
     <sr_latin txt="Kriva šina"/>
     <fi txt="Kaarteinen rata"/>
+    <sv txt="Kurvräls"/>
   </Msg>
   <Msg id="track_buffer">
     <en txt="Track bumper"/>
@@ -28422,6 +28438,7 @@
     <sr_latin txt="Šina pravca"/>
     <fi txt="Radan suunta"/>
     <en_GB txt="Track direction"/>
+    <sv txt="Rälsriktning"/>
   </Msg>
   <Msg id="track_dirall">
     <en txt="Track all directions"/>
@@ -28487,6 +28504,7 @@
     <sl txt="Leva kretnica"/>
     <sr_latin txt="Leva skretnica"/>
     <fi txt="Vasen vaihde"/>
+    <sv txt="Vänster växel"/>
   </Msg>
   <Msg id="switch_right">
     <en txt="Right turnout"/>
@@ -28500,6 +28518,7 @@
     <sl txt="Desna kretnica"/>
     <sr_latin txt="Desna skretnica"/>
     <fi txt="Oikea vaihde"/>
+    <sv txt="Höger växel"/>
   </Msg>
   <Msg id="crossing_right">
     <en txt="Right crossing"/>
@@ -28513,6 +28532,7 @@
     <sl txt="Desno križanje"/>
     <sr_latin txt="Desno ukrštanje"/>
     <fi txt="Oikea risteys"/>
+    <sv txt="Höger korsning"/>
   </Msg>
   <Msg id="crossing_left">
     <en txt="Left crossing"/>
@@ -28526,6 +28546,7 @@
     <sl txt="Levo križanje"/>
     <sr_latin txt="Levo ukrštanje"/>
     <fi txt="Vasen risteys"/>
+    <sv txt="Vänster korsning"/>
   </Msg>
   <Msg id="dcrossing_right">
     <en txt="Right double slip switch"/>
@@ -28578,6 +28599,7 @@
     <sl txt="Glavni signal"/>
     <sr_latin txt="Glavni semafor"/>
     <fi txt="Pääopastin (siipiopastin)"/>
+    <sv txt="Huvudsemafor"/>
   </Msg>
   <Msg id="semaphore_shunting">
     <en txt="Shunting semaphore"/>
@@ -28604,6 +28626,7 @@
     <sl txt="Kratki odsek"/>
     <sr_latin txt="Kratki blok"/>
     <fi txt="Lyhyt raideosuus"/>
+    <sv txt="Kort block"/>
   </Msg>
   <Msg id="sensor_curve">
     <en txt="Curved sensor"/>
@@ -28617,6 +28640,7 @@
     <sl txt="Tipalo v odklonu"/>
     <sr_latin txt="Senzor na krivini"/>
     <fi txt="Kaarreanturi"/>
+    <sv txt="Kurvsensor"/>
   </Msg>
   <Msg id="sensor_notrack">
     <en txt="General sensor"/>
@@ -28630,6 +28654,7 @@
     <sl txt="Splošno tipalo"/>
     <sr_latin txt="Glavni senzor"/>
     <fi txt="Yleinen anturi"/>
+    <sv txt="Allmän sensor"/>
   </Msg>
   <Msg id="level_crossing">
     <en txt="Level crossing"/>
@@ -28656,6 +28681,7 @@
     <sl txt="Zgradba"/>
     <sr_latin txt="Zgrada"/>
     <fi txt="Rakennus"/>
+    <sv txt="Byggnad"/>
   </Msg>
   <Msg id="platform">
     <en txt="Platform"/>
@@ -28669,6 +28695,7 @@
     <sr_latin txt="Peron"/>
     <fi txt="Laituri"/>
     <en_GB txt="Platform"/>
+    <sv txt="Plattform"/>
   </Msg>
   <Msg id="industry">
     <en txt="Industry"/>
@@ -28682,6 +28709,7 @@
     <sl txt="Industija"/>
     <sr_latin txt="Industrija"/>
     <fi txt="Teollisuus"/>
+    <sv txt="Industri"/>
   </Msg>
   <Msg id="bascule_bridge">
     <en txt="Bascule bridge"/>
@@ -28708,6 +28736,7 @@
     <sl txt="Ravna cesta"/>
     <sr_latin txt="Prav put"/>
     <fi txt="Suora tie"/>
+    <sv txt="Rak väg"/>
   </Msg>
   <Msg id="road_curve">
     <en txt="Curved road"/>
@@ -28721,6 +28750,7 @@
     <sl txt="Cestni zavoj"/>
     <sr_latin txt="Krivina puta"/>
     <fi txt="Kaarteinen tie"/>
+    <sv txt="Svängd väg"/>
   </Msg>
   <Msg id="road_dir">
     <en txt="Road direction"/>
@@ -28734,6 +28764,7 @@
     <sl txt="Smer ceste"/>
     <sr_latin txt="Putni pravac"/>
     <fi txt="Tien suunta"/>
+    <sv txt="Vägriktning"/>
   </Msg>
   <Msg id="road_dirall">
     <en txt="Road all directions"/>
@@ -28825,6 +28856,7 @@
     <sr_latin txt="Semafor"/>
     <fi txt="Liikennevalo"/>
     <en_GB txt="Traffic light"/>
+    <sv txt="Trafikljus"/>
   </Msg>
   <Msg id="road_signal_dwarf">
     <en txt="Small traffic light"/>
@@ -28890,6 +28922,7 @@
     <sr_latin txt="Prikaz slike loko. u bloku"/>
     <fi txt="Näytä veturin kuva raideosuudella"/>
     <en_GB txt="Show loco image in block"/>
+    <sv txt="Visa lokbild i block"/>
   </Msg>
   <Msg id="modnr">
     <en txt="Module number"/>
@@ -28902,6 +28935,7 @@
     <sr_latin txt="Broj modula"/>
     <en_GB txt="Module number"/>
     <fi txt="Modulin numero"/>
+    <sv txt="Modulnummer"/>
   </Msg>
   <Msg id="newaddress">
     <en txt="New address"/>
@@ -28915,6 +28949,7 @@
     <sr_latin txt="Nova adresa"/>
     <fi txt="Uusi osoite"/>
     <en_GB txt="New address"/>
+    <sv txt="Ny adress"/>
   </Msg>
   <Msg id="maxwaittime">
     <en txt="Max. wait time"/>
@@ -28928,6 +28963,7 @@
     <sr_latin txt="Maks. vreme čekanja"/>
     <fi txt="Maksimi odotusaika"/>
     <en_GB txt="Max. wait time"/>
+    <sv txt="Max. väntetid"/>
   </Msg>
   <Msg id="grayicons">
     <en txt="Gray icons"/>
@@ -28966,6 +29002,7 @@
     <sr_latin txt="Alt"/>
     <fi txt="Alt"/>
     <en_GB txt="Alt"/>
+    <sv txt="Alt"/>
   </Msg>
   <Msg id="ctrl">
     <en txt="Ctrl"/>
@@ -28978,6 +29015,7 @@
     <sr_latin txt="Ctrl"/>
     <fi txt="Ctrl"/>
     <en_GB txt="Ctrl"/>
+    <sv txt="Ctrl"/>
   </Msg>
   <Msg id="keycode">
     <en txt="Key code"/>
@@ -29003,6 +29041,7 @@
     <fi txt="Muunnin"/>
     <en_GB txt="Modifier"/>
     <it txt="Modificatore"/>
+    <sv txt="Modifierare"/>
   </Msg>
   <Msg id="showroute4switch">
     <en txt="Show routes on switches"/>
@@ -29076,6 +29115,7 @@
     <fr txt="Binaire"/>
     <pt_BR txt="Binário"/>
     <fi txt="Binääri"/>
+    <sv txt="Binär"/>
   </Msg>
   <Msg id="group">
     <en txt="Group"/>
@@ -29088,6 +29128,7 @@
     <sr_latin txt="Grupa"/>
     <ru txt="Группа"/>
     <fi txt="Ryhmä"/>
+    <sv txt="Grupp"/>
   </Msg>
   <Msg id="inputfield">
     <en txt="Input field" accel="0"/>
@@ -29112,6 +29153,7 @@
     <pt_BR txt="Localidade"/>
     <fr txt="Emplacement"/>
     <fi txt="Sijainti"/>
+    <sv txt="Plats"/>
   </Msg>
   <Msg id="v0onswap">
     <en txt="V0 on swap"/>
@@ -29178,6 +29220,7 @@
     <sl txt="Ustavi uro ob izklopu"/>
     <it txt="Fermare orologio allo spegnimento"/>
     <sr_latin txt="Zaustavi sat kod isključenja"/>
+    <sv txt="Stanna klockan vid strömlöst"/>
   </Msg>
   <Msg id="showtrainidinblock">
     <en txt="Show train ID in block"/>
@@ -29188,6 +29231,7 @@
     <sl txt="Prikaži ID vlaka v odseku"/>
     <it txt="Mostrare ID treno nel blocco"/>
     <sr_latin txt="Prikaži ID voza u bloku"/>
+    <sv txt="Visa tåg-ID i block"/>
   </Msg>
   <Msg id="sensormonitorauto">
     <en txt="Sensor monitor in automatic mode"/>
@@ -29209,6 +29253,7 @@
     <sr_latin txt="ID korisnika"/>
     <ru txt="ID пользователя"/>
     <sl txt="ID uporabnika"/>
+    <sv txt="Användar-id"/>
   </Msg>
   <Msg id="weather" dialog="true">
     <en txt="Weather" tip="Weather setup"/>
@@ -29219,6 +29264,7 @@
     <sr_latin txt="Vremenske prilike" tip="Podešavanje vremenskih prilika"/>
     <ru txt="Погода"/>
     <sl txt="Vreme" tip="Nastavitev vremena"/>
+    <sv txt="Väder" tip="Väderinställningar"/>
   </Msg>
   <Msg id="outputs">
     <en txt="Outputs"/>
@@ -29229,6 +29275,7 @@
     <sr_latin txt="Izlazi"/>
     <ru txt="Выходы"/>
     <sl txt="Izhodi"/>
+    <sv txt="Utgångar"/>
   </Msg>
   <Msg id="minbri">
     <en txt="Min. brightness"/>
@@ -29239,6 +29286,7 @@
     <sr_latin txt="Min. osvetljenost"/>
     <ru txt="Мин.яркость"/>
     <sl txt="Min. svetlost"/>
+    <sv txt="Min. ljusstyrka"/>
   </Msg>
   <Msg id="maxbri">
     <en txt="Max. brightness"/>
@@ -29249,6 +29297,7 @@
     <sr_latin txt="Maks. osvetljenost"/>
     <ru txt="Макс.яркость"/>
     <sl txt="Maks. svetlost"/>
+    <sv txt="Max. ljusstyrka"/>
   </Msg>
   <Msg id="sunrise">
     <en txt="Sunrise"/>
@@ -29259,6 +29308,7 @@
     <sr_latin txt="Izlazak sunca"/>
     <ru txt="Восход"/>
     <sl txt="Sončni vzhod"/>
+    <sv txt="Soluppgång"/>
   </Msg>
   <Msg id="sunset">
     <en txt="Sunset"/>
@@ -29269,6 +29319,7 @@
     <sr_latin txt="Zalazak sunca"/>
     <ru txt="Закат"/>
     <sl txt="Sončni zahod"/>
+    <sv txt="Solnedgång"/>
   </Msg>
   <Msg id="watchnodes">
     <en txt="Watch nodes"/>
@@ -29288,6 +29339,7 @@
     <sr_latin txt="Noć"/>
     <ru txt="Ночь"/>
     <sl txt="Ponoči"/>
+    <sv txt="Natt"/>
   </Msg>
   <Msg id="brightness">
     <en txt="Brightness"/>
@@ -29298,6 +29350,7 @@
     <sr_latin txt="Sjajnost"/>
     <ru txt="Яркость"/>
     <sl txt="Svetlost"/>
+    <sv txt="Ljusstyrka"/>
   </Msg>
   <Msg id="rgb">
     <en txt="RGB"/>
@@ -29307,6 +29360,7 @@
     <it txt="RGB"/>
     <sl txt="RGB"/>
     <sr_latin txt="RGB"/>
+    <sv txt="RGB"/>
   </Msg>
   <Msg id="slidingdaylight">
     <en txt="Sliding daylight"/>
@@ -29314,7 +29368,7 @@
     <en_GB txt="Sliding daylight"/>
     <it txt="Scorrimento luce del giorno"/>
     <nl txt="Bewegend daglicht"/>
-    <sl txt="Prehodi svetlobe"/>
+    <sl txt="Dnevni prehod"/>
     <sr_latin txt="Podešavanje osvetljenja"/>
   </Msg>
   <Msg id="colorsliding">
@@ -29333,6 +29387,8 @@
     <nl txt="Middag"/>
     <sl txt="Opoldne"/>
     <sr_latin txt="podne"/>
+    <it txt="Mezzogiorno"/>
+    <sv txt="Middag"/>
   </Msg>
   <Msg id="blue">
     <en txt="blue"/>
@@ -29340,6 +29396,9 @@
     <nl txt="blauw"/>
     <sl txt="modra"/>
     <sr_latin txt="plavo"/>
+    <en_GB txt="blue"/>
+    <it txt="blu"/>
+    <sv txt="blå"/>
   </Msg>
   <Msg id="dim">
     <en txt="Dim"/>
@@ -29347,6 +29406,9 @@
     <nl txt="Dimmen"/>
     <sl txt="Zatemnitev"/>
     <sr_latin txt="Zatamnjenje"/>
+    <en_GB txt="Dim"/>
+    <it txt="Oscurare"/>
+    <sv txt="Dimmra"/>
   </Msg>
   <Msg id="redirecttomaster">
     <en txt="Redirect slave commands to the master loco"/>
@@ -29354,17 +29416,39 @@
     <nl txt="Leidt commandos om naar het hoofd van de tractie"/>
     <sl txt="Preusmeri ukaze na glavno lokomotivo"/>
     <sr_latin txt="Preusmeri sporedne komande na glavnu loko."/>
+    <en_GB txt="Redirect slave commands to the master loco"/>
+    <it txt="Reindirizza i comandi slave alla loco principale"/>
   </Msg>
   <Msg id="nightsliding">
     <en txt="Night sliding"/>
+    <de txt="Gleitendes Nachtlicht"/>
+    <en_GB txt="Night sliding"/>
+    <it txt="Notte scorrevole"/>
+    <nl txt="Nacht overgang"/>
+    <sl txt="Nočni prehod"/>
+    <sr_latin txt="Podešavanje noći"/>
   </Msg>
   <Msg id="search">
     <en txt="Search"/>
+    <de txt="Suchen"/>
+    <en_GB txt="Search"/>
+    <it txt="Trova"/>
+    <nl txt="Zoek"/>
+    <sl txt="Iskanje"/>
+    <sr_latin txt="Potraži"/>
+    <sv txt="Sök"/>
   </Msg>
   <Msg id="shutdownonexit">
     <en txt="Shutdown on exit"/>
+    <de txt="Herunterfahren beim Beenden"/>
+    <nl txt="Uitschakelen bij afsluiten"/>
+    <sl txt="Ugasni ob izhodu"/>
+    <sr_latin txt="Isključi pri izlasku"/>
+    <sv txt="Stäng ner vid avslut"/>
   </Msg>
   <Msg id="milliseconds">
     <en txt="ms"/>
+    <nl txt="ms"/>
+    <sr_latin txt="ms"/>
   </Msg>
 </Messages>
