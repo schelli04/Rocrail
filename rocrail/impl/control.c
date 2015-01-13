@@ -1325,6 +1325,10 @@ static void __listener( obj inst, iONode nodeC, int level ) {
       PowerManOp.base.event( data->powerman, nodeC);
     }
 
+    if( wState.isshortcut(nodeC) ) {
+      __checkAction((iOControl)inst, "shortcut", "event");
+    }
+
     AppOp.broadcastEvent( nodeC );
     __checkAction((iOControl)inst, data->power?wSysCmd.go:wSysCmd.stop, "event");
 
