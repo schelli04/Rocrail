@@ -1616,6 +1616,7 @@
           <var name="minute" vt="int" defval="0" range="0-59"/>
           <var name="duration" vt="int" defval="20" range="10-1440"/>
           <var name="sound" vt="string" defval="" range="*" remark="Comma separated list of sounds."/>
+          <var name="soundoutput" vt="string" defval="" range="*" remark="Sound output"/>
           <var name="soundrandomrate" vt="int" defval="5" range="0-9"/>
           </weathertheme>
       </weather>

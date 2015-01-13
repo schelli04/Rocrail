@@ -508,10 +508,26 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
 
           if( cnt == wWeatherTheme.getsoundrandomrate(data->theme) && StrOp.len(wWeatherTheme.getsound(data->theme)) > 0 ) {
             if( data->themesoundtimer <= 0 ) {
-              char* s = StrOp.fmt("%s \"%s%c%s\"", wRocRail.getsoundplayer(AppOp.getIni()),
-                  wRocRail.getsoundpath(AppOp.getIni()), SystemOp.getFileSeparator(), wWeatherTheme.getsound(data->theme) );
-              SystemOp.system( s, True, False );
-              StrOp.free(s);
+              if( StrOp.len(wWeatherTheme.getsound(data->theme)) > 0 ) {
+                char* s = StrOp.fmt("%s \"%s%c%s\"", wRocRail.getsoundplayer(AppOp.getIni()),
+                    wRocRail.getsoundpath(AppOp.getIni()), SystemOp.getFileSeparator(), wWeatherTheme.getsound(data->theme) );
+                SystemOp.system( s, True, False );
+                StrOp.free(s);
+              }
+              if( StrOp.len(wWeatherTheme.getsoundoutput(data->theme)) > 0 ) {
+                iOOutput output = ModelOp.getOutput(model, wWeatherTheme.getsoundoutput(data->theme));
+                if( output != NULL ) {
+                  iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+                  wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+                  wOutput.setcmd(cmd, wOutput.on);
+                  OutputOp.cmd(output, cmd, False);
+                  ThreadOp.sleep(100);
+                  cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+                  wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
+                  wOutput.setcmd(cmd, wOutput.off);
+                  OutputOp.cmd(output, cmd, False);
+                }
+              }
               data->themesoundtimer = 10;
             }
           }
