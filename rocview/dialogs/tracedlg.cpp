@@ -155,6 +155,7 @@ void TraceDlg::onOpen( wxCommandEvent& event )
   if( m_Text != NULL ) {
     StrOp.free(m_Text);
     m_Text = NULL;
+    m_Save->Enable(false);
   }
 
   wxFileDialog* fdlg = new wxFileDialog(this, _T("Search trace"),
