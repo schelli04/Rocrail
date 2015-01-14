@@ -387,7 +387,7 @@ void TraceDlg::onSave( wxCommandEvent& event ) {
   if( fdlg->ShowModal() == wxID_OK ) {
     iOFile file = FileOp.inst(fdlg->GetPath().mb_str(wxConvUTF8), OPEN_WRITE);
     if( file != NULL ) {
-      FileOp.writeStr(file, m_Text);
+      FileOp.writeStr(file, m_Trace->GetValue().mb_str(wxConvUTF8));
       FileOp.base.del(file);
     }
   }
