@@ -152,12 +152,6 @@ void TraceDlg::onOpen( wxCommandEvent& event )
   }
 
 
-  if( m_Text != NULL ) {
-    StrOp.free(m_Text);
-    m_Text = NULL;
-    m_Save->Enable(false);
-  }
-
   wxFileDialog* fdlg = new wxFileDialog(this, _T("Search trace"),
       wxString(".",wxConvUTF8), _T(""),
       _T("TRC files (*.trc)|*.trc"), wxFD_OPEN);
@@ -169,6 +163,11 @@ void TraceDlg::onOpen( wxCommandEvent& event )
     if( FileOp.exist(fdlg->GetPath().mb_str(wxConvUTF8)) ) {
       SetTitle(wxGetApp().getMsg( "trace" ) + wxT(": ") + fdlg->GetPath() );
       m_TraceFile = StrOp.dup(fdlg->GetPath().mb_str(wxConvUTF8));
+      if( m_Text != NULL ) {
+        StrOp.free(m_Text);
+        m_Text = NULL;
+        m_Save->Enable(false);
+      }
       onSearch(event);
     }
   }
