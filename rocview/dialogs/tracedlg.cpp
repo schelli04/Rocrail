@@ -117,6 +117,7 @@ void TraceDlg::initLabels() {
   m_labSearchText->SetLabel( wxGetApp().getMsg( "text" ) + wxT(":") );
   m_Open->SetLabel( wxGetApp().getMsg( "open" ) + wxT("...") );
   m_labRemote->SetLabel( wxGetApp().getMsg( "server" ) + wxT(":") );
+  m_Save->SetLabel( wxGetApp().getMsg( "save" ) + wxT("...") );
   m_Search->SetLabel( wxGetApp().getMsg( "search" ) );
   m_labStatus->SetLabel( wxGetApp().getMsg( "state" ) + wxT(":") );
 
