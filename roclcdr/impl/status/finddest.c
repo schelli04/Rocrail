@@ -105,6 +105,7 @@ void statusFindDest( iILcDriverInt inst ) {
         TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4201, "End of schedule: STOP." );
         checkScheduleEntryActions(inst, scheduleIdx, False);
         checkScheduleActions(inst, LC_FINDDEST);
+        data->warningnodestfound = True;
       }
     }
   }
