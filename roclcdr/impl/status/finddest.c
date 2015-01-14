@@ -66,6 +66,7 @@ void statusFindDest( iILcDriverInt inst ) {
       TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
           "Waiting for schedule index[%d] (preWaitIdx=%d)",
           data->prewaitScheduleIdx == -1 ? data->scheduleIdx:data->prewaitScheduleIdx, data->prewaitScheduleIdx);
+      data->warningnodestfound = True;
       wait = True;
     }
 
