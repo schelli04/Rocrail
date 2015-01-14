@@ -51,6 +51,8 @@ TraceDlg::TraceDlg( wxWindow* parent ):TraceDlgGen( parent )
 
   Connect( 4711, wxCommandEventHandler( TraceDlg::doLine ) );
 
+  m_Save->Enable(false);
+
   if( !wxGetApp().isStayOffline() && !wxGetApp().isOffline() ) {
     /* Request the Rocrail server the current trace. */
     iONode cmd = NodeOp.inst( wDataReq.name(), NULL, ELEMENT_NODE );
@@ -125,7 +127,8 @@ void TraceDlg::initLabels() {
 
 
 void TraceDlg::onServerTraces( wxCommandEvent& event ) {
-  onOpen(event);
+  if(!m_ServerTraces->GetStringSelection().empty())
+    onOpen(event);
 }
 
 
@@ -324,7 +327,7 @@ void TraceDlg::traceEvent(iONode node) {
     onSearch(event);
 
     m_Open->Enable(true);
-
+    m_Save->Enable(true);
   }
   else if( wDataReq.getcmd(node) == wDataReq.gettracedir ) {
     TraceOp.trc( "tracedlg", TRCLEVEL_INFO, __LINE__, 9999, "Trace directory from server received." );
@@ -372,4 +375,21 @@ void TraceDlg::onID( wxCommandEvent& event ) {
 void TraceDlg::onText( wxCommandEvent& event ) {
   onSearch(event);
 }
+
+void TraceDlg::onSave( wxCommandEvent& event ) {
+  if( m_Text == NULL )
+    return;
+
+  wxFileDialog* fdlg = new wxFileDialog(this, _T("Save trace"),
+      wxString(".",wxConvUTF8), _T(""),
+      _T("TRC files (*.trc)|*.trc"), wxFD_SAVE);
+  if( fdlg->ShowModal() == wxID_OK ) {
+    iOFile file = FileOp.inst(fdlg->GetPath().mb_str(wxConvUTF8), OPEN_WRITE);
+    if( file != NULL ) {
+      FileOp.writeStr(file, m_Text);
+      FileOp.base.del(file);
+    }
+  }
+}
+
 

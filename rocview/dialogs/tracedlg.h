@@ -56,6 +56,7 @@ class TraceDlg : public TraceDlgGen
     void onID( wxCommandEvent& event );
     void onText( wxCommandEvent& event );
     void doLine( wxCommandEvent& event );
+    void onSave( wxCommandEvent& event );
 
 	public:
 		/** Constructor */
