@@ -1950,7 +1950,7 @@
         <var name="redChannel" vt="int" defval="0" range="0-*" remark="Red channel address"/>
         <var name="greenChannel" vt="int" defval="0" range="0-*" remark="Green channel address"/>
         <var name="blueChannel" vt="int" defval="0" range="0-*" remark="Blue channel address"/>
-        <var name="delay" vt="int" defval="0" range="0-*" required="false" remark="Turn off after x ms if greater then 0"/>
+        <var name="delay" vt="int" defval="0" range="0-*" required="false" remark="Turn off after x seconds if greater then 0"/>
         
         <var name="colortype" vt="bool" defval="false" remark="The output supports RGB color settings."/>
         <var name="tristate" vt="bool" defval="false" remark="Tri-state flag."/>

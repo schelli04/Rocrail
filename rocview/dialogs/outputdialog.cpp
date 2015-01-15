@@ -743,7 +743,7 @@ void OutputDialog::CreateControls()
     m_labDelay = new wxStaticText( m_InterfacePanel, wxID_ANY, _("Delay"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer30->Add(m_labDelay, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5);
 
-    m_Delay = new wxSpinCtrl( m_InterfacePanel, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(100, -1), wxSP_ARROW_KEYS, 0, 5000, 0 );
+    m_Delay = new wxSpinCtrl( m_InterfacePanel, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(100, -1), wxSP_ARROW_KEYS, 0, 10000, 0 );
     itemFlexGridSizer30->Add(m_Delay, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT|wxTOP, 5);
 
     itemFlexGridSizer30->AddGrowableCol(1);

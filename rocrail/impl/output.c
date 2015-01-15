@@ -179,7 +179,7 @@ static void __delayedOffThread( void* threadinst ) {
   wOutput.setid( nodeF, wOutput.getid( data->props ) );
   if( wOutput.getiid( data->props ) != NULL )
     wOutput.setiid( nodeF, wOutput.getiid( data->props ) );
-  ThreadOp.sleep(wOutput.getdelay(data->props));
+  ThreadOp.sleep(wOutput.getdelay(data->props)*1000);
   __doCmd(op, nodeF, True);
   ThreadOp.base.del(th);
 }
