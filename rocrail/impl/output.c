@@ -45,6 +45,7 @@
 
 
 static int instCnt = 0;
+static Boolean __doCmd( struct OOutput* inst ,iONode nodeA ,Boolean update );
 
 /** ----- OBase ----- */
 static const char* __id( void* inst ) {
@@ -169,6 +170,21 @@ static void __checkActions(iOOutput inst, const char* cmd) {
 }
 
 
+static void __delayedOffThread( void* threadinst ) {
+  iOThread th = (iOThread)threadinst;
+  iOOutput op = (iOOutput)ThreadOp.getParm( th );
+  iOOutputData data = Data(op);
+  iONode nodeF = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE );
+  wOutput.setcmd( nodeF, wOutput.off );
+  wOutput.setid( nodeF, wOutput.getid( data->props ) );
+  if( wOutput.getiid( data->props ) != NULL )
+    wOutput.setiid( nodeF, wOutput.getiid( data->props ) );
+  ThreadOp.sleep(wOutput.getdelay(data->props));
+  __doCmd(op, nodeF, True);
+  ThreadOp.base.del(th);
+}
+
+
 /**  */
 static Boolean __doCmd( struct OOutput* inst ,iONode nodeA ,Boolean update ) {
   iOOutputData o = Data(inst);
@@ -269,6 +285,12 @@ static Boolean __doCmd( struct OOutput* inst ,iONode nodeA ,Boolean update ) {
                      wOutput.getid( o->props ) );
       return False;
     }
+
+    if( StrOp.equals(wOutput.on, wOutput.getcmd(nodeA) ) && wOutput.getdelay( o->props ) > 0 ) {
+      iOThread th = ThreadOp.inst(NULL, &__delayedOffThread, inst);
+      ThreadOp.start(th);
+    }
+
   }
   else {
     /* no longer needed */

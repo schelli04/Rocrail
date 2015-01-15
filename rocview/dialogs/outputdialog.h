@@ -236,6 +236,8 @@ public:
     wxSpinCtrl* m_Gain;
     wxStaticText* m_labValue;
     wxSpinCtrl* m_Value;
+    wxStaticText* m_labDelay;
+    wxSpinCtrl* m_Delay;
     wxStaticBox* m_OptionsBox;
     wxCheckBox* m_AsSwitch;
     wxCheckBox* m_Invert;
