@@ -166,7 +166,6 @@ void TraceDlg::onOpen( wxCommandEvent& event )
       if( m_Text != NULL ) {
         StrOp.free(m_Text);
         m_Text = NULL;
-        m_Save->Enable(false);
       }
       onSearch(event);
     }
@@ -240,6 +239,7 @@ void TraceDlg::doLine( wxCommandEvent& event ) {
   else {
     m_Status->SetLabel(wxT("Ready."));
     m_Search->Enable(true);
+    m_Save->Enable(true);
   }
 }
 
@@ -378,9 +378,6 @@ void TraceDlg::onText( wxCommandEvent& event ) {
 }
 
 void TraceDlg::onSave( wxCommandEvent& event ) {
-  if( m_Text == NULL )
-    return;
-
   wxFileDialog* fdlg = new wxFileDialog(this, _T("Save trace"),
       wxString(".",wxConvUTF8), _T(""),
       _T("TRC files (*.trc)|*.trc"), wxFD_SAVE);
