@@ -1177,6 +1177,7 @@ void TimedActions::initCommands()
       break;
     case 18: // location
       m_Command->Append(wxString( wLocation.cmd_minocc, wxConvUTF8));
+      m_Command->Append(wxString( wLocation.cmd_fifo, wxConvUTF8));
       break;
     case 19: // weather
       m_Command->Append(wxString( wAction.weather_set, wxConvUTF8));

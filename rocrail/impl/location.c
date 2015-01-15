@@ -313,6 +313,17 @@ static Boolean _cmd( struct OLocation* inst ,iONode node ) {
         AppOp.broadcastEvent( clone );
       }
     }
+    else if( StrOp.equals(wLocation.cmd_fifo, cmd ) ) {
+      Boolean fifo = wLocation.getvalue(node) > 0 ? True:False;
+      TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "set location [%s] fifo to [%d]", wLocation.getid( data->props ), fifo);
+      wLocation.setfifo(data->props, fifo);
+      data->fifo = wLocation.isfifo(data->props);
+      /* Broadcast to clients. */
+      {
+        iONode clone = (iONode)NodeOp.base.clone( data->props );
+        AppOp.broadcastEvent( clone );
+      }
+    }
   }
 
   return True;
