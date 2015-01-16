@@ -27,6 +27,8 @@
 #include "rocs/public/system.h"
 
 #include "rocrail/wrapper/public/DigInt.h"
+#include "rocrail/wrapper/public/SysCmd.h"
+#include "rocrail/wrapper/public/Output.h"
 
 static int instCnt = 0;
 
@@ -85,10 +87,84 @@ static void* __event( void* inst, const void* evt ) {
 
 /** ----- ODMXArtNet ----- */
 
+#define MSGSIZE 531
+
+static void __sendDMX(iODMXArtNet inst) {
+  iODMXArtNetData data = Data(inst);
+
+  byte msg[MSGSIZE];
+  char s=0x00;
+  int i=0;
+
+  msg[i++]='A';
+  msg[i++]='r';
+  msg[i++]='t';
+  msg[i++]='-';
+  msg[i++]='N';
+  msg[i++]='e';
+  msg[i++]='t';
+  msg[i++]=0x00;
+
+  s=0x00;
+  msg[i++]=0; //dmx5000
+  s=0x50;
+  msg[i++]=0x50;
+
+  msg[i++]=0x50; //version
+  s=0x0e;
+  msg[i++]=0x0E;
+  s=0x00;
+  msg[i++]=0x00; //sequenz =0
+
+  msg[i++]=0x00;  //physikal
+
+  msg[i++]=0x00;
+  msg[i++]=0x00; //universe
+
+  s=0x02;
+  msg[i++]=0x02;
+  s=0x00;
+  msg[i]=0x00;
+
+  // add DMX-values
+  int j=0;
+  for(j = 1; j <= 512; j++) {
+    msg[i+j]=(byte)data->dmxchannel[j];
+  }
+
+  data->socket = SocketOp.inst( wDigInt.gethost(data->ini), 6454, False, True, False );
+  if( data->socket != NULL ) {
+    TraceOp.dump( NULL, TRCLEVEL_BYTE, (char*)msg, MSGSIZE );
+    SocketOp.sendto( data->socket, (char*)msg, MSGSIZE, NULL, 0 );
+    SocketOp.base.del(data->socket);
+  }
+
+}
+
+static iONode __translate( iODMXArtNet inst, iONode node ) {
+  iODMXArtNetData data = Data(inst);
+  iONode rsp   = NULL;
+
+  /* System command. */
+  if( StrOp.equals( NodeOp.getName( node ), wSysCmd.name() ) ) {
+    const char* cmd = wSysCmd.getcmd( node );
+
+    if( StrOp.equals( cmd, wSysCmd.stop ) ) {
+      __sendDMX(inst);
+    }
+  }
+
+  return rsp;
+}
+
 
 /**  */
 static iONode _cmd( obj inst ,const iONode cmd ) {
-  return 0;
+  iODMXArtNetData data = Data(inst);
+  iONode rsp = __translate( (iODMXArtNet)inst, cmd );
+  /* Cleanup Node1 */
+  cmd->base.del(cmd);
+  return rsp;
 }
 
 
@@ -106,7 +182,10 @@ static void _halt( obj inst ,Boolean poweroff ,Boolean shutdown ) {
 
 /**  */
 static Boolean _setListener( obj inst ,obj listenerObj ,const digint_listener listenerFun ) {
-  return 0;
+  iODMXArtNetData data = Data(inst);
+  data->listenerObj = listenerObj;
+  data->listenerFun = listenerFun;
+  return True;
 }
 
 
@@ -159,6 +238,7 @@ static struct ODMXArtNet* _inst( const iONode ini ,const iOTrace trc ) {
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "DMX-ArtNet %d.%d.%d", vmajor, vminor, patch );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IP: %s", wDigInt.gethost(data->ini) );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
 
   instCnt++;
