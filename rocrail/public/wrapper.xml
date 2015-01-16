@@ -740,6 +740,11 @@
         <product cardinality="n"/>
       </mcs2>
       
+      <dmx remark="DMX Options" wrappername="DMX">
+        <var name="nrdevicechannels" vt="int" defval="5" range="3-5"/>
+        <var name="dmxaddr" vt="int" defval="1" range="0-*"/>
+      </dmx>
+      
       <cbus remark="CBUS options" wrappername="CBus">
         <var name="cid" vt="int" defval="1" range="0-*" remark="CANID"/>
         <var name="sodaddr" vt="int" defval="0" range="0-*" remark="Start of Day input address."/>

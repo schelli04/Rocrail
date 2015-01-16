@@ -29,6 +29,8 @@
 #include "rocrail/wrapper/public/DigInt.h"
 #include "rocrail/wrapper/public/SysCmd.h"
 #include "rocrail/wrapper/public/Output.h"
+#include "rocrail/wrapper/public/Color.h"
+#include "rocrail/wrapper/public/DMX.h"
 
 static int instCnt = 0;
 
@@ -89,11 +91,10 @@ static void* __event( void* inst, const void* evt ) {
 
 #define MSGSIZE 531
 
-static void __sendDMX(iODMXArtNet inst) {
+static void __ArtDmx(iODMXArtNet inst) {
   iODMXArtNetData data = Data(inst);
 
   byte msg[MSGSIZE];
-  char s=0x00;
   int i=0;
 
   msg[i++]='A';
@@ -105,25 +106,20 @@ static void __sendDMX(iODMXArtNet inst) {
   msg[i++]='t';
   msg[i++]=0x00;
 
-  s=0x00;
-  msg[i++]=0; //dmx5000
-  s=0x50;
+  msg[i++]=0; // OpOutput 0x5000
   msg[i++]=0x50;
 
   msg[i++]=0x50; //version
-  s=0x0e;
   msg[i++]=0x0E;
-  s=0x00;
-  msg[i++]=0x00; //sequenz =0
 
-  msg[i++]=0x00;  //physikal
+  msg[i++]=0x00; //sequence =0
+
+  msg[i++]=0x00; //physical
 
   msg[i++]=0x00;
-  msg[i++]=0x00; //universe
+  msg[i++]=0x00; //subuni net
 
-  s=0x02;
   msg[i++]=0x02;
-  s=0x00;
   msg[i]=0x00;
 
   // add DMX-values
@@ -141,6 +137,19 @@ static void __sendDMX(iODMXArtNet inst) {
 
 }
 
+static void __setChannel(iODMXArtNet inst, int channel, int red, int green, int blue, int brightness, Boolean active) {
+  iODMXArtNetData data = Data(inst);
+  int device = data->dmxaddr+channel*data->nrdevicechannels;
+  data->dmxchannel[device+0] = red;
+  data->dmxchannel[device+1] = green;
+  data->dmxchannel[device+2] = blue;
+  if( data->nrdevicechannels > 3 )
+    data->dmxchannel[device+3] = brightness;
+  if( data->nrdevicechannels > 4 )
+    data->dmxchannel[device+4] = 0;
+}
+
+
 static iONode __translate( iODMXArtNet inst, iONode node ) {
   iODMXArtNetData data = Data(inst);
   iONode rsp   = NULL;
@@ -150,9 +159,38 @@ static iONode __translate( iODMXArtNet inst, iONode node ) {
     const char* cmd = wSysCmd.getcmd( node );
 
     if( StrOp.equals( cmd, wSysCmd.stop ) ) {
-      __sendDMX(inst);
     }
   }
+
+  /* Output command. */
+  else if( StrOp.equals( NodeOp.getName( node ), wOutput.name() ) ) {
+    int addr = wOutput.getaddr( node );
+    int val  = wOutput.getvalue( node );
+    iONode color = wOutput.getcolor(node);
+    Boolean blink = wOutput.isblink( node );
+    Boolean colortype = wOutput.iscolortype( node );
+    Boolean active = False;
+    int r = 0;
+    int g = 0;
+    int b = 0;
+
+    if( StrOp.equals( wOutput.getcmd( node ), wOutput.on ) || StrOp.equals( wOutput.getcmd( node ), wOutput.value ) )
+      active = True;
+
+    if( color != NULL ) {
+      r = wColor.getred(color);
+      g = wColor.getgreen(color);
+      b = wColor.getblue(color);
+    }
+    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output addr=%d active=%d cmd=%s bri=%d RGB=%d,%d,%d",
+        addr, active, wOutput.getcmd( node ), val, r, g, b );
+
+    __setChannel(inst, addr, r, g, b, val, active);
+    __ArtDmx(inst);
+
+  }
+
+
 
   return rsp;
 }
@@ -234,11 +272,23 @@ static struct ODMXArtNet* _inst( const iONode ini ,const iOTrace trc ) {
   SystemOp.inst();
 
   data->ini  = ini;
+  data->dmxini = wDigInt.getdmx(ini);
   data->iid  = StrOp.dup( wDigInt.getiid( ini ) );
+
+  if( data->dmxini == NULL ) {
+    data->dmxini = NodeOp.inst(wDMX.name(), data->ini, ELEMENT_NODE);
+    NodeOp.addChild(data->ini, data->dmxini);
+  }
+
+  data->dmxaddr = wDMX.getdmxaddr(data->dmxini);
+  data->nrdevicechannels = wDMX.getnrdevicechannels(data->dmxini);
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "DMX-ArtNet %d.%d.%d", vmajor, vminor, patch );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IP: %s", wDigInt.gethost(data->ini) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IID               : %s", data->iid );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IP                : %s", wDigInt.gethost(data->ini) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  DMX Address       : %d", data->dmxaddr );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  Nr device channels: %d", data->nrdevicechannels );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
 
   instCnt++;
