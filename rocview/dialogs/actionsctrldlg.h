@@ -17,6 +17,7 @@
 
 ////@begin includes
 #include "wx/notebook.h"
+#include "wx/spinctrl.h"
 #include "wx/listctrl.h"
 ////@end includes
 
@@ -28,6 +29,7 @@
 
 ////@begin forward declarations
 class wxNotebook;
+class wxSpinCtrl;
 class wxListCtrl;
 ////@end forward declarations
 
@@ -187,6 +189,8 @@ public:
     wxChoice* m_ID;
     wxStaticText* m_labState;
     wxComboBox* m_State;
+    wxStaticText* m_labDuration;
+    wxSpinCtrl* m_Duration;
     wxStaticText* m_labLocoID;
     wxChoice* m_LocoID;
     wxStaticText* m_labDesc;

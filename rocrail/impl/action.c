@@ -74,10 +74,10 @@
 
 static int instCnt = 0;
 static int levelCnt = 0;
-static void __doFunction(iOActionData data, iOLoc lc, Boolean fon, int fnaction);
-static void __doCarFunction(iOActionData data, iOCar car, Boolean fon, int fnaction);
-static void __doOperatorFunction(iOActionData data, iOOperator opr, Boolean fon, int fnaction);
-static void __setFunctionCmd(iOActionData data, iONode cmd, Boolean fon, int fnaction);
+static void __doFunction(iOActionData data, iOLoc lc, Boolean fon, int fnaction, int duration);
+static void __doCarFunction(iOActionData data, iOCar car, Boolean fon, int fnaction, int duration);
+static void __doOperatorFunction(iOActionData data, iOOperator opr, Boolean fon, int fnaction, int duration);
+static void __setFunctionCmd(iOActionData data, iONode cmd, Boolean fon, int fnaction, int duration);
 
 /** ----- OBase ----- */
 static void __del( void* inst ) {
@@ -1433,6 +1433,7 @@ static void __executeAction( struct OAction* inst, iONode actionctrl ) {
     iOLoc lc = ModelOp.getLoc( model, wAction.getoid( data->action ), NULL, False);
     Boolean fon = StrOp.equals( "on", wAction.getcmd( data->action ) );
     Boolean random = StrOp.startsWith(wAction.getparam(data->action), "?");
+    int duration = wActionCtrl.getduration(actionctrl);
     iOStrTok tok = StrTokOp.inst(wAction.getparam(data->action)+(random?1:0), ',');
     int fncnt = StrTokOp.countTokens(tok);
     int fnpick = 0;
@@ -1453,7 +1454,7 @@ static void __executeAction( struct OAction* inst, iONode actionctrl ) {
         int fnaction = LocOp.getFnNrByDesc(lc, StrTokOp.nextToken(tok));
         if( fnaction != -1 )
           if( !random || fnpick == fnidx )
-            __doFunction(data, lc, fon, fnaction);
+            __doFunction(data, lc, fon, fnaction, duration);
         fnidx++;
       }
     }
@@ -1464,7 +1465,7 @@ static void __executeAction( struct OAction* inst, iONode actionctrl ) {
           int fnaction = CarOp.getFnNrByDesc(car, StrTokOp.nextToken(tok));
           if( fnaction != -1 )
             if( !random || fnpick == fnidx )
-              __doCarFunction(data, car, fon, fnaction);
+              __doCarFunction(data, car, fon, fnaction, duration);
           fnidx++;
         }
       }
@@ -1474,7 +1475,7 @@ static void __executeAction( struct OAction* inst, iONode actionctrl ) {
           while( StrTokOp.hasMoreTokens(tok) ) {
             int fnaction = atoi(StrTokOp.nextToken(tok));
             if( !random || fnpick == fnidx )
-              __doOperatorFunction(data, opr, fon, fnaction);
+              __doOperatorFunction(data, opr, fon, fnaction, duration);
             fnidx++;
           }
         }
@@ -1486,7 +1487,7 @@ static void __executeAction( struct OAction* inst, iONode actionctrl ) {
 }
 
 
-static void __setFunctionCmd(iOActionData data, iONode cmd, Boolean fon, int fnaction) {
+static void __setFunctionCmd(iOActionData data, iONode cmd, Boolean fon, int fnaction, int duration) {
   if( StrOp.equals( wOutput.flip, wAction.getcmd( data->action ) ) ) {
     wFunCmd.setf0 ( cmd, fnaction== 0?!wFunCmd.isf0 ( cmd ):wFunCmd.isf0 ( cmd ) );
     wFunCmd.setf1 ( cmd, fnaction== 1?!wFunCmd.isf1 ( cmd ):wFunCmd.isf1 ( cmd ) );
@@ -1552,37 +1553,41 @@ static void __setFunctionCmd(iOActionData data, iONode cmd, Boolean fon, int fna
   wFunCmd.setfnchanged( cmd, fnaction );
   wFunCmd.settimedfn( cmd, fon?fnaction:-1 );
   wFunCmd.setgroup( cmd, fnaction/4 + ((fnaction%4 > 0) ? 1:0) );
-  if( fon )
-    wFunCmd.settimer( cmd, wAction.getactiontime(data->action) );
+  if( fon ) {
+    if( duration > 0 )
+      wFunCmd.settimer( cmd, duration );
+    else
+      wFunCmd.settimer( cmd, wAction.getactiontime(data->action) );
+  }
 }
 
 
-static void __doOperatorFunction(iOActionData data, iOOperator opr, Boolean fon, int fnaction) {
+static void __doOperatorFunction(iOActionData data, iOOperator opr, Boolean fon, int fnaction, int duration) {
   iONode cmd = NodeOp.inst( wFunCmd.name(), NULL, ELEMENT_NODE );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "operator function [%d] %s", fnaction, fon?"ON":"OFF" );
   wFunCmd.setid( cmd, wAction.getid( data->action ) );
-  __setFunctionCmd(data, cmd, fon, fnaction);
+  __setFunctionCmd(data, cmd, fon, fnaction, duration);
   OperatorOp.cmd( opr, cmd);
 }
 
-static void __doCarFunction(iOActionData data, iOCar car, Boolean fon, int fnaction) {
+static void __doCarFunction(iOActionData data, iOCar car, Boolean fon, int fnaction, int duration) {
   iONode cmd = NodeOp.inst( wFunCmd.name(), NULL, ELEMENT_NODE );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "car function [%d] %s", fnaction, fon?"ON":"OFF" );
   wFunCmd.setid( cmd, wAction.getid( data->action ) );
 
-  __setFunctionCmd(data, cmd, fon, fnaction);
+  __setFunctionCmd(data, cmd, fon, fnaction, duration);
 
   CarOp.cmd( car, cmd);
 }
 
 
-static void __doFunction(iOActionData data, iOLoc lc, Boolean fon, int fnaction) {
+static void __doFunction(iOActionData data, iOLoc lc, Boolean fon, int fnaction, int duration) {
   iONode cmd = NodeOp.inst( wFunCmd.name(), NULL, ELEMENT_NODE );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "loco function [%d] %s", fnaction, fon?"ON":"OFF" );
   wFunCmd.setid( cmd, wAction.getid( data->action ) );
   LocOp.getFunctionStatus(lc, cmd);
 
-  __setFunctionCmd(data, cmd, fon, fnaction);
+  __setFunctionCmd(data, cmd, fon, fnaction, duration);
 
   wLoc.setfn( cmd, wFunCmd.isf0 ( cmd) );
   LocOp.cmd( lc, cmd);
