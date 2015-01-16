@@ -132,7 +132,7 @@ all: $(OBJS) $(NMRAOBJS) $(COMMONOBJS) $(OUTDIR)$(FS)opendcc$(SHAREDSUFFIX) $(OU
 	$(OUTDIR)$(FS)infracar$(SHAREDSUFFIX) $(OUTDIR)$(FS)cti$(SHAREDSUFFIX) $(OUTDIR)$(FS)easydcc$(SHAREDSUFFIX) $(OUTDIR)$(FS)z21$(SHAREDSUFFIX) \
 	$(OUTDIR)$(FS)xnmm$(SHAREDSUFFIX) $(OUTDIR)$(FS)rocomp$(SHAREDSUFFIX) $(OUTDIR)$(FS)zimocan$(SHAREDSUFFIX) $(OUTDIR)$(FS)ucons88$(SHAREDSUFFIX) $(OUTDIR)$(FS)got$(SHAREDSUFFIX) \
 	$(OUTDIR)$(FS)esunavi$(SHAREDSUFFIX) $(OUTDIR)$(FS)spl$(SHAREDSUFFIX) $(OUTDIR)$(FS)inter10$(SHAREDSUFFIX) $(OUTDIR)$(FS)mgbox$(SHAREDSUFFIX) \
-	$(OUTDIR)$(FS)hue$(SHAREDSUFFIX) $(OUTDIR)$(FS)dccar$(SHAREDSUFFIX)
+	$(OUTDIR)$(FS)hue$(SHAREDSUFFIX) $(OUTDIR)$(FS)dccar$(SHAREDSUFFIX) $(OUTDIR)$(FS)dmxartnet$(SHAREDSUFFIX)
 
 # ------------------------------------------------------------
 # The Digital Interfaces as shared libraries.
@@ -239,6 +239,8 @@ $(OUTDIR)$(FS)hue$(SHAREDSUFFIX): $(TMPOUTDIR)$(FS)hue.o $(COMMONOBJS) $(RRLIBS)
 	$(LNK) $(LNK_FLAGS) -o $(OUTDIR)$(FS)hue$(SHAREDSUFFIX) $(TMPOUTDIR)$(FS)hue.o $(COMMONOBJS) $(RRLIBS) $(LIBS)
 $(OUTDIR)$(FS)dccar$(SHAREDSUFFIX): $(TMPOUTDIR)$(FS)dccar.o $(COMMONOBJS) $(RRLIBS)
 	$(LNK) $(LNK_FLAGS) -o $(OUTDIR)$(FS)dccar$(SHAREDSUFFIX) $(TMPOUTDIR)$(FS)dccar.o $(COMMONOBJS) $(RRLIBS) $(LIBS)
+$(OUTDIR)$(FS)dmxartnet$(SHAREDSUFFIX): $(TMPOUTDIR)$(FS)dmxartnet.o $(COMMONOBJS) $(RRLIBS)
+	$(LNK) $(LNK_FLAGS) -o $(OUTDIR)$(FS)dmxartnet$(SHAREDSUFFIX) $(TMPOUTDIR)$(FS)dmxartnet.o $(COMMONOBJS) $(RRLIBS) $(LIBS)
 
 # ------------------------------------------------------------
 # The RocDigs objects.
@@ -359,6 +361,7 @@ clean:
 	-$(REMOVE) $(OUTDIR)$(FS)hue$(SHAREDSUFFIX)
 	-$(REMOVE) $(OUTDIR)$(FS)inter10$(SHAREDSUFFIX)
 	-$(REMOVE) $(OUTDIR)$(FS)dccar$(SHAREDSUFFIX)
+	-$(REMOVE) $(OUTDIR)$(FS)dmxartnet$(SHAREDSUFFIX)
 	cd $(GENDIR)$(FS)rocdigs$(CS) ..$(FS)$(BINDIR)$(FS)ogen$(GENSUFFIX) ..$(FS)..$(FS)rocdigs$(FS)rocdigs.xml ..$(FS)
 	cd $(GENDIR)$(FS)rocdigs$(CS) ..$(FS)$(BINDIR)$(FS)xml2cstr$(GENSUFFIX) ..$(FS)..$(FS)common$(FS)version.xml impl$(FS)version.c svnLog
 
@@ -414,4 +417,5 @@ install:
 	-cp -p $(OUTDIR)$(FS)hue$(SHAREDSUFFIX) $(DESTDIR)
 	-cp -p $(OUTDIR)$(FS)inter10$(SHAREDSUFFIX) $(DESTDIR)
 	-cp -p $(OUTDIR)$(FS)dccar$(SHAREDSUFFIX) $(DESTDIR)
+	-cp -p $(OUTDIR)$(FS)dmxartnet$(SHAREDSUFFIX) $(DESTDIR)
 	

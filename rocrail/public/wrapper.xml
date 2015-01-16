@@ -478,6 +478,7 @@
       <const name="inter10" vt="string" val="inter10"/>
       <const name="hue" vt="string" val="hue"/>
       <const name="dccar" vt="string" val="dccar"/>
+      <const name="dmxartnet" vt="string" val="dmxartnet"/>
       <var name="lib" vt="string" defval="virtual"/>
 
       <var name="libpath" vt="string" defval="."/>
