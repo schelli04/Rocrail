@@ -742,7 +742,6 @@
       
       <dmx remark="DMX Options" wrappername="DMX">
         <var name="nrdevicechannels" vt="int" defval="5" range="3-5"/>
-        <var name="dmxaddr" vt="int" defval="1" range="0-*"/>
       </dmx>
       
       <cbus remark="CBUS options" wrappername="CBus">

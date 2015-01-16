@@ -137,9 +137,9 @@ static void __ArtDmx(iODMXArtNet inst) {
 
 }
 
-static void __setChannel(iODMXArtNet inst, int channel, int red, int green, int blue, int brightness, Boolean active) {
+static void __setChannel(iODMXArtNet inst, int addr, int channel, int red, int green, int blue, int brightness, Boolean active) {
   iODMXArtNetData data = Data(inst);
-  int device = data->dmxaddr+channel*data->nrdevicechannels;
+  int device = addr + (channel * data->nrdevicechannels);
   data->dmxchannel[device+0] = red;
   data->dmxchannel[device+1] = green;
   data->dmxchannel[device+2] = blue;
@@ -165,8 +165,9 @@ static iONode __translate( iODMXArtNet inst, iONode node ) {
   /* Output command. */
   else if( StrOp.equals( NodeOp.getName( node ), wOutput.name() ) ) {
     int addr = wOutput.getaddr( node );
+    int port = wOutput.getport( node );
     int val  = wOutput.getvalue( node );
-    iONode color = wOutput.getcolor(node);
+    iONode  color = wOutput.getcolor(node);
     Boolean blink = wOutput.isblink( node );
     Boolean colortype = wOutput.iscolortype( node );
     Boolean active = False;
@@ -182,10 +183,10 @@ static iONode __translate( iODMXArtNet inst, iONode node ) {
       g = wColor.getgreen(color);
       b = wColor.getblue(color);
     }
-    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output addr=%d active=%d cmd=%s bri=%d RGB=%d,%d,%d",
-        addr, active, wOutput.getcmd( node ), val, r, g, b );
+    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output addr=%d channel=%d active=%d cmd=%s bri=%d RGB=%d,%d,%d",
+        addr, port, active, wOutput.getcmd( node ), val, r, g, b );
 
-    __setChannel(inst, addr, r, g, b, val, active);
+    __setChannel(inst, addr, port, r, g, b, val, active);
     __ArtDmx(inst);
 
   }
@@ -280,14 +281,12 @@ static struct ODMXArtNet* _inst( const iONode ini ,const iOTrace trc ) {
     NodeOp.addChild(data->ini, data->dmxini);
   }
 
-  data->dmxaddr = wDMX.getdmxaddr(data->dmxini);
   data->nrdevicechannels = wDMX.getnrdevicechannels(data->dmxini);
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "DMX-ArtNet %d.%d.%d", vmajor, vminor, patch );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IID               : %s", data->iid );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IP                : %s", wDigInt.gethost(data->ini) );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  DMX Address       : %d", data->dmxaddr );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  Nr device channels: %d", data->nrdevicechannels );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
 
