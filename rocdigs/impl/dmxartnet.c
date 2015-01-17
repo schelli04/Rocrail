@@ -215,7 +215,12 @@ static byte* _cmdRaw( obj inst ,const byte* cmd ) {
 
 /**  */
 static void _halt( obj inst ,Boolean poweroff ,Boolean shutdown ) {
-  return;
+  iODMXArtNetData data = Data(inst);
+  data->run = False;
+  if( poweroff ) {
+  }
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Shutting down <%s>...", data->iid );
+  ThreadOp.sleep(200);
 }
 
 
@@ -261,6 +266,29 @@ static int _version( obj inst ) {
   return vmajor*10000 + vminor*100 + patch;
 }
 
+static void __reader( void* threadinst ) {
+  iOThread th = (iOThread)threadinst;
+  iODMXArtNet inst = (iODMXArtNet)ThreadOp.getParm( th );
+  iODMXArtNetData data = Data(inst);
+
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "reader started." );
+  ThreadOp.sleep(1000);
+
+  iOSocket socket = SocketOp.inst( wDigInt.gethost(data->ini), 6454, False, True, False );
+  if( socket != NULL ) {
+    byte in[513];
+    while( data->run ) {
+      if( SocketOp.recvfrom( socket, (char*)in, 513, NULL, NULL ) ) {
+        TraceOp.dump( NULL, TRCLEVEL_BYTE, (char*)in, MSGSIZE );
+      }
+      ThreadOp.sleep(100);
+    }
+    SocketOp.base.del(socket);
+  }
+
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "reader ended." );
+}
+
 
 /**  */
 static struct ODMXArtNet* _inst( const iONode ini ,const iOTrace trc ) {
@@ -275,13 +303,14 @@ static struct ODMXArtNet* _inst( const iONode ini ,const iOTrace trc ) {
   data->ini  = ini;
   data->dmxini = wDigInt.getdmx(ini);
   data->iid  = StrOp.dup( wDigInt.getiid( ini ) );
+  data->run = True;
 
   if( data->dmxini == NULL ) {
     data->dmxini = NodeOp.inst(wDMX.name(), data->ini, ELEMENT_NODE);
     NodeOp.addChild(data->ini, data->dmxini);
   }
 
-  data->nrdevicechannels = wDMX.getnrdevicechannels(data->dmxini);
+  data->nrdevicechannels = 5;
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "DMX-ArtNet %d.%d.%d", vmajor, vminor, patch );
@@ -289,6 +318,9 @@ static struct ODMXArtNet* _inst( const iONode ini ,const iOTrace trc ) {
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IP                : %s", wDigInt.gethost(data->ini) );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  Nr device channels: %d", data->nrdevicechannels );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
+
+  data->reader = ThreadOp.inst( "dmxreader", &__reader, __DMXArtNet );
+  ThreadOp.start( data->reader );
 
   instCnt++;
   return __DMXArtNet;

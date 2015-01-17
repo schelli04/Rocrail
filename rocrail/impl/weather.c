@@ -486,6 +486,11 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
           int cnt = rand() % 10;
           for( i = 0; i < cnt; i++ ) {
             iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+            iONode color = NodeOp.inst( wColor.name(), NULL, ELEMENT_NODE);
+            NodeOp.addChild(cmd, color);
+            wColor.setred(color, 50);
+            wColor.setgreen(color, 50);
+            wColor.setblue(color, 255);
             wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
             wOutput.setvalue(cmd, 255);
             wOutput.setcmd(cmd, wOutput.value);
@@ -493,6 +498,8 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
             ThreadOp.sleep(rand()%100);
 
             cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+            color = NodeOp.inst( wColor.name(), NULL, ELEMENT_NODE);
+            NodeOp.addChild(cmd, color);
             wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
             wOutput.setvalue(cmd, 0);
             wOutput.setcmd(cmd, wOutput.value);

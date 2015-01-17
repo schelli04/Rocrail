@@ -741,7 +741,10 @@
       </mcs2>
       
       <dmx remark="DMX Options" wrappername="DMX">
-        <var name="nrdevicechannels" vt="int" defval="5" range="3-5"/>
+        <dmxdevice cardinality="n" remark="DMX Device Options" wrappername="DMXDevice">
+          <var name="addr" vt="int" defval="0" range="0-*"/>
+          <var name="nrdevicechannels" vt="int" defval="5" range="3-5"/>
+        </dmxdevice>
       </dmx>
       
       <cbus remark="CBUS options" wrappername="CBus">
