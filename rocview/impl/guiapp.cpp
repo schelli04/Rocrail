@@ -669,7 +669,7 @@ bool RocGui::OnInit() {
   readArgs(lang);
 
   // create a trace object:
-  m_Trace = TraceOp.inst( (tracelevel)(debug | info | TRCLEVEL_WARNING), tf, True );
+  m_Trace = TraceOp.inst( (tracelevel)(debug | info | TRCLEVEL_WARNING), NULL, True );
   TraceOp.setAppID( m_Trace, "g" );
 
   // check for alternative ini file:
@@ -706,6 +706,102 @@ bool RocGui::OnInit() {
 
   if( m_Ini == NULL )
     m_Ini = NodeOp.inst( wGui.name(), NULL, ELEMENT_NODE );
+
+
+
+  iONode trace = wGui.gettrace( m_Ini );
+  if( trace == NULL ) {
+    trace = NodeOp.inst( wTrace.name(), m_Ini, ELEMENT_NODE );
+    NodeOp.addChild( m_Ini, trace );
+  }
+
+  if( wTrace.isdebug( trace ) || debug )
+    TraceOp.setLevel( m_Trace, (tracelevel)(TraceOp.getLevel( m_Trace ) | TRCLEVEL_DEBUG) );
+  if( wTrace.isparse( trace ) || parse )
+    TraceOp.setLevel( m_Trace, (tracelevel)(TraceOp.getLevel( m_Trace ) | TRCLEVEL_PARSE) );
+  if( wTrace.isinfo( trace ) || info )
+    TraceOp.setLevel( m_Trace, (tracelevel)(TraceOp.getLevel( m_Trace ) | TRCLEVEL_INFO) );
+
+  char*    tracefilename = NULL;
+  const char*   protpath = wTrace.getprotpath( trace );
+  Boolean        unique  = wTrace.isunique( trace );
+  const char*        tf2 = wTrace.getgfile( trace );
+  int               size = wTrace.getsize( trace );
+  int                 nr = wTrace.getnr( trace );
+  Boolean  exceptionfile = wTrace.isexceptionfile( trace );
+  const char*     invoke = wTrace.getinvoke( trace );
+  Boolean    invokeasync = wTrace.isinvokeasync( trace );
+  int           dumpsize = wTrace.getdumpsize( trace );
+
+  TraceOp.setFileSize( m_Trace, size );
+  TraceOp.setNrFiles( m_Trace, nr );
+  TraceOp.setExceptionFile( m_Trace, exceptionfile );
+  TraceOp.setInvoke( m_Trace, invoke, invokeasync );
+  TraceOp.setDumpsize( m_Trace, dumpsize );
+
+  if( tf == NULL )
+    tf = tf2;
+  else {
+    char* p = FileOp.getPath( tf );
+    TraceOp.trc( "app", TRCLEVEL_DEBUG, __LINE__, 9999, "ProtPath set to [%s]. (tf=\"%s\")", p, tf );
+    wTrace.setprotpath( trace, p );
+    StrOp.free( p );
+    protpath = wTrace.getprotpath( trace );
+    wTrace.setgfile( trace, FileOp.ripPath( tf ) );
+  }
+
+  /* Check protpath. */
+  if( protpath != NULL ) {
+    if( !FileOp.access( protpath ) ) {
+      if( FileOp.mkdir( protpath ) )
+        TraceOp.trc( "app", TRCLEVEL_DEBUG, __LINE__, 9999, "ProtPath [%s] created.", protpath );
+      else {
+        TraceOp.trc( "app", TRCLEVEL_WARNING, __LINE__, 1002,
+            "Protocol path [%s] invalid.(Using current folder.", protpath );
+        protpath = NULL;
+      }
+    }
+    else
+      TraceOp.trc( "app", TRCLEVEL_DEBUG, __LINE__, 9999, "ProtPath [%s] OK.", protpath );
+  }
+
+  if( protpath != NULL && !FileOp.isAbsolute( tf ) ) {
+    char* stamp = StrOp.createStamp();
+
+    if( !FileOp.isAbsolute( protpath ) ) {
+      char* wd = FileOp.pwd();
+      tracefilename = StrOp.fmt( "%s%c%s%c%s%s",
+                                 wd,
+                                 SystemOp.getFileSeparator(),
+                                 protpath,
+                                 SystemOp.getFileSeparator(),
+                                 tf,
+                                 unique ? stamp:"" );
+      StrOp.free( wd );
+    }
+    else {
+      tracefilename = StrOp.fmt( "%s%c%s%s",
+                                 protpath,
+                                 SystemOp.getFileSeparator(),
+                                 tf,
+                                 unique ? stamp:"" );
+    }
+
+    StrOp.free( stamp );
+  }
+  else {
+    char* stamp = StrOp.createStamp();
+    tracefilename = StrOp.fmt( "%s%s", tf, unique ? stamp:"" );
+    StrOp.free( stamp );
+  }
+
+  TraceOp.setFilename( m_Trace, tracefilename );
+
+  StrOp.free( tracefilename );
+
+
+
+
 
 #if defined __APPLE__ || defined __OpenBSD__
   char* licPath = StrOp.fmt("%s/rocrail/lic.dat", SystemOp.getProperty("HOME") );
@@ -779,22 +875,6 @@ bool RocGui::OnInit() {
 
   m_RCon  = NULL;
   m_Model = NULL;
-
-  iONode trace = wGui.gettrace( m_Ini );
-  if( trace == NULL ) {
-    trace = NodeOp.inst( wTrace.name(), m_Ini, ELEMENT_NODE );
-    NodeOp.addChild( m_Ini, trace );
-  }
-
-  if( wTrace.isdebug( trace ) || debug )
-    TraceOp.setLevel( m_Trace, (tracelevel)(TraceOp.getLevel( m_Trace ) | TRCLEVEL_DEBUG) );
-  if( wTrace.isparse( trace ) || parse )
-    TraceOp.setLevel( m_Trace, (tracelevel)(TraceOp.getLevel( m_Trace ) | TRCLEVEL_PARSE) );
-  if( wTrace.isinfo( trace ) || info )
-    TraceOp.setLevel( m_Trace, (tracelevel)(TraceOp.getLevel( m_Trace ) | TRCLEVEL_INFO) );
-
-  if( tf == NULL )
-    TraceOp.setFilename( m_Trace, wTrace.getgfile( trace ) );
 
   /* Logo. */
   TraceOp.println( "--------------------------------------------------" );

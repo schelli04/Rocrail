@@ -237,7 +237,10 @@ public:
     wxCheckBox* m_Debug;
     wxCheckBox* m_Info;
     wxStaticBoxSizer* m_TraceFileBox;
+    wxStaticText* m_labTraceFile;
     wxTextCtrl* m_TraceFile;
+    wxStaticText* m_labProtPath;
+    wxTextCtrl* m_ProtPath;
     wxStaticBox* m_HelpBox;
     wxTextCtrl* m_HelpURL;
     wxPanel* m_PTpanel;
