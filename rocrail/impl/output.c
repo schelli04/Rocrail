@@ -261,6 +261,8 @@ static Boolean __doCmd( struct OOutput* inst ,iONode nodeA ,Boolean update ) {
     wOutput.setvalue( nodeA, StrOp.equals(wOutput.off, state ) ? 0:wOutput.getvalue( o->props ) );
 
   if( wOutput.getaddr( o->props ) > 0 || wOutput.getport( o->props ) > 0 ){
+    Boolean on = StrOp.equals(wOutput.on, wOutput.getcmd(nodeA) );
+
     if( wOutput.isasswitch(o->props) ) {
       NodeOp.setName( nodeA, wSwitch.name() );
 
@@ -286,7 +288,7 @@ static Boolean __doCmd( struct OOutput* inst ,iONode nodeA ,Boolean update ) {
       return False;
     }
 
-    if( StrOp.equals(wOutput.on, wOutput.getcmd(nodeA) ) && wOutput.getdelay( o->props ) > 0 ) {
+    if( on && wOutput.getdelay( o->props ) > 0 ) {
       iOThread th = ThreadOp.inst(NULL, &__delayedOffThread, inst);
       ThreadOp.start(th);
     }
