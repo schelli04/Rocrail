@@ -674,7 +674,7 @@ static iOFBack _inst( iONode props ) {
   data->props = props;
   data->timer = -1;
   /* initially the state is off: */
-  wFeedback.setstate( props, False );
+  wFeedback.setstate( props, wFeedback.isactivelow( data->props ) );
 
   if( wCtrl.istimedsensors( wRocRail.getctrl( AppOp.getIni() ) ) ) {
     data->timedoff = wFeedback.gettimer( props );
