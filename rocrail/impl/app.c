@@ -990,7 +990,9 @@ static int _Main( iOApp inst, int argc, char** argv ) {
   data->control = ControlOp.inst( nocom );
 
   /* Weather */
-  data->weather = WeatherOp.inst(ModelOp.getWeather(data->model, wRocRail.getweatherid(data->ini)));
+  if( wCtrl.isweather(wRocRail.getctrl(data->ini)) ) {
+    data->weather = WeatherOp.inst(ModelOp.getWeather(data->model, wRocRail.getweatherid(data->ini)));
+  }
 
   /* Client connection */
   {
@@ -1223,7 +1225,8 @@ static Boolean _shutdown( int network, const char* signame ) {
       HttpOp.shutdown( data->http );
 
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Informing controller..." );
-    WeatherOp.halt( data->weather );
+    if( data->weather != NULL )
+      WeatherOp.halt( data->weather );
     ControlOp.halt( data->control );
 
     /* signal main loop */

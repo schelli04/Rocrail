@@ -743,7 +743,7 @@
       <dmx remark="DMX Options" wrappername="DMX">
         <dmxdevice cardinality="n" remark="DMX Device Options" wrappername="DMXDevice">
           <var name="addr" vt="int" defval="0" range="0-*"/>
-          <var name="nrdevicechannels" vt="int" defval="5" range="3-5"/>
+          <var name="nrdevicechannels" vt="int" defval="5" range="3-*"/>
         </dmxdevice>
       </dmx>
       
@@ -934,6 +934,7 @@
       <var name="useonlyfirstident" vt="bool" defval="true"/>
       <var name="userandomrate" vt="bool" defval="false"/>
       <var name="redirecttomaster" vt="bool" defval="true" remark="Redirect commands send to a slave consist member to the master loco."/>
+      <var name="weather" vt="bool" defval="true"/>
     </ctrl>
     <anaopt remark="Analyser options." wrappername="AnaOpt">
       <!-- option -->

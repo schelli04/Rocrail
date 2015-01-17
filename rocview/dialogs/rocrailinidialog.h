@@ -395,6 +395,7 @@ public:
     wxCheckBox* m_ProcessSignalEvents;
     wxCheckBox* m_UseRandomRate;
     wxCheckBox* m_RedirectToMaster;
+    wxCheckBox* m_Weather;
     wxPanel* m_ControllersPanel;
     wxListBox* m_Controllers;
     wxButton* m_ControllerDelete;
