@@ -430,6 +430,10 @@ void PowerManDlg::initValues() {
   m_IID->SetValue( wxString(wBooster.getiid( m_Props ),wxConvUTF8) );
   m_District->SetValue( wxString(wBooster.getdistrict( m_Props ),wxConvUTF8) );
 
+  m_ShortcutSensor->SetStringSelection(wxT("-"));
+  m_PowerSensor->SetStringSelection(wxT("-"));
+  m_PowerOutput->SetStringSelection(wxT("-"));
+
   m_ShortcutSensor->SetStringSelection( wxString(wBooster.getscfb( m_Props ),wxConvUTF8) );
   m_PowerSensor->SetStringSelection( wxString(wBooster.getpowerfb( m_Props ),wxConvUTF8) );
   m_PowerOutput->SetStringSelection( wxString(wBooster.getpowersw( m_Props ),wxConvUTF8) );
