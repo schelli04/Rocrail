@@ -56,6 +56,7 @@
 #include "rocview/dialogs/controllers/cbusdlg.h"
 #include "rocview/dialogs/controllers/ucons88dlg.h"
 #include "rocview/dialogs/controllers/spldlg.h"
+#include "rocview/dialogs/controllers/dmxdlg.h"
 
 #include "rocrail/wrapper/public/RocRail.h"
 #include "rocrail/wrapper/public/Plan.h"
@@ -2244,7 +2245,7 @@ void RocrailIniDialog::OnButtonRrPropsClick( wxCommandEvent& event )
   else if( StrOp.equals( wDigInt.hue, wDigInt.getlib( m_Controller ) ) )
     m_CSDialog = new ECoSCtrlDialog(this,m_Controller,devices);
   else if( StrOp.equals( wDigInt.dmxartnet, wDigInt.getlib( m_Controller ) ) )
-    m_CSDialog = new ECoSCtrlDialog(this,m_Controller,devices);
+    m_CSDialog = new DmxDlg(this,m_Controller);
   else
     m_CSDialog = new GenericCtrlDlg(this,m_Controller,wDigInt.getlib( m_Controller ), 0, NULL, devices);
 

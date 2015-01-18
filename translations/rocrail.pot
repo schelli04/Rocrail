@@ -7685,3 +7685,9 @@ msgstr ""
 msgid "ms"
 msgstr ""
 
+#. 
+# id="fixturchannels"
+#, c-format
+msgid "Fixtur channels"
+msgstr ""
+
