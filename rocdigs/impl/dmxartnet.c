@@ -139,14 +139,15 @@ static void __ArtDmx(iODMXArtNet inst) {
 
 static void __setChannel(iODMXArtNet inst, int addr, int channel, int red, int green, int blue, int brightness, Boolean active) {
   iODMXArtNetData data = Data(inst);
-  int device = addr + (channel * data->nrdevicechannels);
-  data->dmxchannel[device+0] = red;
-  data->dmxchannel[device+1] = green;
-  data->dmxchannel[device+2] = blue;
-  if( data->nrdevicechannels > 3 )
-    data->dmxchannel[device+3] = brightness;
-  if( data->nrdevicechannels > 4 )
+  int device = addr + (channel * data->fixturchannels);
+  data->dmxchannel[device+0] = brightness;
+  data->dmxchannel[device+1] = red;
+  data->dmxchannel[device+2] = green;
+  data->dmxchannel[device+3] = blue;
+  if( data->fixturchannels > 4 )
     data->dmxchannel[device+4] = 0;
+  if( data->fixturchannels > 5 )
+    data->dmxchannel[device+5] = 0;
 }
 
 
@@ -186,7 +187,7 @@ static iONode __translate( iODMXArtNet inst, iONode node ) {
     TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output addr=%d channel=%d active=%d cmd=%s bri=%d RGB=%d,%d,%d",
         addr, port, active, wOutput.getcmd( node ), val, r, g, b );
 
-    __setChannel(inst, addr, port, r, g, b, val, active);
+    __setChannel(inst, 1, addr, r, g, b, val, active);
     __ArtDmx(inst);
 
   }
@@ -310,13 +311,13 @@ static struct ODMXArtNet* _inst( const iONode ini ,const iOTrace trc ) {
     NodeOp.addChild(data->ini, data->dmxini);
   }
 
-  data->nrdevicechannels = 5;
+  data->fixturchannels = wDMX.getfixturchannels(data->dmxini);
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "DMX-ArtNet %d.%d.%d", vmajor, vminor, patch );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IID               : %s", data->iid );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IP                : %s", wDigInt.gethost(data->ini) );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  Nr device channels: %d", data->nrdevicechannels );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IID            : %s", data->iid );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IP             : %s", wDigInt.gethost(data->ini) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  Fixtur channels: %d", data->fixturchannels );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
 
   data->reader = ThreadOp.inst( "dmxreader", &__reader, __DMXArtNet );

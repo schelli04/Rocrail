@@ -656,8 +656,7 @@ public:
     wxStaticText* m_labBBTCorrection;
     wxSpinCtrl* m_BBTCorrection;
     wxStaticText* m_labBBTPer;
-    wxCheckBox* m_BBTUseFromBlockID;
-    wxCheckBox* m_BBTUseRoute;
+    wxRadioBox* m_BBTKey;
     wxStaticText* m_labBBTCalculation;
     wxListCtrl* m_BBTList2;
     wxStaticText* m_labBBTFromBlock;
@@ -669,6 +668,8 @@ public:
     wxCheckBox* m_BBTFixed;
     wxStaticText* m_labBBTRoute;
     wxTextCtrl* m_BBTRoute;
+    wxStaticText* m_labBBTSpeed;
+    wxSpinCtrl* m_BBTSpeed;
     wxButton* m_BBTDelete;
     wxButton* m_BBTCopy;
     wxButton* m_BBTDeleteAll;

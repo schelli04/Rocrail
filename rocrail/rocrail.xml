@@ -848,6 +848,7 @@
       <var name="bbtInBlock" vt="const char*"/>
       <var name="bbtPrevBlock" vt="const char*"/>
       <var name="bbtRoute" vt="const char*"/>
+      <var name="bbtEnterSpeed" vt="int"/>
       <var name="bbtSpeed" vt="int"/>
       <var name="bbtSpeedInterval" vt="int"/>
       <var name="bbtInterval" vt="int"/>
