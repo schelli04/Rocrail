@@ -159,10 +159,10 @@ class wxGrid;
 #define ID_BUTTON_LC_CV_DESC 10347
 #define ID_PANEL_LOC_BBT 10337
 #define ID_LOC_BBTLIST2 10427
-#define ID_BBT_MODIFY 10426
 #define ID_BUTTON_BBT_DELETE 10424
 #define ID_BBT_COPY 10455
 #define ID_BUTTON_BBT_DELETEALL 10425
+#define ID_BBT_MODIFY 10426
 #define SYMBOL_LOCDIALOG_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
 #define SYMBOL_LOCDIALOG_TITLE _("Dialog")
 #define SYMBOL_LOCDIALOG_IDNAME ID_DIALOG_LOC
@@ -348,9 +348,6 @@ public:
     /// wxEVT_COMMAND_LIST_COL_CLICK event handler for ID_LOC_BBTLIST2
     void OnLocBbtlist2ColLeftClick( wxListEvent& event );
 
-    /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_BBT_MODIFY
-    void OnBbtModifyClick( wxCommandEvent& event );
-
     /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_BUTTON_BBT_DELETE
     void OnButtonBbtDeleteClick( wxCommandEvent& event );
 
@@ -359,6 +356,9 @@ public:
 
     /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_BUTTON_BBT_DELETEALL
     void OnButtonBbtDeleteallClick( wxCommandEvent& event );
+
+    /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_BBT_MODIFY
+    void OnBbtModifyClick( wxCommandEvent& event );
 
     /// wxEVT_COMMAND_BUTTON_CLICKED event handler for wxID_CANCEL
     void OnCancelClick( wxCommandEvent& event );
@@ -657,6 +657,7 @@ public:
     wxSpinCtrl* m_BBTCorrection;
     wxStaticText* m_labBBTPer;
     wxCheckBox* m_BBTUseFromBlockID;
+    wxCheckBox* m_BBTUseRoute;
     wxStaticText* m_labBBTCalculation;
     wxListCtrl* m_BBTList2;
     wxStaticText* m_labBBTFromBlock;
@@ -666,10 +667,12 @@ public:
     wxStaticText* m_labBBTInterval;
     wxSpinCtrl* m_BBTInterval;
     wxCheckBox* m_BBTFixed;
-    wxButton* m_BBTModify;
+    wxStaticText* m_labBBTRoute;
+    wxTextCtrl* m_BBTRoute;
     wxButton* m_BBTDelete;
     wxButton* m_BBTCopy;
     wxButton* m_BBTDeleteAll;
+    wxButton* m_BBTModify;
     wxButton* m_Cancel;
     wxButton* m_Apply;
     wxButton* m_OK;

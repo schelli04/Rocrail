@@ -595,6 +595,14 @@ static const char* _getCurblock( iILcDriverInt inst ) {
     return NULL;
 }
 
+static const char* _getCurroute( iILcDriverInt inst ) {
+  iOLcDriverData data = Data(inst);
+  if( data->next1Route!= NULL )
+    return data->next1Route->base.id( data->next1Route );
+  else
+    return NULL;
+}
+
 static void _gotoblock( iILcDriverInt inst, const char* blockid ) {
   iOLcDriverData data = Data(inst);
   data->gotoBlock = blockid;
