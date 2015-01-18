@@ -287,12 +287,13 @@ static void _setIni( iONode ini ) {
   if( __appinst != NULL ) {
     iOAppData data  = Data(__appinst);
     iONode    trace = wRocRail.gettrace( ini );
-    iONode     ctrl = wRocRail.gettrace( ini );
+    iONode     ctrl = wRocRail.getctrl( ini );
     iONode curtrace = wRocRail.gettrace( data->ini );
     iONode  curctrl = wRocRail.getctrl( data->ini );
 
     if( curctrl != NULL && ctrl != NULL) {
       wCtrl.setvirtualtimer(curctrl, wCtrl.getvirtualtimer(ctrl));
+      wCtrl.setweather(curctrl, wCtrl.isweather(ctrl));
     }
 
     if( trace != NULL && curtrace != NULL) {
@@ -990,9 +991,7 @@ static int _Main( iOApp inst, int argc, char** argv ) {
   data->control = ControlOp.inst( nocom );
 
   /* Weather */
-  if( wCtrl.isweather(wRocRail.getctrl(data->ini)) ) {
-    data->weather = WeatherOp.inst(ModelOp.getWeather(data->model, wRocRail.getweatherid(data->ini)));
-  }
+  data->weather = WeatherOp.inst(ModelOp.getWeather(data->model, wRocRail.getweatherid(data->ini)));
 
   /* Client connection */
   {

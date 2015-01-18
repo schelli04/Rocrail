@@ -4116,7 +4116,7 @@ static void _event( iOModel inst, iONode nodeC ) {
       addr = wOutput.getaddr( nodeC );
       port = wOutput.getport( nodeC );
     }
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "unregistered event: %s [%s]%d:%d:%d uidname=[%s]", NodeOp.getName(nodeC), iid!=NULL?iid:"", bus, addr, port, uidname );
+    TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999, "unregistered event: %s [%s]%d:%d:%d uidname=[%s]", NodeOp.getName(nodeC), iid!=NULL?iid:"", bus, addr, port, uidname );
     /* Cleanup Node3 */
     nodeC->base.del(nodeC);
     return;

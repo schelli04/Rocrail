@@ -47,6 +47,7 @@
 #include "rocrail/wrapper/public/Output.h"
 #include "rocrail/wrapper/public/Color.h"
 #include "rocrail/wrapper/public/WeatherTheme.h"
+#include "rocrail/wrapper/public/Ctrl.h"
 
 
 static int instCnt = 0;
@@ -594,15 +595,19 @@ static void __makeWeather( void* threadinst ) {
       loopCnt = 0;
 
       if( lastMin != ltm->tm_min ) {
-        TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "weather time is %02d:%02d", hour, min );
-        __doDaylight(weather, hour, min, False, False );
+        if( wCtrl.isweather(wRocRail.getctrl(AppOp.getIni())) ) {
+          TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "weather time is %02d:%02d", hour, min );
+          __doDaylight(weather, hour, min, False, False );
+        }
         lastMin = min;
       }
     }
     else {
       loopCnt++;
     }
-    __checkWeatherThemes(weather, hour, min );
+    if( wCtrl.isweather(wRocRail.getctrl(AppOp.getIni())) ) {
+      __checkWeatherThemes(weather, hour, min );
+    }
     ThreadOp.sleep(100);
   }
   __doDaylight(weather, 0, 0, True, False );
