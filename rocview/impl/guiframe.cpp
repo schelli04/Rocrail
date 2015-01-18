@@ -2555,7 +2555,7 @@ void RocGuiFrame::create() {
     activeLocsSizer->Add(m_LocImage, 0, wxGROW|wxALL|wxADJUST_MINSIZE, 2);
   }
 
-  m_ActiveLocs = new wxGrid( m_ActiveLocsPanel, -1, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
+  m_ActiveLocs = new wxGrid( m_ActiveLocsPanel, 7007, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
   if(wGui.isgrayicons(wxGetApp().getIni()))
     m_ActiveLocs->SetBackgroundColour(Base::getGrey());
   m_ActiveLocs->SetRowLabelSize(0);
