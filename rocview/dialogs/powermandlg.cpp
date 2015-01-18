@@ -250,6 +250,11 @@ void PowerManDlg::initLabels() {
 
   m_Actions->SetLabel( wxGetApp().getMsg( "actions" )+_T("...") );
 
+  // Buttons
+  m_stdButtonOK->SetLabel( wxGetApp().getMsg( "ok" ) );
+  m_stdButtonCancel->SetLabel( wxGetApp().getMsg( "cancel" ) );
+  m_stdButtonApply->SetLabel( wxGetApp().getMsg( "apply" ) );
+  m_stdButtonHelp->SetLabel( wxGetApp().getMsg( "help" ) );
 }
 
 
