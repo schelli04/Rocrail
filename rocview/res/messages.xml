@@ -29451,7 +29451,7 @@
     <nl txt="ms"/>
     <sr_latin txt="ms"/>
   </Msg>
-  <Msg id="fixturchannels">
-    <en txt="Fixtur channels"/>
+  <Msg id="devicechannels">
+    <en txt="Device channels"/>
   </Msg>
 </Messages>

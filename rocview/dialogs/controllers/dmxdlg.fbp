@@ -345,10 +345,10 @@
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">wxID_ANY</property>
-                                <property name="label">Fixtur channels</property>
+                                <property name="label">Device channels</property>
                                 <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
-                                <property name="name">m_labFixturChannels</property>
+                                <property name="name">m_labDeviceChannels</property>
                                 <property name="permission">protected</property>
                                 <property name="pos"></property>
                                 <property name="size"></property>
@@ -406,7 +406,7 @@
                                 <property name="maximum_size"></property>
                                 <property name="min">3</property>
                                 <property name="minimum_size"></property>
-                                <property name="name">m_FixturChannels</property>
+                                <property name="name">m_DeviceChannels</property>
                                 <property name="permission">protected</property>
                                 <property name="pos"></property>
                                 <property name="size">80,-1</property>

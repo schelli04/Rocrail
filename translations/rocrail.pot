@@ -7686,8 +7686,8 @@ msgid "ms"
 msgstr ""
 
 #. 
-# id="fixturchannels"
+# id="devicechannels"
 #, c-format
-msgid "Fixtur channels"
+msgid "Device channels"
 msgstr ""
 

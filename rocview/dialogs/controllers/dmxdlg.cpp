@@ -56,7 +56,7 @@ void DmxDlg::onOK( wxCommandEvent& event )
 void DmxDlg::initLabels() {
   m_labIID->SetLabel(wxGetApp().getMsg( "iid" ));
   m_labHost->SetLabel(wxGetApp().getMsg( "host" ));
-  m_labFixturChannels->SetLabel(wxGetApp().getMsg( "fixturchannels" ));
+  m_labDeviceChannels->SetLabel(wxGetApp().getMsg( "devicechannels" ));
 }
 
 void DmxDlg::initValues() {
@@ -68,14 +68,14 @@ void DmxDlg::initValues() {
 
   m_IID->SetValue( wxString( wDigInt.getiid( m_Props ), wxConvUTF8 ) );
   m_Host->SetValue( wxString( wDigInt.gethost( m_Props ), wxConvUTF8 ) );
-  m_FixturChannels->SetValue(wDMX.getfixturchannels(dmxini));
+  m_DeviceChannels->SetValue(wDMX.getdevicechannels(dmxini));
 }
 
 bool DmxDlg::evaluate() {
   iONode dmxini = wDigInt.getdmx(m_Props);
   wDigInt.setiid( m_Props, m_IID->GetValue().mb_str(wxConvUTF8) );
   wDigInt.sethost( m_Props, m_Host->GetValue().mb_str(wxConvUTF8) );
-  wDMX.setfixturchannels(dmxini, m_FixturChannels->GetValue());
+  wDMX.setdevicechannels(dmxini, m_DeviceChannels->GetValue());
   return true;
 }
 

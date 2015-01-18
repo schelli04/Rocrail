@@ -741,7 +741,7 @@
       </mcs2>
       
       <dmx remark="DMX Options" wrappername="DMX">
-        <var name="fixturchannels" vt="int" defval="6" range="4-6"/>
+        <var name="devicechannels" vt="int" defval="6" range="4-6"/>
       </dmx>
       
       <cbus remark="CBUS options" wrappername="CBus">

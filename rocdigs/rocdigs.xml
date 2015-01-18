@@ -2109,7 +2109,7 @@
       <var name="socket" vt="iOSocket"/>
       <var name="run" vt="Boolean"/>
       <var name="reader" vt="iOThread"/>
-      <var name="fixturchannels" vt="int"/>
+      <var name="devicechannels" vt="int"/>
       <var name="dmxchannel[513]" vt="byte"/>
       <var name="transactor" vt="iOThread"/>
       <var name="listenerObj" vt="obj"/>
