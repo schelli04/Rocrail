@@ -1805,7 +1805,7 @@ static void __BBT(iOLoc loc) {
     iIBlockBase block = ModelOp.getBlock( AppOp.getModel(), data->bbtEnterBlock );
     if( block != NULL ) {
       TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "BBT-GENERATE-IN id=%s block=%s", wLoc.getid(data->props), data->bbtEnterBlock );
-      LocOp.event(loc, block, in_event, 0, False, "BBT-IN-Event" );
+      LocOp.event(loc, (obj)block, in_event, 0, False, "BBT-IN-Event" );
     }
     else {
       TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999,
