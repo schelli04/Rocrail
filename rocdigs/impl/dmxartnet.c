@@ -137,9 +137,11 @@ static void __ArtDmx(iODMXArtNet inst) {
 
 }
 
-static void __setChannel(iODMXArtNet inst, int addr, int channel, int red, int green, int blue, int brightness, Boolean active) {
+static void __setChannel(iODMXArtNet inst, int addr, int red, int green, int blue, int brightness, Boolean active) {
   iODMXArtNetData data = Data(inst);
-  int device = addr + (channel * data->devicechannels);
+  int device = 1 + ((addr-1) * data->devicechannels);
+  TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999,
+      "device=%d active=%d bri=%d RGB=%d,%d,%d, devicechannels=%d", device, active, brightness, red, green, blue, data->devicechannels );
   data->dmxchannel[device+0] = brightness;
   data->dmxchannel[device+1] = red;
   data->dmxchannel[device+2] = green;
@@ -148,6 +150,7 @@ static void __setChannel(iODMXArtNet inst, int addr, int channel, int red, int g
     data->dmxchannel[device+4] = 0;
   if( data->devicechannels > 5 )
     data->dmxchannel[device+5] = 0;
+  TraceOp.dump( NULL, TRCLEVEL_BYTE, (char*)&data->dmxchannel[device], data->devicechannels );
 }
 
 
@@ -184,10 +187,10 @@ static iONode __translate( iODMXArtNet inst, iONode node ) {
       g = wColor.getgreen(color);
       b = wColor.getblue(color);
     }
-    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output addr=%d channel=%d active=%d cmd=%s bri=%d RGB=%d,%d,%d",
-        addr, port, active, wOutput.getcmd( node ), val, r, g, b );
+    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output device=%d active=%d cmd=%s bri=%d RGB=%d,%d,%d",
+        addr, active, wOutput.getcmd( node ), val, r, g, b );
 
-    __setChannel(inst, 1, addr, r, g, b, val, active);
+    __setChannel(inst, addr, r, g, b, val, active);
     __ArtDmx(inst);
 
   }
