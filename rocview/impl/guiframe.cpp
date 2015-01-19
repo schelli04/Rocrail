@@ -5085,27 +5085,37 @@ void RocGuiFrame::setLocID( const char* locid ) {
 }
 
 void RocGuiFrame::OnCellLeftDClick( wxGridEvent& event ){
-  TraceOp.trc( "frame", TRCLEVEL_INFO, __LINE__, 9999, "OnCellLeftDClick..." );
-  OnCellLeftClick(event);
-  OnLcDlg(event);
+  if( event.GetEventObject() == m_ActiveLocs ) {
+    TraceOp.trc( "frame", TRCLEVEL_INFO, __LINE__, 9999, "OnCellLeftDClick..." );
+    OnCellLeftClick(event);
+    OnLcDlg(event);
+  }
+  else {
+    event.Skip();
+  }
 }
 
 
 void RocGuiFrame::OnLabelLeftClick( wxGridEvent& event ){
-  if( event.ShiftDown() ) {
-    event.Skip();
+  if( event.GetEventObject() == m_ActiveLocs ) {
+    if( event.ShiftDown() ) {
+      event.Skip();
+    }
+    else {
+      int column = event.GetCol();
+      if( m_LocoSortColumn == column )
+        ms_LocoSortInvert = !ms_LocoSortInvert;
+      else {
+        ms_LocoSortInvert = false;
+        m_LocoSortColumn = column;
+      }
+      TraceOp.trc( "frame", TRCLEVEL_INFO, __LINE__, 9999, "OnLabelLeftClick column=%d invert=%s", m_LocoSortColumn, ms_LocoSortInvert?"true":"false" );
+      wxCommandEvent cmdevent;
+      InitActiveLocs(cmdevent);
+    }
   }
   else {
-    int column = event.GetCol();
-    if( m_LocoSortColumn == column )
-      ms_LocoSortInvert = !ms_LocoSortInvert;
-    else {
-      ms_LocoSortInvert = false;
-      m_LocoSortColumn = column;
-    }
-    TraceOp.trc( "frame", TRCLEVEL_INFO, __LINE__, 9999, "OnLabelLeftClick column=%d invert=%s", m_LocoSortColumn, ms_LocoSortInvert?"true":"false" );
-    wxCommandEvent cmdevent;
-    InitActiveLocs(cmdevent);
+    event.Skip();
   }
 }
 
