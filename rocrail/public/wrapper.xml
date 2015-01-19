@@ -2852,6 +2852,7 @@
           <var name="speed" vt="int" defval="0" range="0-*"/>
           <var name="steps" vt="int" defval="0" range="0-*"/>
           <var name="fixed" vt="bool" defval="False" remark="Fixed block brake timer."/>
+          <var name="generatein" vt="bool" defval="False" remark="Generate an IN event at the last BBT step."/>
           <var name="count" vt="int" defval="0" remark="Counter for dynamically adjust the correction factor."/>
         </bbt>
       </lc>

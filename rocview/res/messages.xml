@@ -29454,4 +29454,7 @@
   <Msg id="devicechannels">
     <en txt="Device channels"/>
   </Msg>
+  <Msg id="generatein">
+    <en txt="Generate IN event"/>
+  </Msg>
 </Messages>

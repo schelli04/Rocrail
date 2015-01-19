@@ -1697,6 +1697,7 @@ static void _resetBBT(iOLoc loc) {
   data->bbtEnter      = 0;
   data->bbtIn         = 0;
   data->bbtAtMinSpeed = False;
+  data->bbtGenerateIn = False;
   data->bbtStepCount  = 0;
   data->bbtAtMin      = 0;
 }
@@ -1751,6 +1752,7 @@ static void __BBT(iOLoc loc) {
       if( bbt != NULL ) {
         TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "BBT-Record found: [%s] keytype=%d", key, bbtkey);
         data->bbtInterval = wBBT.getinterval(bbt) / bbtsteps;
+        data->bbtGenerateIn = wBBT.isgeneratein(bbt);
         if( wBBT.getinterval(bbt) % bbtsteps > 5 )
           data->bbtInterval++;
         wBBT.setsteps(bbt, 0 );
@@ -1781,7 +1783,8 @@ static void __BBT(iOLoc loc) {
         data->bbtAtMin = SystemOp.getTick();
         wLoc.setV_hint( data->props, wLoc.min );
       }
-      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "BBT-SPEED V=%d id=%s mode=%s", speed, wLoc.getid(data->props), wLoc.getmode(data->props)  );
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "BBT-SPEED V=%d id=%s mode=%s atminspeed=%d",
+          speed, wLoc.getid(data->props), wLoc.getmode(data->props), data->bbtAtMinSpeed  );
 
       wLoc.setV( cmd, speed );
       wLoc.setdir( cmd, wLoc.isdir( data->props ) );
@@ -1796,6 +1799,22 @@ static void __BBT(iOLoc loc) {
     data->bbtEnter      = 0;
     data->bbtIn         = 0;
     data->bbtAtMinSpeed = False;
+  }
+
+  if(data->bbtGenerateIn && data->bbtAtMinSpeed) {
+    iIBlockBase block = ModelOp.getBlock( AppOp.getModel(), data->bbtEnterBlock );
+    if( block != NULL ) {
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "BBT-GENERATE-IN id=%s block=%s", wLoc.getid(data->props), data->bbtEnterBlock );
+      LocOp.event(loc, block, in_event, 0, False, "BBT-IN-Event" );
+    }
+    else {
+      TraceOp.trc( name, TRCLEVEL_EXCEPTION, __LINE__, 9999,
+          "BBT-GENERATE-IN id=%s: Block [%s] does not exist; Stop loco", wLoc.getid(data->props), data->bbtEnterBlock );
+      iONode cmd = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE );
+      wLoc.setV( cmd, 0 );
+      wLoc.setdir( cmd, wLoc.isdir( data->props ) );
+      LocOp.cmd( loc, cmd );
+    }
   }
 
   if( data->bbtEnter != 0 && data->bbtIn != 0 && data->bbtEnterBlock != NULL && data->bbtInBlock != NULL ) {
@@ -1889,6 +1908,7 @@ static void __BBT(iOLoc loc) {
     data->bbtEnter      = 0;
     data->bbtIn         = 0;
     data->bbtAtMinSpeed = False;
+    data->bbtGenerateIn = False;
     data->bbtStepCount  = 0;
     data->bbtAtMin      = 0;
   }
@@ -1899,6 +1919,7 @@ static void __BBT(iOLoc loc) {
     data->bbtIn         = 0;
     data->bbtAtMin      = 0;
     data->bbtAtMinSpeed = False;
+    data->bbtGenerateIn = False;
     data->bbtStepCount  = 0;
   }
 }

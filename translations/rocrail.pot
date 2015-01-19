@@ -7691,3 +7691,9 @@ msgstr ""
 msgid "Device channels"
 msgstr ""
 
+#. 
+# id="generatein"
+#, c-format
+msgid "Generate IN event"
+msgstr ""
+

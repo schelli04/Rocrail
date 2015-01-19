@@ -857,6 +857,7 @@
       <var name="bbtInTimer" vt="int"/>
       <var name="bbtStepCount" vt="int"/>
       <var name="bbtExternalStop" vt="Boolean"/>
+      <var name="bbtGenerateIn" vt="Boolean"/>
       <var name="lastfncmd" vt="long"/>
       <var name="govirtual" vt="Boolean"/>
       <var name="muxEngine" vt="iOMutex"/>
