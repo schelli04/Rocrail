@@ -551,6 +551,7 @@ public:
     wxCheckBox* m_UseDepartDelay;
     wxCheckBox* m_FreeBlockOnEnter;
     wxCheckBox* m_V0onSwap;
+    wxCheckBox* m_BBT;
     wxRadioBox* m_EngineBox;
     wxRadioBox* m_Era;
     wxStaticText* m_labClass;
@@ -653,7 +654,7 @@ public:
     wxTextCtrl* m_CVDescription;
     wxButton* m_CVDescModify;
     wxPanel* m_BBTPanel;
-    wxCheckBox* m_BBT;
+    wxStaticText* m_BBTDummy;
     wxSpinCtrl* m_BBTSteps;
     wxStaticText* m_labSteps;
     wxStaticText* m_labBBTStartInterval;
