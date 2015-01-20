@@ -144,7 +144,7 @@ LocDialog::LocDialog(  wxWindow* parent, iONode p_Props, bool save )
   m_iSelectedCV = -1;
   m_iFunGroup = 0;
   m_BBTSel = NULL;
-
+  m_iBBTSel = wxNOT_FOUND;
 
   initLabels();
   initCVDesc();
@@ -3623,7 +3623,7 @@ void LocDialog::OnButtonBbtDeleteallClick( wxCommandEvent& event )
 
 void LocDialog::OnBbtModifyClick( wxCommandEvent& event )
 {
-  if( m_Props != NULL ) {
+  if( m_Props != NULL && m_iBBTSel != wxNOT_FOUND) {
     // re-init the list to update the bbt pointers
     initBBT();
     m_BBTSel = (iONode)m_BBTList2->GetItemData(m_iBBTSel);
