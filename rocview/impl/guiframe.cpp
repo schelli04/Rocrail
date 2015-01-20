@@ -1774,7 +1774,15 @@ void RocGuiFrame::UpdateActiveLocs( wxCommandEvent& event ) {
       // save image
       const char* imagepath = wGui.getimagepath(m_Ini);
       static char pixpath[256];
-      StrOp.fmtb( pixpath, "%s%c%s", imagepath, SystemOp.getFileSeparator(), FileOp.ripPath( wDataReq.getfilename(node) ) );
+      if( !wGui.isfsutf8(m_Ini) ) {
+        char* tmp = SystemOp.utf2latin(FileOp.ripPath( wDataReq.getfilename(node) ));
+        StrOp.fmtb( pixpath, "%s%c%s", imagepath, SystemOp.getFileSeparator(), tmp );
+        StrOp.free(tmp);
+      }
+      else {
+        StrOp.fmtb( pixpath, "%s%c%s", imagepath, SystemOp.getFileSeparator(), FileOp.ripPath( wDataReq.getfilename(node) ) );
+      }
+
       if( !FileOp.exist(imagepath) ) {
         FileOp.mkdir(imagepath);
       }
