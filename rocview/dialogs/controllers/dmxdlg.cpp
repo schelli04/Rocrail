@@ -56,8 +56,8 @@ void DmxDlg::onOK( wxCommandEvent& event )
 void DmxDlg::initLabels() {
   m_labIID->SetLabel(wxGetApp().getMsg( "iid" ));
   m_labHost->SetLabel(wxGetApp().getMsg( "host" ));
-  m_labRefreshRate->SetLabel(wxGetApp().getMsg( "refreshrate" ));
-  m_labRefreshRateMS->SetLabel(wxGetApp().getMsg( "milliseconds" ));
+  m_labFrameRate->SetLabel(wxGetApp().getMsg( "framerate" ));
+  m_labFrameRateMS->SetLabel(wxGetApp().getMsg( "milliseconds" ));
 
   // Buttons
   m_stdButtonsOK->SetLabel( wxGetApp().getMsg( "ok" ) );
@@ -74,14 +74,14 @@ void DmxDlg::initValues() {
 
   m_IID->SetValue( wxString( wDigInt.getiid( m_Props ), wxConvUTF8 ) );
   m_Host->SetValue( wxString( wDigInt.gethost( m_Props ), wxConvUTF8 ) );
-  m_RefreshRate->SetValue(wDMX.getrefreshrate(dmxini));
+  m_FrameRate->SetValue(wDMX.getframerate(dmxini));
 }
 
 bool DmxDlg::evaluate() {
   iONode dmxini = wDigInt.getdmx(m_Props);
   wDigInt.setiid( m_Props, m_IID->GetValue().mb_str(wxConvUTF8) );
   wDigInt.sethost( m_Props, m_Host->GetValue().mb_str(wxConvUTF8) );
-  wDMX.setrefreshrate(dmxini, m_RefreshRate->GetValue());
+  wDMX.setframerate(dmxini, m_FrameRate->GetValue());
   return true;
 }
 

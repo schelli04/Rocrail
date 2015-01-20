@@ -738,7 +738,7 @@
       </mcs2>
       
       <dmx remark="DMX Options" wrappername="DMX">
-        <var name="refreshrate" vt="int" defval="500" range="100-10000"/>
+        <var name="framerate" vt="int" defval="500" range="100-10000"/>
       </dmx>
       
       <cbus remark="CBUS options" wrappername="CBus">

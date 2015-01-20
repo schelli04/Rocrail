@@ -345,10 +345,10 @@
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">wxID_ANY</property>
-                                <property name="label">Refresh rate</property>
+                                <property name="label">Frame rate</property>
                                 <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
-                                <property name="name">m_labRefreshRate</property>
+                                <property name="name">m_labFrameRate</property>
                                 <property name="permission">protected</property>
                                 <property name="pos"></property>
                                 <property name="size"></property>
@@ -422,7 +422,7 @@
                                         <property name="maximum_size"></property>
                                         <property name="min">100</property>
                                         <property name="minimum_size"></property>
-                                        <property name="name">m_RefreshRate</property>
+                                        <property name="name">m_FrameRate</property>
                                         <property name="permission">protected</property>
                                         <property name="pos"></property>
                                         <property name="size">100,-1</property>
@@ -480,7 +480,7 @@
                                         <property name="label">ms</property>
                                         <property name="maximum_size"></property>
                                         <property name="minimum_size"></property>
-                                        <property name="name">m_labRefreshRateMS</property>
+                                        <property name="name">m_labFrameRateMS</property>
                                         <property name="permission">protected</property>
                                         <property name="pos"></property>
                                         <property name="size"></property>

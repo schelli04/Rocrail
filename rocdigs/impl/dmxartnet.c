@@ -250,7 +250,7 @@ static iONode __translate( iODMXArtNet inst, iONode node ) {
         addr, active, wOutput.getcmd( node ), val, briChannel, r, g, b, redChannel, greenChannel, blueChannel );
 
     __setChannel(inst, addr, r, g, b, val, active, redChannel, greenChannel, blueChannel, briChannel);
-    data->refreshnow = True;
+    data->refresh = True;
   }
 
 
@@ -337,13 +337,13 @@ static void __writer( void* threadinst ) {
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "writer started." );
   ThreadOp.sleep(1000);
 
-  int refreshpasue = 0;
+  int framepause = 0;
   while( data->run ) {
     ThreadOp.sleep(10);
-    refreshpasue += 10;
-    if( refreshpasue >= data->refreshrate || data->refreshnow) {
-      data->refreshnow = False;
-      refreshpasue = 0;
+    framepause += 10;
+    if( framepause >= data->framerate || data->refresh) {
+      data->refresh = False;
+      framepause = 0;
       __ArtDmx(inst);
     }
   }
@@ -402,15 +402,15 @@ static struct ODMXArtNet* _inst( const iONode ini ,const iOTrace trc ) {
     NodeOp.addChild(data->ini, data->dmxini);
   }
 
-  data->refreshrate = wDMX.getrefreshrate(data->dmxini);
-  if( data->refreshrate < 100 )
-    data->refreshrate = 500;
+  data->framerate = wDMX.getframerate(data->dmxini);
+  if( data->framerate < 100 )
+    data->framerate = 500;
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "DMX-ArtNet %d.%d.%d", vmajor, vminor, patch );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IID         : %s", data->iid );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IP          : %s", wDigInt.gethost(data->ini) );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  Refresh rate: %d", data->refreshrate );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IID       : %s", data->iid );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IP        : %s", wDigInt.gethost(data->ini) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  Frame rate: %d", data->framerate );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
 
   data->reader = ThreadOp.inst( "dmxreader", &__reader, __DMXArtNet );

@@ -7697,3 +7697,9 @@ msgstr ""
 msgid "Generate IN event"
 msgstr ""
 
+#. 
+# id="framerate"
+#, c-format
+msgid "Frame rate"
+msgstr ""
+
