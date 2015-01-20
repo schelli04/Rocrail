@@ -252,6 +252,10 @@ public:
     wxSpinCtrl* m_GreenChannel;
     wxStaticText* m_labBlueChannel;
     wxSpinCtrl* m_BlueChannel;
+    wxStaticText* m_labWhiteChannel;
+    wxSpinCtrl* m_WhiteChannel;
+    wxStaticText* m_labBrightnessChannel;
+    wxSpinCtrl* m_BrightnessChannel;
     wxStaticBox* m_ColorRGBBox;
     wxStaticText* m_labRedColor;
     wxSpinCtrl* m_RedColor;
@@ -259,6 +263,8 @@ public:
     wxSpinCtrl* m_GreenColor;
     wxStaticText* m_labBlueColor;
     wxSpinCtrl* m_BlueColor;
+    wxStaticText* m_labWhiteColor;
+    wxSpinCtrl* m_WhiteColor;
     wxPanel* m_LocationPanel;
     wxStaticText* m_LabelX;
     wxTextCtrl* m_x;
@@ -270,6 +276,7 @@ public:
     wxButton* m_Cancel;
     wxButton* m_OK;
     wxButton* m_Apply;
+    wxButton* m_Help;
     iONode m_Props;
 ////@end OutputDialog member variables
 };

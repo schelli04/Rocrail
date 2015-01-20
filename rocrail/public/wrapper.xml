@@ -3,9 +3,6 @@
 
  Copyright (C) 2002-2014 Rob Versluis, Rocrail.net
 
- 
-  
-
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  as published by the Free Software Foundation; either version 2
@@ -741,7 +738,7 @@
       </mcs2>
       
       <dmx remark="DMX Options" wrappername="DMX">
-        <var name="devicechannels" vt="int" defval="6" range="4-6"/>
+        <var name="refreshrate" vt="int" defval="500" range="100-10000"/>
       </dmx>
       
       <cbus remark="CBUS options" wrappername="CBus">
@@ -1558,7 +1555,8 @@
     <var name="red" vt="int" defval="0" range="0-255" remark="Red value"/>
 		<var name="green" vt="int" defval="0" range="0-255" remark="Green value"/>
 		<var name="blue" vt="int" defval="0" range="0-255" remark="Blue value"/>
-    <var name="brightness" vt="int" defval="0" range="0-255" remark="Brightness"/>
+    <var name="white" vt="int" defval="0" range="0-255" remark="White value"/>
+		<var name="brightness" vt="int" defval="0" range="0-255" remark="Brightness"/>
   </color>
 
   <plan structname="RRP" wrappername="Plan" remark="Root node of the planfile.">
@@ -1954,9 +1952,13 @@
         <var name="inv" vt="bool" defval="false" remark="Output as switch inverted. (Software wiring correction)"/>
         <var name="blink" vt="bool" defval="false" remark="Blink output."/>
         <var name="asswitch" vt="bool" defval="false" remark="send a switch command"/>
+
         <var name="redChannel" vt="int" defval="0" range="0-*" remark="Red channel address"/>
         <var name="greenChannel" vt="int" defval="0" range="0-*" remark="Green channel address"/>
         <var name="blueChannel" vt="int" defval="0" range="0-*" remark="Blue channel address"/>
+        <var name="whiteChannel" vt="int" defval="0" range="0-*" remark="White channel address"/>
+        <var name="brightnessChannel" vt="int" defval="0" range="0-*" remark="Brightnes channel address"/>
+        
         <var name="delay" vt="int" defval="0" range="0-*" required="false" remark="Turn off after x seconds if greater then 0"/>
         
         <var name="colortype" vt="bool" defval="false" remark="The output supports RGB color settings."/>

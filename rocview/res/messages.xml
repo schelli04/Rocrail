@@ -29457,4 +29457,7 @@
   <Msg id="generatein">
     <en txt="Generate IN event"/>
   </Msg>
+  <Msg id="refreshrate">
+    <en txt="Refresh rate"/>
+  </Msg>
 </Messages>

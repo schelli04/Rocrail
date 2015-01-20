@@ -864,6 +864,26 @@ Boolean rocs_socket_setKeepalive( iOSocket inst, Boolean alive ) {
 }
 
 
+Boolean rocs_socket_setBroadcast( iOSocket inst, Boolean broadcast ) {
+#ifdef __ROCS_SOCKET__
+  iOSocketData o = Data(inst);
+  int rc   = 0;
+  int size = sizeof( broadcast );
+  rc = setsockopt( o->sh, SOL_SOCKET, SO_BROADCAST, (void*)&broadcast, size );
+
+  if( rc != 0 ) {
+    o->rc = errno;
+    TraceOp.terrno( name, TRCLEVEL_EXCEPTION, __LINE__, 9999, o->rc, "setsockopt() failed" );
+    return False;
+  }
+  TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "rocs_socket_setBroadcast() OK." );
+  return True;
+#else
+  return False;
+#endif
+}
+
+
 Boolean rocs_socket_setNodelay( iOSocket inst, Boolean flag ) {
 #ifdef __ROCS_SOCKET__
   iOSocketData o = Data(inst);

@@ -254,6 +254,8 @@ static Boolean __doCmd( struct OOutput* inst ,iONode nodeA ,Boolean update ) {
   wOutput.setredChannel( nodeA, wOutput.getredChannel( o->props ) );
   wOutput.setgreenChannel( nodeA, wOutput.getgreenChannel( o->props ) );
   wOutput.setblueChannel( nodeA, wOutput.getblueChannel( o->props ) );
+  wOutput.setwhiteChannel( nodeA, wOutput.getwhiteChannel( o->props ) );
+  wOutput.setbrightnessChannel( nodeA, wOutput.getbrightnessChannel( o->props ) );
 
   if( inv )
     wOutput.setvalue( nodeA, StrOp.equals(wOutput.off, state ) ? wOutput.getvalue( o->props ):0 );

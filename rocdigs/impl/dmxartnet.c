@@ -89,14 +89,12 @@ static void* __event( void* inst, const void* evt ) {
 
 /** ----- ODMXArtNet ----- */
 
-#define MSGSIZE 531
+#define ARTDMX_MSGSIZE 531
+#define ARTPOL_MSGSIZE 7
+#define ARTPOL_IP "255.255.255.255"
 
-static void __ArtDmx(iODMXArtNet inst) {
-  iODMXArtNetData data = Data(inst);
-
-  byte msg[MSGSIZE];
-  int i=0;
-
+static int __ArtHeader(byte* msg) {
+  int i = 0;
   msg[i++]='A';
   msg[i++]='r';
   msg[i++]='t';
@@ -105,6 +103,58 @@ static void __ArtDmx(iODMXArtNet inst) {
   msg[i++]='e';
   msg[i++]='t';
   msg[i++]=0x00;
+  return i;
+}
+
+
+
+/*
+From 192.168.100.181(63167) To 255.255.255.255(6454)  ArtPoll, Enquiry to Art-Net device(s)
+ Raw Data = { [41], [72], [74], [2D], [4E], [65], [74], [00], [00], [20], [50], [0E], [06], [00], [00], [00], [14], [DE], [37], [04], [14], [DE], [00], [00], [4B], [53], [41], [76], [72], [41], [72], [74], ... } //Data )
+>> Error in source port number
+From 192.168.100.120(6454) To 192.168.100.255(6454) ArtPoll, Enquiry to Art-Net device(s)
+ Raw Data = { [41], [72], [74], [2D], [4E], [65], [74], [00], [00], [20], [00], [0E], [06], [00], [00], [00], [14], [DE], [37], [04], [14], [DE], [00], [00], [4B], [53], [41], [76], [72], [41], [72], [74], ... } //Data )
+
+ */
+static void __ArtPol(iODMXArtNet inst) {
+  iODMXArtNetData data = Data(inst);
+
+  byte msg[ARTPOL_MSGSIZE];
+  int i = __ArtHeader(msg);
+
+  msg[i++]=0; // OpArtPol 0x2000
+  msg[i++]=0x20;
+
+  msg[i++]=0x50; //version
+  msg[i++]=0x0E;
+
+  msg[i++]=0x06; // TalkToMe
+  msg[i++]=0x00; // Priority
+
+  iOSocket socket = SocketOp.inst( ARTPOL_IP, 6454, False, True, False );
+  if( socket != NULL ) {
+    char client[256] = {'\0'};
+    int port = 0;
+    byte in[ARTDMX_MSGSIZE];
+    SocketOp.setBroadcast(socket, True);
+    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "ArtPol broadcast...");
+
+    TraceOp.dump( NULL, TRCLEVEL_INFO, (char*)msg, i );
+    SocketOp.sendto( socket, (char*)msg, i, ARTPOL_IP, 0 );
+    int packetSize = SocketOp.recvfrom( socket, (char*)in, ARTDMX_MSGSIZE, client, &port );
+    if( packetSize > 0 ) {
+      TraceOp.dump( NULL, TRCLEVEL_INFO, (char*)in, packetSize );
+    }
+    SocketOp.base.del(socket);
+    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "ArtPol broadcast ended");
+  }
+}
+
+static void __ArtDmx(iODMXArtNet inst) {
+  iODMXArtNetData data = Data(inst);
+
+  byte msg[ARTDMX_MSGSIZE];
+  int i = __ArtHeader(msg);
 
   msg[i++]=0; // OpOutput 0x5000
   msg[i++]=0x50;
@@ -122,35 +172,39 @@ static void __ArtDmx(iODMXArtNet inst) {
   msg[i++]=0x02;
   msg[i]=0x00;
 
-  // add DMX-values
-  int j=0;
-  for(j = 1; j <= 512; j++) {
-    msg[i+j]=(byte)data->dmxchannel[j];
+  if( MutexOp.wait( data->mux ) ) {
+    // add DMX-values
+    int j = 0;
+    for(j = 1; j <= 512; j++) {
+      msg[i+j]=(byte)data->dmxchannel[j];
+    }
+    MutexOp.post(data->mux);
   }
 
-  data->socket = SocketOp.inst( wDigInt.gethost(data->ini), 6454, False, True, False );
-  if( data->socket != NULL ) {
-    TraceOp.dump( NULL, TRCLEVEL_BYTE, (char*)msg, MSGSIZE );
-    SocketOp.sendto( data->socket, (char*)msg, MSGSIZE, NULL, 0 );
-    SocketOp.base.del(data->socket);
+  iOSocket socket = SocketOp.inst( wDigInt.gethost(data->ini), 6454, False, True, False );
+  if( socket != NULL ) {
+    TraceOp.dump( NULL, TRCLEVEL_BYTE, (char*)msg, ARTDMX_MSGSIZE );
+    SocketOp.sendto( socket, (char*)msg, ARTDMX_MSGSIZE, NULL, 0 );
+    SocketOp.base.del(socket);
   }
 
 }
 
-static void __setChannel(iODMXArtNet inst, int addr, int red, int green, int blue, int brightness, Boolean active) {
+static void __setChannel(iODMXArtNet inst, int addr, int red, int green, int blue, int brightness, Boolean active, int redChannel, int greenChannel, int blueChannel, int briChannel) {
   iODMXArtNetData data = Data(inst);
-  int device = 1 + ((addr-1) * data->devicechannels);
-  TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999,
-      "device=%d active=%d bri=%d RGB=%d,%d,%d, devicechannels=%d", device, active, brightness, red, green, blue, data->devicechannels );
-  data->dmxchannel[device+0] = brightness;
-  data->dmxchannel[device+1] = red;
-  data->dmxchannel[device+2] = green;
-  data->dmxchannel[device+3] = blue;
-  if( data->devicechannels > 4 )
-    data->dmxchannel[device+4] = 0;
-  if( data->devicechannels > 5 )
-    data->dmxchannel[device+5] = 0;
-  TraceOp.dump( NULL, TRCLEVEL_BYTE, (char*)&data->dmxchannel[device], data->devicechannels );
+  if( MutexOp.wait( data->mux ) ) {
+    TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999,
+        "device=%d active=%d bri=%d RGB=%d,%d,%d", addr, active, brightness, red, green, blue );
+    if( briChannel > 0 )
+      data->dmxchannel[addr+briChannel-1] = brightness;
+    if( redChannel > 0 )
+      data->dmxchannel[addr+redChannel-1] = red;
+    if( greenChannel > 0 )
+      data->dmxchannel[addr+greenChannel-1] = green;
+    if( blueChannel > 0 )
+      data->dmxchannel[addr+blueChannel-1] = blue;
+    MutexOp.post(data->mux);
+  }
 }
 
 
@@ -175,6 +229,11 @@ static iONode __translate( iODMXArtNet inst, iONode node ) {
     Boolean blink = wOutput.isblink( node );
     Boolean colortype = wOutput.iscolortype( node );
     Boolean active = False;
+
+    int redChannel   = wOutput.getredChannel(node);
+    int greenChannel = wOutput.getgreenChannel(node);
+    int blueChannel  = wOutput.getblueChannel(node);
+    int briChannel   = wOutput.getbrightnessChannel(node);
     int r = 0;
     int g = 0;
     int b = 0;
@@ -187,12 +246,11 @@ static iONode __translate( iODMXArtNet inst, iONode node ) {
       g = wColor.getgreen(color);
       b = wColor.getblue(color);
     }
-    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output device=%d active=%d cmd=%s bri=%d RGB=%d,%d,%d",
-        addr, active, wOutput.getcmd( node ), val, r, g, b );
+    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output device=%d active=%d cmd=%s bri=%d briChannel(%d) RGB=%d,%d,%d RGBChannels(%d,%d,%d)",
+        addr, active, wOutput.getcmd( node ), val, briChannel, r, g, b, redChannel, greenChannel, blueChannel );
 
-    __setChannel(inst, addr, r, g, b, val, active);
-    __ArtDmx(inst);
-
+    __setChannel(inst, addr, r, g, b, val, active, redChannel, greenChannel, blueChannel, briChannel);
+    data->refreshnow = True;
   }
 
 
@@ -270,20 +328,49 @@ static int _version( obj inst ) {
   return vmajor*10000 + vminor*100 + patch;
 }
 
+
+static void __writer( void* threadinst ) {
+  iOThread th = (iOThread)threadinst;
+  iODMXArtNet inst = (iODMXArtNet)ThreadOp.getParm( th );
+  iODMXArtNetData data = Data(inst);
+
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "writer started." );
+  ThreadOp.sleep(1000);
+
+  int refreshpasue = 0;
+  while( data->run ) {
+    ThreadOp.sleep(10);
+    refreshpasue += 10;
+    if( refreshpasue >= data->refreshrate || data->refreshnow) {
+      data->refreshnow = False;
+      refreshpasue = 0;
+      __ArtDmx(inst);
+    }
+  }
+
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "writer ended." );
+}
+
+
 static void __reader( void* threadinst ) {
   iOThread th = (iOThread)threadinst;
   iODMXArtNet inst = (iODMXArtNet)ThreadOp.getParm( th );
   iODMXArtNetData data = Data(inst);
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "reader started." );
-  ThreadOp.sleep(1000);
+  ThreadOp.sleep(500);
 
-  iOSocket socket = SocketOp.inst( wDigInt.gethost(data->ini), 6454, False, True, False );
+  iOSocket socket = SocketOp.inst( ARTPOL_IP, 6454, False, True, False );
   if( socket != NULL ) {
-    byte in[513];
+    char client[256] = {'\0'};
+    int port = 0;
+    byte in[ARTDMX_MSGSIZE];
+    __ArtPol(inst);
     while( data->run ) {
-      if( SocketOp.recvfrom( socket, (char*)in, 513, NULL, NULL ) ) {
-        TraceOp.dump( NULL, TRCLEVEL_BYTE, (char*)in, MSGSIZE );
+      int packetSize = SocketOp.recvfrom( socket, (char*)in, ARTDMX_MSGSIZE, client, &port );
+
+      if( packetSize > 0 ) {
+        TraceOp.dump( NULL, TRCLEVEL_INFO, (char*)in, packetSize );
       }
       ThreadOp.sleep(100);
     }
@@ -304,27 +391,33 @@ static struct ODMXArtNet* _inst( const iONode ini ,const iOTrace trc ) {
   TraceOp.set( trc );
   SystemOp.inst();
 
-  data->ini  = ini;
+  data->ini    = ini;
   data->dmxini = wDigInt.getdmx(ini);
-  data->iid  = StrOp.dup( wDigInt.getiid( ini ) );
-  data->run = True;
+  data->iid    = StrOp.dup( wDigInt.getiid( ini ) );
+  data->mux    = MutexOp.inst( NULL, True );
+  data->run    = True;
 
   if( data->dmxini == NULL ) {
     data->dmxini = NodeOp.inst(wDMX.name(), data->ini, ELEMENT_NODE);
     NodeOp.addChild(data->ini, data->dmxini);
   }
 
-  data->devicechannels = wDMX.getdevicechannels(data->dmxini);
+  data->refreshrate = wDMX.getrefreshrate(data->dmxini);
+  if( data->refreshrate < 100 )
+    data->refreshrate = 500;
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "DMX-ArtNet %d.%d.%d", vmajor, vminor, patch );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IID            : %s", data->iid );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IP             : %s", wDigInt.gethost(data->ini) );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  Device channels: %d", data->devicechannels );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IID         : %s", data->iid );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  IP          : %s", wDigInt.gethost(data->ini) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  Refresh rate: %d", data->refreshrate );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
 
   data->reader = ThreadOp.inst( "dmxreader", &__reader, __DMXArtNet );
   ThreadOp.start( data->reader );
+
+  data->writer = ThreadOp.inst( "dmxwriter", &__writer, __DMXArtNet );
+  ThreadOp.start( data->writer );
 
   instCnt++;
   return __DMXArtNet;

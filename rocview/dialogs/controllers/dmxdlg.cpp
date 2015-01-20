@@ -56,7 +56,13 @@ void DmxDlg::onOK( wxCommandEvent& event )
 void DmxDlg::initLabels() {
   m_labIID->SetLabel(wxGetApp().getMsg( "iid" ));
   m_labHost->SetLabel(wxGetApp().getMsg( "host" ));
-  m_labDeviceChannels->SetLabel(wxGetApp().getMsg( "devicechannels" ));
+  m_labRefreshRate->SetLabel(wxGetApp().getMsg( "refreshrate" ));
+  m_labRefreshRateMS->SetLabel(wxGetApp().getMsg( "milliseconds" ));
+
+  // Buttons
+  m_stdButtonsOK->SetLabel( wxGetApp().getMsg( "ok" ) );
+  m_stdButtonsCancel->SetLabel( wxGetApp().getMsg( "cancel" ) );
+  m_stdButtonsHelp->SetLabel( wxGetApp().getMsg( "help" ) );
 }
 
 void DmxDlg::initValues() {
@@ -68,14 +74,14 @@ void DmxDlg::initValues() {
 
   m_IID->SetValue( wxString( wDigInt.getiid( m_Props ), wxConvUTF8 ) );
   m_Host->SetValue( wxString( wDigInt.gethost( m_Props ), wxConvUTF8 ) );
-  m_DeviceChannels->SetValue(wDMX.getdevicechannels(dmxini));
+  m_RefreshRate->SetValue(wDMX.getrefreshrate(dmxini));
 }
 
 bool DmxDlg::evaluate() {
   iONode dmxini = wDigInt.getdmx(m_Props);
   wDigInt.setiid( m_Props, m_IID->GetValue().mb_str(wxConvUTF8) );
   wDigInt.sethost( m_Props, m_Host->GetValue().mb_str(wxConvUTF8) );
-  wDMX.setdevicechannels(dmxini, m_DeviceChannels->GetValue());
+  wDMX.setrefreshrate(dmxini, m_RefreshRate->GetValue());
   return true;
 }
 

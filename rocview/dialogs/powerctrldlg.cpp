@@ -103,6 +103,9 @@ void PowerCtrlDlg::initLabels() {
   m_Off->SetLabel(wxGetApp().getMsg("off") );
   m_ResetStat->SetLabel(wxGetApp().getMsg("reset") );
 
+  // Buttons
+  m_stdButtonOK->SetLabel( wxGetApp().getMsg( "ok" ) );
+  m_stdButtonHelp->SetLabel( wxGetApp().getMsg( "help" ) );
 }
 
 

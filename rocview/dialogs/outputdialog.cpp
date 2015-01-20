@@ -210,10 +210,13 @@ void OutputDialog::initLabels() {
   m_labRedChannel->SetLabel(wxGetApp().getMsg( "red"));
   m_labGreenChannel->SetLabel(wxGetApp().getMsg( "green"));
   m_labBlueChannel->SetLabel(wxGetApp().getMsg( "blue"));
+  m_labWhiteChannel->SetLabel(wxGetApp().getMsg( "white"));
+  m_labBrightnessChannel->SetLabel(wxGetApp().getMsg( "brightness"));
   m_ColorRGBBox->SetLabel(wxGetApp().getMsg( "rgb"));
   m_labRedColor->SetLabel(wxGetApp().getMsg( "red"));
   m_labGreenColor->SetLabel(wxGetApp().getMsg( "green"));
   m_labBlueColor->SetLabel(wxGetApp().getMsg( "blue"));
+  m_labWhiteColor->SetLabel(wxGetApp().getMsg( "white"));
 
   // Location
   m_LabelX->SetLabel( wxGetApp().getMsg( "x" ) );
@@ -229,6 +232,7 @@ void OutputDialog::initLabels() {
   m_OK->SetLabel( wxGetApp().getMsg( "ok" ) );
   m_Cancel->SetLabel( wxGetApp().getMsg( "cancel" ) );
   m_Apply->SetLabel( wxGetApp().getMsg( "apply" ) );
+  m_Help->SetLabel( wxGetApp().getMsg( "help" ) );
 
   m_BlockID->Append( _T("") );
   iOList list = ListOp.inst();
@@ -361,6 +365,8 @@ void OutputDialog::initValues() {
   m_RedChannel->SetValue(wOutput.getredChannel(m_Props));
   m_GreenChannel->SetValue(wOutput.getgreenChannel(m_Props));
   m_BlueChannel->SetValue(wOutput.getblueChannel(m_Props));
+  m_WhiteChannel->SetValue(wOutput.getwhiteChannel(m_Props));
+  m_BrightnessChannel->SetValue(wOutput.getbrightnessChannel(m_Props));
   iONode color = wOutput.getcolor(m_Props);
   if( color == NULL ) {
     color = NodeOp.inst(wColor.name(), m_Props, ELEMENT_NODE);
@@ -369,6 +375,7 @@ void OutputDialog::initValues() {
   m_RedColor->SetValue(wColor.getred(color));
   m_GreenColor->SetValue(wColor.getgreen(color));
   m_BlueColor->SetValue(wColor.getblue(color));
+  m_WhiteColor->SetValue(wColor.getwhite(color));
 
   // Location
   char* val = StrOp.fmt( "%d", wOutput.getx( m_Props ) );
@@ -450,10 +457,13 @@ bool OutputDialog::evaluate() {
   wOutput.setredChannel(m_Props, m_RedChannel->GetValue());
   wOutput.setgreenChannel(m_Props, m_GreenChannel->GetValue());
   wOutput.setblueChannel(m_Props, m_BlueChannel->GetValue());
+  wOutput.setwhiteChannel(m_Props, m_WhiteChannel->GetValue());
+  wOutput.setbrightnessChannel(m_Props, m_BrightnessChannel->GetValue());
   iONode color = wOutput.getcolor(m_Props);
   wColor.setred(color, m_RedColor->GetValue());
   wColor.setgreen(color, m_GreenColor->GetValue());
   wColor.setblue(color, m_BlueColor->GetValue());
+  wColor.setwhite(color, m_WhiteColor->GetValue());
 
   // Location
   wOutput.setx( m_Props, atoi( m_x->GetValue().mb_str(wxConvUTF8) ) );
@@ -539,6 +549,10 @@ bool OutputDialog::Create( wxWindow* parent, wxWindowID id, const wxString& capt
     m_GreenChannel = NULL;
     m_labBlueChannel = NULL;
     m_BlueChannel = NULL;
+    m_labWhiteChannel = NULL;
+    m_WhiteChannel = NULL;
+    m_labBrightnessChannel = NULL;
+    m_BrightnessChannel = NULL;
     m_ColorRGBBox = NULL;
     m_labRedColor = NULL;
     m_RedColor = NULL;
@@ -546,6 +560,8 @@ bool OutputDialog::Create( wxWindow* parent, wxWindowID id, const wxString& capt
     m_GreenColor = NULL;
     m_labBlueColor = NULL;
     m_BlueColor = NULL;
+    m_labWhiteColor = NULL;
+    m_WhiteColor = NULL;
     m_LocationPanel = NULL;
     m_LabelX = NULL;
     m_x = NULL;
@@ -557,6 +573,7 @@ bool OutputDialog::Create( wxWindow* parent, wxWindowID id, const wxString& capt
     m_Cancel = NULL;
     m_OK = NULL;
     m_Apply = NULL;
+    m_Help = NULL;
 ////@end OutputDialog member initialisation
 
 ////@begin OutputDialog creation
@@ -799,72 +816,90 @@ void OutputDialog::CreateControls()
     itemFlexGridSizer62->Add(m_labRedChannel, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_RedChannel = new wxSpinCtrl( itemPanel59, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(120, -1), wxSP_ARROW_KEYS, 0, 10000, 0 );
-    itemFlexGridSizer62->Add(m_RedChannel, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer62->Add(m_RedChannel, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
 
     m_labGreenChannel = new wxStaticText( itemPanel59, wxID_ANY, _("Green"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer62->Add(m_labGreenChannel, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_GreenChannel = new wxSpinCtrl( itemPanel59, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(120, -1), wxSP_ARROW_KEYS, 0, 10000, 0 );
-    itemFlexGridSizer62->Add(m_GreenChannel, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer62->Add(m_GreenChannel, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
 
     m_labBlueChannel = new wxStaticText( itemPanel59, wxID_ANY, _("Blue"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer62->Add(m_labBlueChannel, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_BlueChannel = new wxSpinCtrl( itemPanel59, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(120, -1), wxSP_ARROW_KEYS, 0, 10000, 0 );
-    itemFlexGridSizer62->Add(m_BlueChannel, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer62->Add(m_BlueChannel, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
+
+    m_labWhiteChannel = new wxStaticText( itemPanel59, wxID_ANY, _("White"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemFlexGridSizer62->Add(m_labWhiteChannel, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_WhiteChannel = new wxSpinCtrl( itemPanel59, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(120, -1), wxSP_ARROW_KEYS, 0, 10000, 0 );
+    itemFlexGridSizer62->Add(m_WhiteChannel, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
+
+    m_labBrightnessChannel = new wxStaticText( itemPanel59, wxID_ANY, _("Brightness"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemFlexGridSizer62->Add(m_labBrightnessChannel, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_BrightnessChannel = new wxSpinCtrl( itemPanel59, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(120, -1), wxSP_ARROW_KEYS, 0, 10000, 0 );
+    itemFlexGridSizer62->Add(m_BrightnessChannel, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
 
     itemFlexGridSizer62->AddGrowableCol(1);
 
     m_ColorRGBBox = new wxStaticBox(itemPanel59, ID_CO_COLOR_RGB_BOX, _("RGB"));
-    wxStaticBoxSizer* itemStaticBoxSizer69 = new wxStaticBoxSizer(m_ColorRGBBox, wxVERTICAL);
-    itemBoxSizer60->Add(itemStaticBoxSizer69, 0, wxALIGN_LEFT|wxALL, 5);
-    wxFlexGridSizer* itemFlexGridSizer70 = new wxFlexGridSizer(0, 2, 0, 0);
-    itemStaticBoxSizer69->Add(itemFlexGridSizer70, 0, wxALIGN_LEFT, 5);
+    wxStaticBoxSizer* itemStaticBoxSizer73 = new wxStaticBoxSizer(m_ColorRGBBox, wxVERTICAL);
+    itemBoxSizer60->Add(itemStaticBoxSizer73, 0, wxALIGN_LEFT|wxALL, 5);
+    wxFlexGridSizer* itemFlexGridSizer74 = new wxFlexGridSizer(0, 2, 0, 0);
+    itemStaticBoxSizer73->Add(itemFlexGridSizer74, 0, wxALIGN_LEFT, 5);
     m_labRedColor = new wxStaticText( itemPanel59, wxID_ANY, _("Red"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer70->Add(m_labRedColor, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer74->Add(m_labRedColor, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_RedColor = new wxSpinCtrl( itemPanel59, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 255, 0 );
-    itemFlexGridSizer70->Add(m_RedColor, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer74->Add(m_RedColor, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
 
     m_labGreenColor = new wxStaticText( itemPanel59, wxID_ANY, _("Green"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer70->Add(m_labGreenColor, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer74->Add(m_labGreenColor, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_GreenColor = new wxSpinCtrl( itemPanel59, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 255, 0 );
-    itemFlexGridSizer70->Add(m_GreenColor, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer74->Add(m_GreenColor, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
 
     m_labBlueColor = new wxStaticText( itemPanel59, wxID_ANY, _("Blue"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer70->Add(m_labBlueColor, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer74->Add(m_labBlueColor, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_BlueColor = new wxSpinCtrl( itemPanel59, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 255, 0 );
-    itemFlexGridSizer70->Add(m_BlueColor, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer74->Add(m_BlueColor, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
 
-    itemFlexGridSizer70->AddGrowableCol(1);
+    m_labWhiteColor = new wxStaticText( itemPanel59, wxID_ANY, _("White"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemFlexGridSizer74->Add(m_labWhiteColor, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+
+    m_WhiteColor = new wxSpinCtrl( itemPanel59, wxID_ANY, wxT("0"), wxDefaultPosition, wxSize(80, -1), wxSP_ARROW_KEYS, 0, 255, 0 );
+    itemFlexGridSizer74->Add(m_WhiteColor, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
+
+    itemFlexGridSizer74->AddGrowableCol(1);
 
     m_Notebook->AddPage(itemPanel59, _("Color"));
 
     m_LocationPanel = new wxPanel( m_Notebook, ID_PANEL_CO_LOCATION, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTAB_TRAVERSAL );
-    wxBoxSizer* itemBoxSizer78 = new wxBoxSizer(wxHORIZONTAL);
-    m_LocationPanel->SetSizer(itemBoxSizer78);
+    wxBoxSizer* itemBoxSizer84 = new wxBoxSizer(wxHORIZONTAL);
+    m_LocationPanel->SetSizer(itemBoxSizer84);
 
-    wxFlexGridSizer* itemFlexGridSizer79 = new wxFlexGridSizer(0, 2, 0, 0);
-    itemBoxSizer78->Add(itemFlexGridSizer79, 0, wxALIGN_TOP|wxALL, 5);
+    wxFlexGridSizer* itemFlexGridSizer85 = new wxFlexGridSizer(0, 2, 0, 0);
+    itemBoxSizer84->Add(itemFlexGridSizer85, 0, wxALIGN_TOP|wxALL, 5);
     m_LabelX = new wxStaticText( m_LocationPanel, wxID_STATIC_CO_X, _("x"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer79->Add(m_LabelX, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
+    itemFlexGridSizer85->Add(m_LabelX, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
     m_x = new wxTextCtrl( m_LocationPanel, ID_TEXTCTRL_CO_X, _("0"), wxDefaultPosition, wxDefaultSize, wxTE_CENTRE );
-    itemFlexGridSizer79->Add(m_x, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer85->Add(m_x, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_LabelY = new wxStaticText( m_LocationPanel, wxID_STATIC_CO_Y, _("y"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer79->Add(m_LabelY, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
+    itemFlexGridSizer85->Add(m_LabelY, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
     m_y = new wxTextCtrl( m_LocationPanel, ID_TEXTCTRL_CO_Y, _("0"), wxDefaultPosition, wxDefaultSize, wxTE_CENTRE );
-    itemFlexGridSizer79->Add(m_y, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer85->Add(m_y, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     m_LabelZ = new wxStaticText( m_LocationPanel, wxID_STATIC_CO_Z, _("z"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer79->Add(m_LabelZ, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
+    itemFlexGridSizer85->Add(m_LabelZ, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxALL|wxADJUST_MINSIZE, 5);
 
     m_z = new wxTextCtrl( m_LocationPanel, ID_TEXTCTRL_CO_Z, _("0"), wxDefaultPosition, wxDefaultSize, wxTE_CENTRE );
-    itemFlexGridSizer79->Add(m_z, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
+    itemFlexGridSizer85->Add(m_z, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL, 5);
 
     wxArrayString m_oriStrings;
     m_oriStrings.Add(_("&north"));
@@ -873,29 +908,29 @@ void OutputDialog::CreateControls()
     m_oriStrings.Add(_("&west"));
     m_ori = new wxRadioBox( m_LocationPanel, ID_RADIOBOX_CO_ORI, _("Orientation"), wxDefaultPosition, wxDefaultSize, m_oriStrings, 1, wxRA_SPECIFY_COLS );
     m_ori->SetSelection(0);
-    itemBoxSizer78->Add(m_ori, 0, wxALIGN_TOP|wxALL, 5);
+    itemBoxSizer84->Add(m_ori, 0, wxALIGN_TOP|wxALL, 5);
 
     m_Notebook->AddPage(m_LocationPanel, _("Location"));
 
     itemBoxSizer2->Add(m_Notebook, 1, wxGROW|wxALL, 5);
 
-    wxStdDialogButtonSizer* itemStdDialogButtonSizer87 = new wxStdDialogButtonSizer;
+    wxStdDialogButtonSizer* itemStdDialogButtonSizer93 = new wxStdDialogButtonSizer;
 
-    itemBoxSizer2->Add(itemStdDialogButtonSizer87, 0, wxGROW|wxALL, 5);
+    itemBoxSizer2->Add(itemStdDialogButtonSizer93, 0, wxGROW|wxALL, 5);
     m_Cancel = new wxButton( itemDialog1, wxID_CANCEL, _("&Cancel"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemStdDialogButtonSizer87->AddButton(m_Cancel);
+    itemStdDialogButtonSizer93->AddButton(m_Cancel);
 
     m_OK = new wxButton( itemDialog1, wxID_OK, _("&OK"), wxDefaultPosition, wxDefaultSize, 0 );
     m_OK->SetDefault();
-    itemStdDialogButtonSizer87->AddButton(m_OK);
+    itemStdDialogButtonSizer93->AddButton(m_OK);
 
     m_Apply = new wxButton( itemDialog1, wxID_APPLY, _("&Apply"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemStdDialogButtonSizer87->AddButton(m_Apply);
+    itemStdDialogButtonSizer93->AddButton(m_Apply);
 
-    wxButton* itemButton91 = new wxButton( itemDialog1, wxID_HELP, _("&Help"), wxDefaultPosition, wxDefaultSize, 0 );
-    itemStdDialogButtonSizer87->AddButton(itemButton91);
+    m_Help = new wxButton( itemDialog1, wxID_HELP, _("&Help"), wxDefaultPosition, wxDefaultSize, 0 );
+    itemStdDialogButtonSizer93->AddButton(m_Help);
 
-    itemStdDialogButtonSizer87->Realize();
+    itemStdDialogButtonSizer93->Realize();
 
 ////@end OutputDialog content construction
 }

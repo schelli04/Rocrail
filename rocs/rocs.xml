@@ -1186,6 +1186,10 @@
       <param name="inst" vt="this" remark="Socket instance."/>
       <param name="keepalive" vt="Boolean" remark=""/>
     </fun>
+    <fun name="setBroadcast" implname="rocs_socket_setBroadcast" vt="Boolean" remark="">
+      <param name="inst" vt="this" remark="Socket instance."/>
+      <param name="broadcast" vt="Boolean" remark=""/>
+    </fun>
     <fun name="setNodelay" implname="rocs_socket_setNodelay" vt="Boolean" remark="">
       <param name="inst" vt="this" remark="Socket instance."/>
       <param name="flag" vt="Boolean" remark=""/>
