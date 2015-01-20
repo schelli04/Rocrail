@@ -2972,6 +2972,8 @@ void LocDialog::OnApplyClick( wxCommandEvent& event )
 
   TraceOp.trc( "locdlg", TRCLEVEL_INFO, __LINE__, 9999, "apply" );
 
+  OnBbtModifyClick(event);
+
   if( !Evaluate() )
     return;
 
