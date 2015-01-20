@@ -108,15 +108,7 @@ static int __ArtHeader(byte* msg) {
 
 
 
-/*
-From 192.168.100.181(63167) To 255.255.255.255(6454)  ArtPoll, Enquiry to Art-Net device(s)
- Raw Data = { [41], [72], [74], [2D], [4E], [65], [74], [00], [00], [20], [50], [0E], [06], [00], [00], [00], [14], [DE], [37], [04], [14], [DE], [00], [00], [4B], [53], [41], [76], [72], [41], [72], [74], ... } //Data )
->> Error in source port number
-From 192.168.100.120(6454) To 192.168.100.255(6454) ArtPoll, Enquiry to Art-Net device(s)
- Raw Data = { [41], [72], [74], [2D], [4E], [65], [74], [00], [00], [20], [00], [0E], [06], [00], [00], [00], [14], [DE], [37], [04], [14], [DE], [00], [00], [4B], [53], [41], [76], [72], [41], [72], [74], ... } //Data )
-
- */
-static void __ArtPol(iODMXArtNet inst) {
+static void __ArtPol(iODMXArtNet inst, iOSocket socket) {
   iODMXArtNetData data = Data(inst);
 
   byte msg[ARTPOL_MSGSIZE];
@@ -131,21 +123,14 @@ static void __ArtPol(iODMXArtNet inst) {
   msg[i++]=0x06; // TalkToMe
   msg[i++]=0x00; // Priority
 
-  iOSocket socket = SocketOp.inst( ARTPOL_IP, 6454, False, True, False );
   if( socket != NULL ) {
-    char client[256] = {'\0'};
-    int port = 0;
-    byte in[ARTDMX_MSGSIZE];
     SocketOp.setBroadcast(socket, True);
+    SocketOp.bind(socket);
+
     TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "ArtPol broadcast...");
 
-    TraceOp.dump( NULL, TRCLEVEL_INFO, (char*)msg, i );
-    SocketOp.sendto( socket, (char*)msg, i, ARTPOL_IP, 0 );
-    int packetSize = SocketOp.recvfrom( socket, (char*)in, ARTDMX_MSGSIZE, client, &port );
-    if( packetSize > 0 ) {
-      TraceOp.dump( NULL, TRCLEVEL_INFO, (char*)in, packetSize );
-    }
-    SocketOp.base.del(socket);
+    TraceOp.dump( NULL, TRCLEVEL_BYTE, (char*)msg, i );
+    SocketOp.sendto( socket, (char*)msg, i, NULL, 0 );
     TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "ArtPol broadcast ended");
   }
 }
@@ -352,6 +337,36 @@ static void __writer( void* threadinst ) {
 }
 
 
+/*
+20150120.122246.136 r9999I dmxreade OSocket  0752 207 bytes readed from 192.168.100.91:6454
+20150120.122246.136 r0000I dmxreade (null)   *trace dump( 0x03E02B70: length=128 )
+    offset:   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F |ASCII...........|
+    --------------------------------------------------------- |----------------|
+    00000000: 41 72 74 2D 4E 65 74 00 00 21 C0 A8 64 5B 36 19 |Art-Net..!..d[6.|
+    00000010: 03 10 00 00 08 B1 00 00 4B 53 41 76 72 41 72 74 |........KSAvrArt|
+    00000020: 4E 6F 64 65 00 00 00 00 00 00 00 00 41 56 52 20 |Node........AVR |
+    00000030: 62 61 73 65 64 20 41 72 74 2D 4E 65 74 20 6E 6F |based Art-Net no|
+    00000040: 64 65 00 00 00 00 00 00 00 00 00 00 00 00 00 00 |de..............|
+    00000050: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 |................|
+    00000060: 00 00 00 00 00 00 00 00 00 00 00 00 41 76 72 41 |............AvrA|
+    00000070: 72 74 4E 6F 64 65 20 69 73 20 72 65 61 64 79 00 |rtNode is ready.|
+
+ */
+#define OPCODE_ArtPollReply 0x2100
+
+static void __evaluateArtNet(iODMXArtNet inst, byte* msg) {
+  iODMXArtNetData data = Data(inst);
+  int opcode = msg[8] + msg[9] * 256;
+
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "opcode = 0x%02X", opcode );
+  if(opcode == OPCODE_ArtPollReply) {
+    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999,
+        "ArtPollReply %d.%d.%d.%d:%d version=%d.%d OEM=%d name=[%s] state=[%s]",
+        msg[10], msg[11], msg[12], msg[13], msg[14] + msg[15]*256, msg[16], msg[17], (msg[20]*256 + msg[21])&0x7FFF, msg+26, msg+108 );
+  }
+}
+
+
 static void __reader( void* threadinst ) {
   iOThread th = (iOThread)threadinst;
   iODMXArtNet inst = (iODMXArtNet)ThreadOp.getParm( th );
@@ -360,17 +375,18 @@ static void __reader( void* threadinst ) {
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "reader started." );
   ThreadOp.sleep(500);
 
-  iOSocket socket = SocketOp.inst( ARTPOL_IP, 6454, False, True, False );
+  iOSocket socket = SocketOp.inst( ARTPOL_IP, 6454, False, True, True );
   if( socket != NULL ) {
     char client[256] = {'\0'};
     int port = 0;
     byte in[ARTDMX_MSGSIZE];
-    __ArtPol(inst);
+    __ArtPol(inst, socket);
     while( data->run ) {
       int packetSize = SocketOp.recvfrom( socket, (char*)in, ARTDMX_MSGSIZE, client, &port );
 
       if( packetSize > 0 ) {
-        TraceOp.dump( NULL, TRCLEVEL_INFO, (char*)in, packetSize );
+        TraceOp.dump( NULL, TRCLEVEL_BYTE, (char*)in, packetSize );
+        __evaluateArtNet(inst, in);
       }
       ThreadOp.sleep(100);
     }
