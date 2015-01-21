@@ -42,8 +42,11 @@ class PowerCtrlDlg : public powerctrlgen
   iONode m_SelBooster;
   iOMap m_BoosterMap;
   int m_SelectedRow;
+  int m_SortColumn;
 
   void paintHistory();
+  void addRow(iONode booster);
+
 
 protected:
 	// Handlers for powerctrlgen events.
@@ -56,6 +59,7 @@ protected:
   void onClose( wxCloseEvent& event );
   void onResetStat( wxCommandEvent& event );
   void OnHelp( wxCommandEvent& event );
+  void onLabelLeftClick( wxGridEvent& event );
 
 public:
 	/** Constructor */

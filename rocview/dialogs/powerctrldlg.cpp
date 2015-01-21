@@ -46,12 +46,14 @@
 #include "rocs/public/trace.h"
 
 
+static bool ms_SortInvert = false;
 
 PowerCtrlDlg::PowerCtrlDlg( wxWindow* parent ):powerctrlgen( parent )
 {
   m_SelBooster = NULL;
   m_BoosterMap = MapOp.inst();
   m_SelectedRow = -1;
+  m_SortColumn = 0;
   initLabels();
   initValues(NULL);
 
@@ -109,6 +111,65 @@ void PowerCtrlDlg::initLabels() {
 }
 
 
+void PowerCtrlDlg::addRow(iONode booster) {
+  m_Boosters->AppendRows();
+  m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 0, wxString(wBooster.getid( booster ),wxConvUTF8) );
+  m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 1, wBooster.isshortcut(booster)?wxGetApp().getMsg("yes"):wxGetApp().getMsg("no") );
+  m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 2, wBooster.ispower(booster)?wxGetApp().getMsg("on"):wxGetApp().getMsg("off") );
+  m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 3, wxString(wBooster.getdistrict( booster ),wxConvUTF8) );
+  m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 4, wxString::Format(_T("%d"), wBooster.getload(booster)) );
+  m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 5, wxString::Format(_T("%d"), wBooster.getloadmax(booster)) );
+  m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 6, wxString::Format(_T("%d.%d"), wBooster.getvolt(booster)/1000, (wBooster.getvolt(booster)%1000)/100)  );
+  m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 7, wxString::Format(_T("%d.%d"), wBooster.getvoltmin(booster)/1000, (wBooster.getvoltmin(booster)%1000)/100)  );
+  m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 8, wxString::Format(_T("%d"), wBooster.gettemp(booster)) );
+  m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 9, wxString::Format(_T("%d"), wBooster.gettempmax(booster)) );
+  m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 0, true );
+  m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 1, true );
+  m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 2, true );
+  m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 3, true );
+  m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 4, true );
+  m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 5, true );
+  m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 6, true );
+  m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 7, true );
+  m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 8, true );
+  m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 9, true );
+
+  int row = m_Boosters->GetNumberRows()-1;
+  m_Boosters->SetCellBackgroundColour( row, 1,
+      wBooster.isshortcut(booster)?wxColour(240,200,200):wxColour(200,240,200));
+  m_Boosters->SetCellBackgroundColour( row, 2,
+      wBooster.ispower(booster)?wxColour(200,240,200):wxColour(240,200,200));
+
+  m_Boosters->SetCellBackgroundColour( row, 8, wxColour(200,240,200));
+  int temp = wBooster.gettemp(booster);
+  if( temp >= 60 ) {
+    if(temp > 127 )
+      temp = 127;
+    m_Boosters->SetCellBackgroundColour( row, 8, wxColour(255,255-temp*2,127-temp));
+  }
+
+}
+
+
+static int boosterIDComparator(obj* o1, obj* o2) {
+  if( *o1 == NULL || *o2 == NULL )
+    return 0;
+  if( ms_SortInvert )
+    return strcmp( wBooster.getdistrict( (iONode)*o2 ), wBooster.getdistrict( (iONode)*o1 ) );
+  else
+    return strcmp( wBooster.getdistrict( (iONode)*o1 ), wBooster.getdistrict( (iONode)*o2 ) );
+}
+
+static int boosterDistrictComparator(obj* o1, obj* o2) {
+  if( *o1 == NULL || *o2 == NULL )
+    return 0;
+  if( ms_SortInvert )
+    return strcmp( wBooster.getid( (iONode)*o2 ), wBooster.getid( (iONode)*o1 ) );
+  else
+    return strcmp( wBooster.getid( (iONode)*o1 ), wBooster.getid( (iONode)*o2 ) );
+}
+
+
 void PowerCtrlDlg::initValues(iONode event) {
   m_Boosters->DeleteRows(0,m_Boosters->GetNumberRows());
   MapOp.clear(m_BoosterMap);
@@ -117,6 +178,7 @@ void PowerCtrlDlg::initValues(iONode event) {
     TraceOp.trc( "pwrctrl", TRCLEVEL_INFO, __LINE__, 9999, "event from booster %08X", wBooster.getuid(event) );
   }
 
+  iOList list = ListOp.inst();
   iONode model = wxGetApp().getModel();
   if( model != NULL ) {
     iONode boosterlist = wPlan.getboosterlist( model );
@@ -158,53 +220,32 @@ void PowerCtrlDlg::initValues(iONode event) {
 
 
         MapOp.put(m_BoosterMap, wBooster.getid( booster ), (obj)booster );
-        if(m_SelBooster == NULL) {
-          m_SelBooster = booster;
-          m_HistoryPanel->setBooster(m_SelBooster);
-          m_labHistory->SetLabel(wxString(wBooster.getid(m_SelBooster), wxConvUTF8 ));
-        }
 
-        m_Boosters->AppendRows();
-        m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 0, wxString(wBooster.getid( booster ),wxConvUTF8) );
-        m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 1, wBooster.isshortcut(booster)?wxGetApp().getMsg("yes"):wxGetApp().getMsg("no") );
-        m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 2, wBooster.ispower(booster)?wxGetApp().getMsg("on"):wxGetApp().getMsg("off") );
-        m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 3, wxString(wBooster.getdistrict( booster ),wxConvUTF8) );
-        m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 4, wxString::Format(_T("%d"), wBooster.getload(booster)) );
-        m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 5, wxString::Format(_T("%d"), wBooster.getloadmax(booster)) );
-        m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 6, wxString::Format(_T("%d.%d"), wBooster.getvolt(booster)/1000, (wBooster.getvolt(booster)%1000)/100)  );
-        m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 7, wxString::Format(_T("%d.%d"), wBooster.getvoltmin(booster)/1000, (wBooster.getvoltmin(booster)%1000)/100)  );
-        m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 8, wxString::Format(_T("%d"), wBooster.gettemp(booster)) );
-        m_Boosters->SetCellValue(m_Boosters->GetNumberRows()-1, 9, wxString::Format(_T("%d"), wBooster.gettempmax(booster)) );
-        m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 0, true );
-        m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 1, true );
-        m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 2, true );
-        m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 3, true );
-        m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 4, true );
-        m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 5, true );
-        m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 6, true );
-        m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 7, true );
-        m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 8, true );
-        m_Boosters->SetReadOnly( m_Boosters->GetNumberRows()-1, 9, true );
-
-        int row = m_Boosters->GetNumberRows()-1;
-        m_Boosters->SetCellBackgroundColour( row, 1,
-            wBooster.isshortcut(booster)?wxColour(240,200,200):wxColour(200,240,200));
-        m_Boosters->SetCellBackgroundColour( row, 2,
-            wBooster.ispower(booster)?wxColour(200,240,200):wxColour(240,200,200));
-
-        m_Boosters->SetCellBackgroundColour( row, 8, wxColour(200,240,200));
-        int temp = wBooster.gettemp(booster);
-        if( temp >= 60 ) {
-          if(temp > 127 )
-            temp = 127;
-          m_Boosters->SetCellBackgroundColour( row, 8, wxColour(255,255-temp*2,127-temp));
-        }
-
+        ListOp.add(list, (obj)booster);
 
         booster = wBoosterList.nextbooster( boosterlist, booster );
       };
     }
   }
+
+  if( m_SortColumn == 3 )
+    ListOp.sort( list, boosterDistrictComparator );
+  else
+    ListOp.sort( list, boosterIDComparator );
+
+  for( int i = 0; i < ListOp.size( list ); i++ ) {
+    iONode booster = (iONode)ListOp.get( list, i );
+    addRow(booster);
+    if(m_SelBooster == NULL) {
+      m_SelBooster = booster;
+      m_HistoryPanel->setBooster(m_SelBooster);
+      m_labHistory->SetLabel(wxString(wBooster.getid(m_SelBooster), wxConvUTF8 ));
+    }
+    if( m_SelBooster == booster )
+      m_SelectedRow = i;
+  }
+  ListOp.base.del(list);
+
 
   m_Boosters->AutoSizeColumns();
 
@@ -327,5 +368,17 @@ void PowerCtrlDlg::onResetStat( wxCommandEvent& event ) {
 
 void PowerCtrlDlg::OnHelp( wxCommandEvent& event ) {
   wxGetApp().openLink( "powerman" );
+}
+
+void PowerCtrlDlg::onLabelLeftClick( wxGridEvent& event ) {
+  int column = event.GetCol();
+  if( m_SortColumn == column )
+    ms_SortInvert = !ms_SortInvert;
+  else {
+    ms_SortInvert = false;
+    m_SortColumn = column;
+  }
+  TraceOp.trc( "pwrctrl", TRCLEVEL_INFO, __LINE__, 9999, "sorting on column %d", m_SortColumn );
+  initValues(NULL);
 }
 
