@@ -442,7 +442,7 @@ void Clock::drawNewClock() {
 
 void Clock::drawSecondHand(wxGraphicsContext* gc, double c, bool erase) {
   // second
-  if( showsecondhand && this->devider <= 10 ) {
+  if( erase || (showsecondhand && this->devider <= 10) ) {
     gc->SetBrush( erase?*wxWHITE_BRUSH:wxColour(255, 0, 0) );
     wxPen redPen( erase?wxColour(255, 255, 255):wxColour(255, 0, 0), wxSOLID );
     redPen.SetWidth(2);
