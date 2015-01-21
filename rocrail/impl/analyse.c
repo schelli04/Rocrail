@@ -1317,9 +1317,11 @@ static Boolean checkActionCondSysCmd( const char* state ) {
   return False;
 }
 
-/* condState(variable) == [*] */
+/* condState(variable) == [=number, >number, <number, !number, #text, ?text] */
 static Boolean checkActionCondVariable( const char* state ) {
-  return True;
+  if( state[0] == '=' || state[0] == '>' || state[0] == '<' || state[0] == '!' || state[0] == '#' || state[0] == '?' )
+    return True;
+  return False;
 }
 
 /* condState(route) == [locked, unlocked, closed, open] */
