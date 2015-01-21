@@ -669,13 +669,13 @@ public:
     wxStaticText* m_labBBTCalculation;
     wxListCtrl* m_BBTList2;
     wxStaticText* m_labBBTFromBlock;
-    wxTextCtrl* m_BBTFromBlock;
+    wxComboBox* m_BBTFromBlock;
     wxStaticText* m_labBBTBlock;
-    wxTextCtrl* m_BBTBlock;
+    wxComboBox* m_BBTBlock;
     wxStaticText* m_labBBTInterval;
     wxSpinCtrl* m_BBTInterval;
     wxStaticText* m_labBBTRoute;
-    wxTextCtrl* m_BBTRoute;
+    wxComboBox* m_BBTRoute;
     wxStaticText* m_labBBTSpeed;
     wxSpinCtrl* m_BBTSpeed;
     wxButton* m_BBTAdd;

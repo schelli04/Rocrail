@@ -57,6 +57,8 @@
 #include "rocrail/wrapper/public/Schedule.h"
 #include "rocrail/wrapper/public/Tour.h"
 #include "rocrail/wrapper/public/BBT.h"
+#include "rocrail/wrapper/public/Block.h"
+#include "rocrail/wrapper/public/Route.h"
 
 
 #include "rocs/public/trace.h"
@@ -466,6 +468,47 @@ void LocDialog::initLabels() {
   m_BBTKey->SetString( 1, wxGetApp().getMsg( "fromblock" ) );
   m_BBTKey->SetString( 2, wxGetApp().getMsg( "route" ) );
   m_BBTKey->SetString( 3, wxGetApp().getMsg( "speed" ) );
+
+  list = ListOp.inst();
+  if( model != NULL ) {
+    iONode blocklist = wPlan.getbklist( model );
+    if( blocklist != NULL ) {
+      int cnt = NodeOp.getChildCnt( blocklist );
+      for( int i = 0; i < cnt; i++ ) {
+        iONode block = NodeOp.getChild( blocklist, i );
+        ListOp.add(list, (obj)wBlock.getid( block ));
+      }
+    }
+
+    ListOp.sort(list, &__sortStr);
+    int cnt = ListOp.size( list );
+    for( int i = 0; i < cnt; i++ ) {
+      const char* id = (const char*)ListOp.get( list, i );
+      m_BBTFromBlock->Append( wxString(id,wxConvUTF8) );
+      m_BBTBlock->Append( wxString(id,wxConvUTF8) );
+    }
+  }
+  ListOp.base.del(list);
+
+  list = ListOp.inst();
+  if( model != NULL ) {
+    iONode routelist = wPlan.getstlist( model );
+    if( routelist != NULL ) {
+      int cnt = NodeOp.getChildCnt( routelist );
+      for( int i = 0; i < cnt; i++ ) {
+        iONode route = NodeOp.getChild( routelist, i );
+        ListOp.add(list, (obj)wRoute.getid( route ));
+      }
+    }
+
+    ListOp.sort(list, &__sortStr);
+    int cnt = ListOp.size( list );
+    for( int i = 0; i < cnt; i++ ) {
+      const char* id = (const char*)ListOp.get( list, i );
+      m_BBTRoute->Append( wxString(id,wxConvUTF8) );
+    }
+  }
+  ListOp.base.del(list);
 
 
   // Buttons
@@ -2793,14 +2836,16 @@ void LocDialog::CreateControls()
     m_labBBTFromBlock = new wxStaticText( m_BBTPanel, wxID_ANY, _("From block"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer363->Add(m_labBBTFromBlock, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxTOP|wxBOTTOM, 5);
 
-    m_BBTFromBlock = new wxTextCtrl( m_BBTPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer363->Add(m_BBTFromBlock, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM, 5);
+    wxArrayString m_BBTFromBlockStrings;
+    m_BBTFromBlock = new wxComboBox( m_BBTPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_BBTFromBlockStrings, wxCB_DROPDOWN );
+    itemFlexGridSizer363->Add(m_BBTFromBlock, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxRIGHT, 5);
 
     m_labBBTBlock = new wxStaticText( m_BBTPanel, wxID_ANY, _("Block"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer363->Add(m_labBBTBlock, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxLEFT|wxTOP|wxBOTTOM, 5);
 
-    m_BBTBlock = new wxTextCtrl( m_BBTPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer363->Add(m_BBTBlock, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM, 5);
+    wxArrayString m_BBTBlockStrings;
+    m_BBTBlock = new wxComboBox( m_BBTPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_BBTBlockStrings, wxCB_DROPDOWN );
+    itemFlexGridSizer363->Add(m_BBTBlock, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxLEFT|wxRIGHT, 5);
 
     m_labBBTInterval = new wxStaticText( m_BBTPanel, wxID_ANY, _("Interval"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer363->Add(m_labBBTInterval, 0, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxLEFT|wxTOP|wxBOTTOM, 5);
@@ -2811,8 +2856,9 @@ void LocDialog::CreateControls()
     m_labBBTRoute = new wxStaticText( m_BBTPanel, wxID_ANY, _("Route"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer363->Add(m_labBBTRoute, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxTOP|wxBOTTOM, 5);
 
-    m_BBTRoute = new wxTextCtrl( m_BBTPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    itemFlexGridSizer363->Add(m_BBTRoute, 0, wxGROW|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxTOP|wxBOTTOM, 5);
+    wxArrayString m_BBTRouteStrings;
+    m_BBTRoute = new wxComboBox( m_BBTPanel, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, m_BBTRouteStrings, wxCB_DROPDOWN );
+    itemFlexGridSizer363->Add(m_BBTRoute, 0, wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL|wxRIGHT, 5);
 
     m_labBBTSpeed = new wxStaticText( m_BBTPanel, wxID_ANY, _("Speed"), wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer363->Add(m_labBBTSpeed, 0, wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxLEFT|wxTOP|wxBOTTOM, 5);
