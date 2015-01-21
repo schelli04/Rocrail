@@ -48,6 +48,7 @@ class WeatherDlg : public WeatherDlgGen
 		void onOK( wxCommandEvent& event );
 		void onApply( wxCommandEvent& event );
 		void onActivateWeather( wxCommandEvent& event );
+    void onDeactivateWeather( wxCommandEvent& event );
 		void onHelp( wxCommandEvent& event );
     void onThemeSelected( wxCommandEvent& event );
     void onThemeAdd( wxCommandEvent& event );

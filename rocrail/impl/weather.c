@@ -683,6 +683,7 @@ static void _setWeather( iOWeather inst, const char* id, const char* param ) {
   }
   else {
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "reset weather" );
+    WeatherOp.halt(inst);
     data->props = NULL;
   }
 }

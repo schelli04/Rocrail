@@ -233,6 +233,17 @@ void WeatherDlg::onActivateWeather( wxCommandEvent& event ) {
 }
 
 
+void WeatherDlg::onDeactivateWeather( wxCommandEvent& event ) {
+  if( m_Props == NULL )
+    return;
+
+  iONode cmd = NodeOp.inst( wSysCmd.name(), NULL, ELEMENT_NODE );
+  wSysCmd.setcmd( cmd, wSysCmd.weather );
+  wxGetApp().sendToRocrail( cmd );
+  cmd->base.del(cmd);
+}
+
+
 void WeatherDlg::onCancel( wxCommandEvent& event )
 {
   EndModal(0);

@@ -239,6 +239,11 @@ static void __setChannel(iODMXArtNet inst, int addr, int red, int green, int blu
         "device=%d active=%d bri=%d RGB=%d,%d,%d", addr, active, brightness, red, green, blue );
     if( briChannel > 0 )
       data->dmxchannel[addr+briChannel-1] = brightness;
+    else {
+      red   = (red   * brightness) / 255;
+      green = (green * brightness) / 255;
+      blue  = (blue  * brightness) / 255;
+    }
     if( redChannel > 0 )
       data->dmxchannel[addr+redChannel-1] = red;
     if( greenChannel > 0 )
