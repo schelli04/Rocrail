@@ -35,6 +35,10 @@
 
 static int instCnt = 0;
 
+static int vmajor = 2;
+static int vminor = 0;
+static int patch  = 99;
+
 /** ----- OBase ----- */
 static void __del( void* inst ) {
   if( inst != NULL ) {
@@ -148,12 +152,15 @@ static void __ArtPollReply(iODMXArtNet inst, iOSocket socket) {
   msg[14] = ARTPOL_PORT % 256;
   msg[15] = ARTPOL_PORT / 256;
 
-  msg[16] = 2;
-  msg[17] = 0;
+  msg[16] = vmajor;
+  msg[17] = vminor;
+
+  msg[24] = 'R';
+  msg[25] = 'R';
 
   StrOp.copy((char*)(msg+26), "Rocrail");
   StrOp.copy((char*)(msg+45), "Rocrail.net DMX");
-  StrOp.copy((char*)(msg+108), "Ready to go!");
+  StrOp.copy((char*)(msg+108), "Ready and running");
 
   if( socket != NULL ) {
     SocketOp.sendto( socket, (char*)msg, 207, NULL, 0 );
@@ -355,9 +362,6 @@ static Boolean _supportPT( obj inst ) {
 
 
 /** vmajor*1000 + vminor*100 + patch */
-static int vmajor = 2;
-static int vminor = 0;
-static int patch  = 99;
 static int _version( obj inst ) {
   iODMXArtNetData data = Data(inst);
   return vmajor*10000 + vminor*100 + patch;
@@ -415,8 +419,8 @@ static void __evaluateArtNet(iODMXArtNet inst, iOSocket socket, byte* msg) {
   }
   else if(opcode == OPCODE_ArtPollReply) {
     TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999,
-        "ArtPollReply %d.%d.%d.%d:%d version=%d.%d OEM=%d name=[%s, %s] state=[%s]",
-        msg[10], msg[11], msg[12], msg[13], msg[14] + msg[15]*256, msg[16], msg[17], (msg[20]*256 + msg[21])&0x7FFF, msg+26, msg+45, msg+108 );
+        "ArtPollReply %d.%d.%d.%d:%d version=%d.%d OEM=%d manu=%c%c name=[%s, %s] state=[%s]",
+        msg[10], msg[11], msg[12], msg[13], msg[14] + msg[15]*256, msg[16], msg[17], (msg[20]*256 + msg[21])&0x7FFF, msg[24], msg[25], msg+26, msg+45, msg+108 );
   }
 }
 
