@@ -96,6 +96,7 @@ class SymbolRenderer {
   wxPaintDC* m_DC;
   const char* m_LocoImage;
   bool m_bLocoPlacing;
+  bool m_bLocoManual;
 
 
 public:
@@ -107,6 +108,7 @@ public:
   void setLabel( const char* label, int occupied, bool rotate );
   void setLocoImage( const char* locoimage ) { m_LocoImage = locoimage;}
   void setLocoPlacing( bool locoplacing ) { m_bLocoPlacing = locoplacing;}
+  void setLocoManual( bool locomanual ) { m_bLocoManual = locomanual;}
   int getcx() {return m_cx;}
   int getcy() {return m_cy;}
   bool isRotateable() { return m_bRotateable; }

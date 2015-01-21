@@ -79,6 +79,7 @@ SymbolRenderer::SymbolRenderer( iONode props, wxWindow* parent, iOMap symmap, in
   m_DC = NULL;
   m_LocoImage = "";
   m_bLocoPlacing = true;
+  m_bLocoManual = false;
 }
 
 
@@ -2285,7 +2286,13 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
       blue = wPlanPanel.getbktext_blue(planpanelIni);
     }
 
-    wxFont* font = setFont(m_iTextps, red, green, blue);
+    if( m_bLocoManual ) {
+      red   = 200;
+      green = 0;
+      blue  = 0;
+    }
+
+    wxFont* font = setFont(m_iTextps, red, green, blue, m_bLocoManual);
     /* center the blocktext */
     double width = 0;
     double height = 0;

@@ -3133,6 +3133,7 @@ void Symbol::modelEvent( iONode node, bool oncreate ) {
 
     m_Renderer->setLocoImage("");
     m_Renderer->setLocoPlacing(true);
+    m_Renderer->setLocoManual(false);
 
     if( locoid == NULL ) {
       locoid = "";
@@ -3242,6 +3243,7 @@ void Symbol::modelEvent( iONode node, bool oncreate ) {
         if( StrOp.len(locoid) > 0 ) {
           iONode loc = wxGetApp().getFrame()->findLoc( locoid );
           if( loc != NULL ) {
+            m_Renderer->setLocoManual(wLoc.ismanual(loc));
             // adjust destination block enterside on update
             if( (occupied == 1 || occupied == 3) && StrOp.equals( wBlock.getid( m_Props ), wLoc.getdestblockid(loc) ) ) {
               m_RotateSym = wLoc.isblockenterside( loc);
