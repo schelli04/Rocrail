@@ -3747,7 +3747,11 @@ void RocGuiFrame::OnLocoSortByAddr( wxCommandEvent& event ) {
 }
 
 void RocGuiFrame::OnBackColor( wxCommandEvent& event ) {
-  wxColourDialog* dlg = new wxColourDialog(this);
+  wxColourData ColourData;
+  iONode panelini = wGui.getplanpanel(m_Ini);
+  ColourData.SetColour(wxColour(wPlanPanel.getred(panelini),wPlanPanel.getgreen(panelini),wPlanPanel.getblue(panelini)));
+
+  wxColourDialog* dlg = new wxColourDialog(this, &ColourData);
   if( wxID_OK == dlg->ShowModal() ) {
     wxColour &color = dlg->GetColourData().GetColour();
 

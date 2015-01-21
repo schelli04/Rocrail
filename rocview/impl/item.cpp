@@ -43,6 +43,7 @@
 
 #include <wx/clipbrd.h>
 #include <wx/dataobj.h>
+#include <wx/colordlg.h>
 
 
 #include "rocs/public/node.h"
@@ -100,6 +101,7 @@
 #include "rocrail/wrapper/public/LocationList.h"
 #include "rocrail/wrapper/public/ActionCtrl.h"
 #include "rocrail/wrapper/public/Program.h"
+#include "rocrail/wrapper/public/Color.h"
 
 #include "rocview/wrapper/public/Gui.h"
 #include "rocview/wrapper/public/PlanPanel.h"
@@ -161,6 +163,7 @@ enum {
     ME_SetSensorLoad,
     ME_IdentifierFwd,
     ME_IdentifierRev,
+    ME_OutputColor,
     ME_Compress,
     ME_Info,
     ME_Timer,
@@ -262,6 +265,7 @@ BEGIN_EVENT_TABLE(Symbol, wxWindow)
   EVT_MENU     (ME_IdentifierRev, Symbol::OnIdentifierRev)
   EVT_MENU     (ME_SetSensorLoad, Symbol::OnSetSensorLoad)
   EVT_MENU     (ME_Compress, Symbol::OnCompress)
+  EVT_MENU     (ME_OutputColor, Symbol::OnOutputColor)
 
   EVT_MENU     (ME_FYGo+0, Symbol::OnFYGo)
   EVT_MENU     (ME_FYGo+1, Symbol::OnFYGo)
@@ -969,6 +973,31 @@ void Symbol::OnSetSensorLoad(wxCommandEvent& event) {
     wFeedback.setload( cmd, atoi(dlg->GetValue().mb_str(wxConvUTF8)) );
     wFeedback.setstate( cmd, True);
     wFeedback.setdirection( cmd, False);
+    wxGetApp().sendToRocrail( cmd );
+    cmd->base.del(cmd);
+  }
+  dlg->Destroy();
+}
+
+void Symbol::OnOutputColor(wxCommandEvent& event) {
+  wxColourData ColourData;
+  iONode color = wOutput.getcolor(m_Props);
+  if( color != NULL )
+    ColourData.SetColour(wxColour(wColor.getred(color),wColor.getgreen(color),wColor.getblue(color)));
+
+  wxColourDialog* dlg = new wxColourDialog(this, &ColourData);
+  if( wxID_OK == dlg->ShowModal() ) {
+    wxColour &colour = dlg->GetColourData().GetColour();
+
+    iONode cmd = NodeOp.inst( wOutput.name(), NULL, ELEMENT_NODE);
+    iONode color = NodeOp.inst( wColor.name(), NULL, ELEMENT_NODE);
+    NodeOp.addChild(cmd, color);
+    wColor.setred(color, (int)colour.Red());
+    wColor.setgreen(color, (int)colour.Green());
+    wColor.setblue(color, (int)colour.Blue());
+    wOutput.setid( cmd, wOutput.getid( m_Props ) );
+    wOutput.setvalue(cmd, wOutput.getvalue( m_Props ));
+    wOutput.setcmd(cmd, wOutput.value);
     wxGetApp().sendToRocrail( cmd );
     cmd->base.del(cmd);
   }
@@ -1930,6 +1959,12 @@ void Symbol::OnPopup(wxMouseEvent& event)
         if( wRoute.getstatus(m_Props) == wRoute.status_closed )
           menu.Append( ME_OpenBlock, wxGetApp().getMenu("operational") );
       //}
+    }
+
+    else if( StrOp.equals( wOutput.name(), NodeOp.getName( m_Props ) ) ) {
+      if( wOutput.iscolortype(m_Props) ) {
+        menu.Append( ME_OutputColor, wxGetApp().getMenu("color") + wxT("...") );
+      }
     }
 
     //menu.AppendSeparator();

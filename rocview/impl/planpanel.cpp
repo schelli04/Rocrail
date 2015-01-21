@@ -1293,26 +1293,33 @@ void PlanPanel::OnTimer(wxTimerEvent& event) {
 
 
 void PlanPanel::OnBackColor( wxCommandEvent& event ) {
-  wxColourDialog* dlg = new wxColourDialog(this);
-  if( wxID_OK == dlg->ShowModal() ) {
-    wxColour &color = dlg->GetColourData().GetColour();
-    iONode ini = wxGetApp().getIni();
+  iONode ini = wxGetApp().getIni();
 
-    iONode tab = wGui.gettab(ini);
-    bool tabBackground = false;
-    while( tab != NULL ) {
-      if( m_Z == wTab.getnr(tab) ) {
-        tabBackground = true;
+  iONode tab = wGui.gettab(ini);
+  bool tabBackground = false;
+  while( tab != NULL ) {
+    if( m_Z == wTab.getnr(tab) ) {
+      tabBackground = true;
+      wxColourData ColourData;
+      ColourData.SetColour(wxColour(wTab.getred(tab),wTab.getgreen(tab),wTab.getblue(tab)));
+      wxColourDialog* dlg = new wxColourDialog(this, &ColourData);
+      if( wxID_OK == dlg->ShowModal() ) {
+        wxColour &color = dlg->GetColourData().GetColour();
         wTab.setred( tab, (int)color.Red() );
         wTab.setgreen( tab, (int)color.Green() );
         wTab.setblue( tab, (int)color.Blue() );
         SetBackgroundColor((byte)wTab.getred(tab), (byte)wTab.getgreen(tab), (byte)wTab.getblue(tab), true);
-        break;
       }
-      tab = wGui.nexttab(ini, tab);
+      dlg->Destroy();
+      break;
     }
+    tab = wGui.nexttab(ini, tab);
+  }
 
-    if( !tabBackground ) {
+  if( !tabBackground ) {
+    wxColourDialog* dlg = new wxColourDialog(this);
+    if( wxID_OK == dlg->ShowModal() ) {
+      wxColour &color = dlg->GetColourData().GetColour();
       iONode tab = NodeOp.inst( wTab.name(), ini, ELEMENT_NODE);
       NodeOp.addChild( ini, tab);
       wTab.setnr(tab, m_Z);
@@ -1321,10 +1328,10 @@ void PlanPanel::OnBackColor( wxCommandEvent& event ) {
       wTab.setblue( tab, (int)color.Blue() );
       SetBackgroundColor((byte)wTab.getred(tab), (byte)wTab.getgreen(tab), (byte)wTab.getblue(tab), true);
     }
-
-    reScale( m_Scale );
+    dlg->Destroy();
   }
-  dlg->Destroy();
+
+  reScale( m_Scale );
 }
 
 

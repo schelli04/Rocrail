@@ -87,6 +87,7 @@ public:
   void OnSetSensorLoad(wxCommandEvent& event);
   void OnIdentifierFwd(wxCommandEvent& event);
   void OnIdentifierRev(wxCommandEvent& event);
+  void OnOutputColor(wxCommandEvent& event);
   void OnCompress(wxCommandEvent& event);
   void OnLocMIC(wxCommandEvent& event);
   void OnLocActivate(wxCommandEvent& event);
