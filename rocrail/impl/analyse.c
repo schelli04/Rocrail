@@ -150,6 +150,7 @@ For the Analyzer to work the Plan has to fullfill:
 #include "rocrail/wrapper/public/Sunset.h"
 #include "rocrail/wrapper/public/Night.h"
 #include "rocrail/wrapper/public/WeatherTheme.h"
+#include "rocrail/wrapper/public/Variable.h"
 
 #include "rocrail/public/app.h"
 #include "rocrail/public/model.h"
@@ -1316,6 +1317,11 @@ static Boolean checkActionCondSysCmd( const char* state ) {
   return False;
 }
 
+/* condState(variable) == [*] */
+static Boolean checkActionCondVariable( const char* state ) {
+  return True;
+}
+
 /* condState(route) == [locked, unlocked, closed, open] */
 static Boolean checkActionCondRoute( const char* state ) {
   if( StrOp.equals( state, "unlocked" ) ||
@@ -1410,11 +1416,18 @@ static int checkAction( iOAnalyse inst, int acIdx, iONode action, Boolean repair
       ptr = (char *) ~0 ;
       if( ptr && checkActionCondSysCmd( condState ) )
         condOK = True;
-    }else if ( StrOp.equals( condType, wRoute.name() ) ) {
+    }
+    else if ( StrOp.equals( condType, wRoute.name() ) ) {
       ptr = (char *) ModelOp.getRoute( data->model, condId );
       if( ptr && checkActionCondRoute( condState ) )
         condOK = True;
-    }else {
+    }
+    else if ( StrOp.equals( condType, wVariable.name() ) ) {
+      ptr = (char *) ~0 ;
+      if( ptr && checkActionCondVariable( condState ) )
+        condOK = True;
+    }
+    else {
       condUnsuportedType = True;
     }
     if( condOK ) {
