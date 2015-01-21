@@ -270,6 +270,7 @@ public:
     wxSpinCtrl* m_Cycle;
     wxStaticText* m_labMaxDelay;
     wxSpinCtrl* m_MaxDelay;
+    wxStaticText* m_labMaxDelaySec;
     wxRadioBox* m_TimeProcessing;
     wxGrid* m_Entries;
     wxStaticText* m_LabelLocation;
@@ -288,6 +289,7 @@ public:
     wxCheckBox* m_Free2Go;
     wxStaticText* m_labInDelay;
     wxSpinCtrl* m_InDelay;
+    wxStaticText* m_labInDelayMS;
     wxButton* m_EntryActions;
     wxButton* m_RemoveDestination;
     wxButton* m_ModifyDestination;

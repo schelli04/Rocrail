@@ -444,8 +444,10 @@ public:
     wxButton* m_SensorProps5;
     wxStaticText* m_labTimer;
     wxTextCtrl* m_Timer;
+    wxStaticText* m_labTimerMS;
     wxStaticText* m_labTimer2;
     wxTextCtrl* m_Timer2;
+    wxStaticText* m_labTimer2MS;
     wxCheckBox* m_ForceBlockTimer;
     wxCheckBox* m_SelectShortestBlock;
     wxButton* m_RouteProps;
