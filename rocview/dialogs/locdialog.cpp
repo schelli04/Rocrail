@@ -145,7 +145,6 @@ LocDialog::LocDialog(  wxWindow* parent, iONode p_Props, bool save )
   m_bSave = save;
   m_iSelectedCV = -1;
   m_iFunGroup = 0;
-  m_BBTSel = NULL;
   m_iBBTSel = wxNOT_FOUND;
 
   initLabels();
@@ -569,6 +568,7 @@ bool LocDialog::InitIndex() {
       else {
         m_Props = setSelection(0);
       }
+      initBBT();
     }
 
   }
@@ -982,12 +982,6 @@ void LocDialog::InitValues() {
   m_BBTKey->SetSelection(wLoc.getbbtkey( m_Props ));
 
   initBBT();
-
-  m_BBTBlock->SetValue( wxT(""));
-  m_BBTFromBlock->SetValue( wxT(""));
-  m_BBTRoute->SetValue( wxT(""));
-  m_BBTInterval->SetValue(0);
-  m_BBTSpeed->SetValue(0);
 
   m_BBTDelete->Enable(false);
   m_BBTCopy->Enable(false);
@@ -3012,30 +3006,27 @@ void LocDialog::OnButtonF4Click( wxCommandEvent& event )
  * wxEVT_COMMAND_BUTTON_CLICKED event handler for wxID_APPLY
  */
 
-void LocDialog::OnApplyClick( wxCommandEvent& event )
+bool LocDialog::OnApply()
 {
   if( m_Props == NULL )
-    return;
+    return false;
 
   TraceOp.trc( "locdlg", TRCLEVEL_INFO, __LINE__, 9999, "apply" );
 
+  wxCommandEvent event;
   OnBbtModifyClick(event);
 
   if( !Evaluate() )
-    return;
+    return false;
 
-  if( !wxGetApp().isStayOffline() ) {
-    /* Notify RocRail. */
-    iONode cmd = NodeOp.inst( wModelCmd.name(), NULL, ELEMENT_NODE );
-    wModelCmd.setcmd( cmd, wModelCmd.modify );
-    NodeOp.addChild( cmd, (iONode)m_Props->base.clone( m_Props ) );
-    wxGetApp().sendToRocrail( cmd );
-    cmd->base.del(cmd);
-  }
-  else {
-    wxGetApp().setLocalModelModified(true);
-  }
   InitIndex();
+  return true;
+}
+
+
+void LocDialog::OnApplyClick( wxCommandEvent& event )
+{
+  OnApply();
 }
 
 
@@ -3059,8 +3050,19 @@ void LocDialog::OnButtonF0Click( wxCommandEvent& event )
 
 void LocDialog::OnOkClick( wxCommandEvent& event )
 {
-  if( m_bSave )
-    OnApplyClick(event);
+  if( m_bSave && OnApply() ) {
+    if( !wxGetApp().isStayOffline() ) {
+      /* Notify RocRail. */
+      iONode cmd = NodeOp.inst( wModelCmd.name(), NULL, ELEMENT_NODE );
+      wModelCmd.setcmd( cmd, wModelCmd.modify );
+      NodeOp.addChild( cmd, (iONode)m_Props->base.clone( m_Props ) );
+      wxGetApp().sendToRocrail( cmd );
+      cmd->base.del(cmd);
+    }
+    else {
+      wxGetApp().setLocalModelModified(true);
+    }
+  }
   EndModal( wxID_OK );
 }
 
@@ -3614,23 +3616,25 @@ void LocDialog::OnButtonBbtDeleteClick( wxCommandEvent& event )
 {
   if( m_Props != NULL) {
     // re-init the list to update the bbt pointers
-    initBBT();
-    m_BBTSel = (iONode)m_BBTList2->GetItemData(m_iBBTSel);
+    // initBBT();
+    if(  m_iBBTSel != wxNOT_FOUND ) {
+      iONode l_BBTSel = (iONode)m_BBTList2->GetItemData(m_iBBTSel);
 
-    if( m_BBTSel != NULL ) {
-      NodeOp.removeChild( m_Props, m_BBTSel );
-      m_BBTSel = NULL;
-      initBBT();
+      if( l_BBTSel != NULL ) {
+        NodeOp.removeChild( m_Props, l_BBTSel );
+        l_BBTSel = NULL;
+        initBBT();
 
-      if( NodeOp.getChildCnt(m_Props) == 0 ) {
-        // ToDo: Work aroud for forcing the loco objects to remove all child nodes...
-        iONode node = NodeOp.inst( wCVByte.name(), m_Props, ELEMENT_NODE);
-        NodeOp.addChild( m_Props, node );
-      }
+        if( NodeOp.getChildCnt(m_Props) == 0 ) {
+          // ToDo: Work aroud for forcing the loco objects to remove all child nodes...
+          iONode node = NodeOp.inst( wCVByte.name(), m_Props, ELEMENT_NODE);
+          NodeOp.addChild( m_Props, node );
+        }
 
-      if( m_BBTList2->GetItemCount() == 0 ) {
-        m_BBTDelete->Enable(false);
-        m_BBTDeleteAll->Enable(false);
+        if( m_BBTList2->GetItemCount() == 0 ) {
+          m_BBTDelete->Enable(false);
+          m_BBTDeleteAll->Enable(false);
+        }
       }
     }
   }
@@ -3671,18 +3675,18 @@ void LocDialog::OnBbtModifyClick( wxCommandEvent& event )
 {
   if( m_Props != NULL && m_iBBTSel != wxNOT_FOUND) {
     // re-init the list to update the bbt pointers
-    initBBT();
-    m_BBTSel = (iONode)m_BBTList2->GetItemData(m_iBBTSel);
+    //initBBT();
+    iONode l_BBTSel = (iONode)m_BBTList2->GetItemData(m_iBBTSel);
 
-    TraceOp.trc( "locdlg", TRCLEVEL_INFO, __LINE__, 9999, "m_BBTSel=%lx", m_BBTSel );
-    wBBT.setinterval(m_BBTSel, m_BBTInterval->GetValue());
-    TraceOp.trc( "locdlg", TRCLEVEL_INFO, __LINE__, 9999, "m_BBTSel=%lx", m_BBTSel );
-    wBBT.setfixed(m_BBTSel, m_BBTFixed->IsChecked()?True:False);
-    wBBT.setgeneratein(m_BBTSel, m_BBTGenerateIn->IsChecked()?True:False);
-    wBBT.setfrombk(m_BBTSel, m_BBTFromBlock->GetValue().mb_str(wxConvUTF8));
-    wBBT.setroute(m_BBTSel, m_BBTRoute->GetValue().mb_str(wxConvUTF8));
-    wBBT.setbk(m_BBTSel, m_BBTBlock->GetValue().mb_str(wxConvUTF8));
-    wBBT.setspeed(m_BBTSel, m_BBTSpeed->GetValue());
+    TraceOp.trc( "locdlg", TRCLEVEL_INFO, __LINE__, 9999, "l_BBTSel=%lx", l_BBTSel );
+    wBBT.setinterval(l_BBTSel, m_BBTInterval->GetValue());
+    TraceOp.trc( "locdlg", TRCLEVEL_INFO, __LINE__, 9999, "l_BBTSel=%lx", l_BBTSel );
+    wBBT.setfixed(l_BBTSel, m_BBTFixed->IsChecked()?True:False);
+    wBBT.setgeneratein(l_BBTSel, m_BBTGenerateIn->IsChecked()?True:False);
+    wBBT.setfrombk(l_BBTSel, m_BBTFromBlock->GetValue().mb_str(wxConvUTF8));
+    wBBT.setroute(l_BBTSel, m_BBTRoute->GetValue().mb_str(wxConvUTF8));
+    wBBT.setbk(l_BBTSel, m_BBTBlock->GetValue().mb_str(wxConvUTF8));
+    wBBT.setspeed(l_BBTSel, m_BBTSpeed->GetValue());
 
     initBBT();
     m_BBTList2->SetItemState(m_iBBTSel, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
@@ -3698,17 +3702,20 @@ void LocDialog::OnLocBbtlist2Selected( wxListEvent& event )
 {
   if( m_Props != NULL ) {
     m_iBBTSel = event.GetIndex();
-    m_BBTSel = (iONode)m_BBTList2->GetItemData(m_iBBTSel);
-    m_BBTDelete->Enable(true);
-    m_BBTCopy->Enable(true);
-    m_BBTBlock->SetValue( wxString(wBBT.getbk(m_BBTSel),wxConvUTF8));
-    m_BBTFromBlock->SetValue( wxString(wBBT.getfrombk(m_BBTSel),wxConvUTF8));
-    m_BBTRoute->SetValue( wxString(wBBT.getroute(m_BBTSel),wxConvUTF8));
-    m_BBTInterval->SetValue(wBBT.getinterval(m_BBTSel));
-    m_BBTGenerateIn->SetValue(wBBT.isgeneratein(m_BBTSel)?true:false);
-    m_BBTFixed->SetValue(wBBT.isfixed(m_BBTSel)?true:false);
-    m_BBTFixed->Enable(!m_BBTGenerateIn->IsChecked());
-    m_BBTSpeed->SetValue(wBBT.getspeed(m_BBTSel));
+    if( m_iBBTSel != wxNOT_FOUND) {
+      iONode l_BBTSel = (iONode)m_BBTList2->GetItemData(m_iBBTSel);
+      TraceOp.trc( "locdlg", TRCLEVEL_INFO, __LINE__, 9999, "selected bbt=%d node=%lx", m_iBBTSel, l_BBTSel );
+      m_BBTDelete->Enable(true);
+      m_BBTCopy->Enable(true);
+      m_BBTBlock->SetValue( wxString(wBBT.getbk(l_BBTSel),wxConvUTF8));
+      m_BBTFromBlock->SetValue( wxString(wBBT.getfrombk(l_BBTSel),wxConvUTF8));
+      m_BBTRoute->SetValue( wxString(wBBT.getroute(l_BBTSel),wxConvUTF8));
+      m_BBTInterval->SetValue(wBBT.getinterval(l_BBTSel));
+      m_BBTGenerateIn->SetValue(wBBT.isgeneratein(l_BBTSel)?true:false);
+      m_BBTFixed->SetValue(wBBT.isfixed(l_BBTSel)?true:false);
+      m_BBTFixed->Enable(!m_BBTGenerateIn->IsChecked());
+      m_BBTSpeed->SetValue(wBBT.getspeed(l_BBTSel));
+    }
   }
 }
 
@@ -3805,6 +3812,17 @@ static int __sortBBTFixed(obj* _a, obj* _b)
 
 void LocDialog::initBBT() {
   m_BBTList2->DeleteAllItems();
+
+  if( m_Props == NULL )
+    return;
+
+  m_iBBTSel = wxNOT_FOUND;
+  m_BBTBlock->SetValue( wxT(""));
+  m_BBTFromBlock->SetValue( wxT(""));
+  m_BBTRoute->SetValue( wxT(""));
+  m_BBTInterval->SetValue(0);
+  m_BBTSpeed->SetValue(0);
+
   iOList list = ListOp.inst();
   iONode bbt = wLoc.getbbt( m_Props );
 
@@ -3856,7 +3874,7 @@ void LocDialog::initBBT() {
   ListOp.base.del(list);
 
   // resize
-  for( int n = 0; n < 7; n++ ) {
+  for( int n = 0; n < 9; n++ ) {
     m_BBTList2->SetColumnWidth(n, wxLIST_AUTOSIZE_USEHEADER);
     int autoheadersize = m_BBTList2->GetColumnWidth(n);
     m_BBTList2->SetColumnWidth(n, wxLIST_AUTOSIZE);
@@ -4095,19 +4113,21 @@ void LocDialog::OnLocBbtlist2ColLeftClick( wxListEvent& event )
 void LocDialog::OnBbtCopyClick( wxCommandEvent& event ) {
   if( m_Props != NULL) {
     // re-init the list to update the bbt pointers
-    initBBT();
-    m_BBTSel = (iONode)m_BBTList2->GetItemData(m_iBBTSel);
+    // initBBT();
+    if( m_iBBTSel != wxNOT_FOUND ) {
+      iONode l_BBTSel = (iONode)m_BBTList2->GetItemData(m_iBBTSel);
 
-    if( m_BBTSel != NULL ) {
-      iONode bbtrec = (iONode)NodeOp.base.clone(m_BBTSel);
-      char* s = StrOp.fmt("copy of %s", wBBT.getfrombk(bbtrec));
-      wBBT.setfrombk(bbtrec, s);
-      StrOp.free(s);
-      s = StrOp.fmt("copy of %s", wBBT.getbk(bbtrec));
-      wBBT.setbk(bbtrec, s);
-      StrOp.free(s);
-      NodeOp.addChild( m_Props, bbtrec );
-      initBBT();
+      if( l_BBTSel != NULL ) {
+        iONode bbtrec = (iONode)NodeOp.base.clone(l_BBTSel);
+        char* s = StrOp.fmt("copy of %s", wBBT.getfrombk(bbtrec));
+        wBBT.setfrombk(bbtrec, s);
+        StrOp.free(s);
+        s = StrOp.fmt("copy of %s", wBBT.getbk(bbtrec));
+        wBBT.setbk(bbtrec, s);
+        StrOp.free(s);
+        NodeOp.addChild( m_Props, bbtrec );
+        initBBT();
+      }
     }
   }
 }
@@ -4131,7 +4151,7 @@ void LocDialog::OnBbtGenateInClick( wxCommandEvent& event ) {
 void LocDialog::OnBbtAddClick( wxCommandEvent& event ) {
   if( m_Props != NULL) {
     // re-init the list to update the bbt pointers
-    initBBT();
+    //initBBT();
     iONode bbtrec = NodeOp.inst(wBBT.name(), m_Props, ELEMENT_NODE);
     NodeOp.addChild( m_Props, bbtrec );
     initBBT();

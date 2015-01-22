@@ -221,6 +221,7 @@ public:
     void SelectNext();
     void SelectPrev();
     void initBBT();
+    bool OnApply();
 
 ////@begin LocDialog event handler declarations
 
@@ -690,7 +691,6 @@ public:
     wxButton* m_OK;
     iONode m_Props;
 ////@end LocDialog member variables
-    iONode m_BBTSel;
     int m_iBBTSel;
 };
 
