@@ -771,12 +771,6 @@ void Symbol::OnPaint(wxPaintEvent& event)
     else if( StrOp.equals( wRoute.name(), NodeOp.getName( m_Props ) ) ) {
       status = wRoute.getstatus(m_Props);
     }
-    else if( StrOp.equals( wSignal.name(), NodeOp.getName( m_Props ) ) ) {
-      if( StrOp.equals( wSignal.blockstate, wSignal.getsignal( m_Props ) ) ) {
-        // ToDo: Block state for signal?
-        TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s]", wSignal.getid( m_Props ));
-      }
-    }
 
     wxGraphicsContext* gc = NULL;
     if( wGui.isrendergc(wxGetApp().getIni())) {
@@ -2805,7 +2799,7 @@ void Symbol::modelEvent( iONode node, bool oncreate ) {
     wSignal.setmanual( m_Props, wSignal.ismanual(node) );
 
     if( StrOp.equals( wSignal.blockstate, wSignal.getsignal( m_Props ) ) ) {
-      TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s]", wSignal.getid( m_Props ));
+      TraceOp.trc( "item", TRCLEVEL_DEBUG, __LINE__, 9999, "blockstate: [%s]", wSignal.getid( m_Props ));
       // ToDo: Change blockstate label?
     }
   }
@@ -3176,13 +3170,28 @@ void Symbol::modelEvent( iONode node, bool oncreate ) {
     const char* trainid = "";
     int occupied = 0;
     Boolean showID = True;
+    Symbol* StateSignal = NULL;
 
     m_Renderer->setLocoImage("");
     m_Renderer->setLocoPlacing(true);
     m_Renderer->setLocoManual(false);
 
+    if(wBlock.getstatesignal(m_Props) != NULL && StrOp.len(wBlock.getstatesignal(m_Props)) > 0 ) {
+      iONode sg = wxGetApp().getFrame()->findSignal( wBlock.getstatesignal(m_Props) );
+      if( sg != NULL ) {
+        char key[256];
+        m_PlanPanel->itemKey( sg, key, NULL );
+        StateSignal = wxGetApp().getFrame()->GetItem(key);
+      }
+    }
+
+
     if( locoid == NULL ) {
       locoid = "";
+      if( StateSignal != NULL ) {
+        TraceOp.trc( "item", TRCLEVEL_DEBUG, __LINE__, 9999, "blockstate: [%s]", wBlock.getstatesignal(m_Props));
+        StateSignal->Blockstate(m_Props, NULL);
+      }
     }
     else {
       iONode loc = wxGetApp().getFrame()->findLoc( updateEnterside ? wBlock.getlocid(m_Props):locoid );
@@ -3192,20 +3201,15 @@ void Symbol::modelEvent( iONode node, bool oncreate ) {
           m_Renderer->setLocoPlacing(wLoc.isplacing(loc)?true:false);
         }
         trainid = wLoc.gettrain(loc);
-        if(wBlock.getstatesignal(m_Props) != NULL && StrOp.len(wBlock.getstatesignal(m_Props)) > 0 ) {
-          TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s]", wBlock.getstatesignal(m_Props));
-          iONode sg = wxGetApp().getFrame()->findSignal( wBlock.getstatesignal(m_Props) );
-          if( sg != NULL ) {
-            TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s]", wBlock.getstatesignal(m_Props));
-            char key[256];
-            m_PlanPanel->itemKey( sg, key, NULL );
-
-            Symbol* item = wxGetApp().getFrame()->GetItem(key);
-            if( item != NULL ) {
-              TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s]", wBlock.getstatesignal(m_Props));
-              item->Blockstate(m_Props, loc);
-            }
-          }
+        if( StateSignal != NULL ) {
+          TraceOp.trc( "item", TRCLEVEL_DEBUG, __LINE__, 9999, "blockstate: [%s]", wBlock.getstatesignal(m_Props));
+          StateSignal->Blockstate(m_Props, loc);
+        }
+      }
+      else {
+        if( StateSignal != NULL ) {
+          TraceOp.trc( "item", TRCLEVEL_DEBUG, __LINE__, 9999, "blockstate: [%s]", wBlock.getstatesignal(m_Props));
+          StateSignal->Blockstate(m_Props, NULL);
         }
       }
     }
@@ -3413,8 +3417,14 @@ double Symbol::getSize() {
 
 void Symbol::Blockstate(iONode bk, iONode lc) {
   if( StrOp.equals(wSignal.name(), NodeOp.getName(m_Props) ) ) {
-    TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s]", wLoc.getmode(lc));
-    m_Renderer->setLabel( wLoc.getmode(lc), 0 );
+    if( lc != NULL ) {
+      TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s]", wLoc.getmode(lc));
+      m_Renderer->setLabel( wLoc.getmode(lc), 0 );
+    }
+    else {
+      TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s]", "-");
+      m_Renderer->setLabel( "-", 0 );
+    }
     Refresh();
   }
 }
