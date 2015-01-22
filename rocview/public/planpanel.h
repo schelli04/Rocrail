@@ -77,6 +77,7 @@ public:
   void addTT(wxCommandEvent& event);
   void addSelTab(wxCommandEvent& event);
   void addText(wxCommandEvent& event);
+  void* GetItem( const char* key );
 
   void OnBackColor( wxCommandEvent& event );
   void addItemAttr( iONode node );

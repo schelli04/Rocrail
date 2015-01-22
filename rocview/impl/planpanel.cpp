@@ -1801,6 +1801,13 @@ void PlanPanel::ChangeItemKey( const char* key, const char* prev_key ) {
 }
 
 
+void* PlanPanel::GetItem( const char* key ) {
+  Symbol* item = (Symbol*)m_ChildTable->Get( wxString(key,wxConvUTF8) );
+  TraceOp.trc( "plan", TRCLEVEL_INFO, __LINE__, 9999, "GetItem [%s] %lx", key, item );
+  return item;
+}
+
+
 void PlanPanel::putChild(void* item) {
   TraceOp.trc( "plan", TRCLEVEL_INFO, __LINE__, 9999, "put moved Item at level %d", m_Z );
 

@@ -619,6 +619,20 @@ iONode RocGuiFrame::findSensor( const char* id ) {
 }
 
 
+iONode RocGuiFrame::findSignal( const char* id ) {
+  iONode model = wxGetApp().getModel();
+  iONode list = wPlan.getsglist( model );
+  if( list != NULL ) {
+    int cnt = NodeOp.getChildCnt( list );
+    for( int i = 0; i < cnt; i++ ) {
+      iONode node = NodeOp.getChild( list, i );
+      if( id != NULL && StrOp.equals( id, wItem.getid(node) ) ) {
+        return node;
+      }
+    }
+  }
+  return NULL;
+}
 
 
 iONode RocGuiFrame::findWaybill( const char* billid ) {
@@ -1540,6 +1554,23 @@ void RocGuiFrame::ServerTrace( wxCommandEvent& event ) {
   if( m_TraceDlg != NULL )
     m_TraceDlg->traceEvent(node);
   NodeOp.base.del(node);
+}
+
+Symbol* RocGuiFrame::GetItem( const char* key ) {
+  if( m_ModPanel != NULL) {
+    return (Symbol*)m_ModPanel->GetItem( key );
+  }
+  else {
+    int pagecnt = getNotebook()->GetPageCount();
+    for( int i = 0; i < pagecnt; i++ ) {
+      PlanPanel* p = (PlanPanel*)wxGetApp().getFrame()->getNotebook()->GetPage(i);
+      Symbol* item = (Symbol*)p->GetItem( key );
+      if( item != NULL ) {
+        return item;
+      }
+    }
+  }
+  return NULL;
 }
 
 

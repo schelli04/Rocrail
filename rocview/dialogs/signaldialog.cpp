@@ -275,6 +275,7 @@ void SignalDialog::initLabels() {
   m_Signal->SetString( 0, wxGetApp().getMsg( "distant_signal" ) );
   m_Signal->SetString( 1, wxGetApp().getMsg( "main_signal" ) );
   m_Signal->SetString( 2, wxGetApp().getMsg( "shunting_signal" ) );
+  m_Signal->SetString( 3, wxGetApp().getMsg( "blockstate_signal" ) );
 
   m_labAspects->SetLabel( wxGetApp().getMsg( "aspects" ) );
   m_labSymbolPrefix->SetLabel( wxGetApp().getMsg( "prefix" ) );
@@ -420,6 +421,8 @@ void SignalDialog::initValues() {
     m_Signal->SetSelection( 1 );
   else if( StrOp.equals( wSignal.shunting, wSignal.getsignal( m_Props ) ) )
     m_Signal->SetSelection( 2 );
+  else if( StrOp.equals( wSignal.blockstate, wSignal.getsignal( m_Props ) ) )
+    m_Signal->SetSelection( 3 );
 
   m_Aspects->SetValue( wSignal.getaspects( m_Props ) );
   m_SymbolPrefix->SetValue( wxString(wSignal.getsymbolprefix( m_Props ),wxConvUTF8) );
@@ -549,6 +552,8 @@ bool SignalDialog::evaluate() {
     wSignal.setsignal( m_Props, wSignal.main );
   else if( signal == 2 )
     wSignal.setsignal( m_Props, wSignal.shunting );
+  else if( signal == 3 )
+    wSignal.setsignal( m_Props, wSignal.blockstate );
 
   wSignal.setaspects( m_Props, m_Aspects->GetValue() );
   wSignal.setsymbolprefix( m_Props, m_SymbolPrefix->GetValue().mb_str(wxConvUTF8) );
@@ -1031,7 +1036,8 @@ void SignalDialog::CreateControls()
     m_SignalStrings.Add(_("&distant"));
     m_SignalStrings.Add(_("&main"));
     m_SignalStrings.Add(_("&shunting"));
-    m_Signal = new wxRadioBox( m_PropsPanel, ID_RADIOBOX_SG_SGTYPE, _("Signal"), wxDefaultPosition, wxDefaultSize, m_SignalStrings, 1, wxRA_SPECIFY_COLS );
+    m_SignalStrings.Add(_("&blockstate"));
+    m_Signal = new wxRadioBox( m_PropsPanel, ID_RADIOBOX_SG_SGTYPE, _("Signal"), wxDefaultPosition, wxDefaultSize, m_SignalStrings, 2, wxRA_SPECIFY_COLS );
     m_Signal->SetSelection(0);
     itemFlexGridSizer86->Add(m_Signal, 0, wxALIGN_LEFT|wxALIGN_TOP|wxALL, 5);
 

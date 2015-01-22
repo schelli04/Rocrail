@@ -215,6 +215,7 @@ public:
   iONode findRoute( const char* routeid );
   iONode findBlock( const char* blockid );
   iONode findSensor( const char* sensorid );
+  iONode findSignal( const char* sensorid );
   iONode findCar(const char* carid);
   char* listCars( const char* bkid );
   iONode findOperator(const char* oprid);
@@ -341,6 +342,8 @@ public:
   void UpdateActiveLocs(wxCommandEvent& event);
   void CVevent(wxCommandEvent& event);
   void UpdateLocImage(wxCommandEvent& event);
+
+  Symbol* GetItem( const char* key );
 
   bool isEditMode() { return m_bEditMode; }
   void setEditMode( bool editmode ) { m_bEditMode = editmode; }

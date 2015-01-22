@@ -69,6 +69,7 @@ public:
   bool hasZLevel( iONode zlevel );
   BasePanel* updateZLevel(iONode zlevel);
   iOList getModList() { return m_ModList; }
+  void* GetItem( const char* key );
 
 private:
   DECLARE_EVENT_TABLE()

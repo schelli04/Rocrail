@@ -591,6 +591,9 @@ void SymbolRenderer::initSym() {
 
       }
     }
+    else if( StrOp.equals( wSignal.blockstate, wSignal.getsignal( m_Props ) ) ) {
+      m_SvgSym1 = (svgSymbol*)MapOp.get( m_SymMap, signaltype::blockstate );
+    }
     else if( StrOp.equals( wSignal.semaphore, wSignal.gettype( m_Props ) ) ) {
       if( StrOp.equals( wSignal.main, wSignal.getsignal( m_Props ) ) ) {
         m_iSymSubType = signaltype::i_semaphoremain;
@@ -1878,7 +1881,33 @@ void SymbolRenderer::drawSignal( wxPaintDC& dc, bool occupied, bool actroute, co
       drawSvgSym(dc, m_SvgSym1, ori);
   }
 
-  if( m_bShowID ) {
+  if( StrOp.equals( wSignal.blockstate, wSignal.getsignal( m_Props ) ) && StrOp.len(m_Label) > 0 ) {
+    int red = 0;
+    int green = 0;
+    int blue = 0;
+
+    wxFont* font = setFont(m_iTextps, red, green, blue);
+    /* center the text */
+    double width = 0;
+    double height = 0;
+    double descent = 0;
+    double externalLeading = 0;
+    if( m_UseGC )
+      m_GC->GetTextExtent( wxString(m_Label,wxConvUTF8).Trim(),(wxDouble*)&width,(wxDouble*)&height,(wxDouble*)&descent,(wxDouble*)&externalLeading);
+    else {
+      wxCoord w;
+      wxCoord h;
+      dc.GetTextExtent(wxString(m_Label,wxConvUTF8).Trim(), &w, &h, 0,0, font);
+      width  = w;
+      height = h;
+    }
+
+    drawString( wxString(m_Label,wxConvUTF8), (32-width)/2, (32-height)/2, 0.0, false );
+
+    delete font;
+  }
+
+  if( m_bShowID && !StrOp.equals( wSignal.blockstate, wSignal.getsignal( m_Props ) ) ) {
     if( StrOp.equals( ori, wItem.north ) )
       drawString( wxString(wItem.getid(m_Props),wxConvUTF8), 32, 1, 270.0 );
     else if( StrOp.equals( ori, wItem.south ) )

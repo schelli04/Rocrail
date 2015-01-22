@@ -29463,4 +29463,7 @@
   <Msg id="blockstate_signal">
     <en txt="Block state"/>
   </Msg>
+  <Msg id="statesignal">
+    <en txt="State signal"/>
+  </Msg>
 </Messages>

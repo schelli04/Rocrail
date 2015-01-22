@@ -135,6 +135,8 @@ public:
   bool isSignal();
   bool hasAlt();
 
+  void Blockstate(iONode bk, iONode lc);
+
 private:
   SymbolRenderer* m_Renderer;
   PlanPanel* m_PlanPanel;

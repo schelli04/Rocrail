@@ -7703,3 +7703,15 @@ msgstr ""
 msgid "Frame rate"
 msgstr ""
 
+#. 
+# id="blockstate_signal"
+#, c-format
+msgid "Block state"
+msgstr ""
+
+#. 
+# id="statesignal"
+#, c-format
+msgid "State signal"
+msgstr ""
+

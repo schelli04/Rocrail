@@ -2202,6 +2202,7 @@
         <var name="signalR" vt="string" defval="NULL" range="*" remark="Home Signal ID for reverse direction. (sw)"/>
         <var name="wsignalR" vt="string" defval="NULL" range="*" remark="Warning Signal ID for reverse direction. (sw)"/>
         <var name="blankatredsignalR" vt="bool" defval="false" remark=""/>
+        <var name="statesignal" vt="string" defval="NULL" range="*" remark="State Signal ID for loco info."/>
         <var name="electrified" vt="bool" defval="false" remark="Block is open for electric locs."/>
         <var name="turnoutstolock" vt="string" defval="NULL" range="*" remark="comma separated list of turnouts to lock with the block"/>
         <const name="type_turntable" vt="string" val="turntable"/>

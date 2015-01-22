@@ -183,6 +183,16 @@ void ModPanel::removeModule(iONode zlevel) {
 }
 
 
+void* ModPanel::GetItem( const char* key ) {
+  BasePanel* p = (BasePanel*)ListOp.first(m_ModList);
+  while( p != NULL ) {
+    void* item = p->GetItem(key);
+    if( item != NULL )
+      return item;
+    p = (BasePanel*)ListOp.next(m_ModList);
+  }
+  return NULL;
+}
 
 void ModPanel::modelEvent( iONode node ) {
   BasePanel* p = (BasePanel*)ListOp.first(m_ModList);

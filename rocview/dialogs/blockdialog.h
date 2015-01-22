@@ -95,6 +95,7 @@ class wxSpinCtrl;
 #define ID_BUTTON_BK_SIGNAL_R 10012
 #define ID_BUTTON_BK_WSIGNAL_R 10015
 #define ID_CHECKBOX1 10392
+#define ID_BK_STATESIGNAL_PROPS 10458
 #define ID_PANEL_BK_DETAILS 10065
 #define ID_RADIOBOX_BK_INCLINE 10074
 #define ID_RADIOBOX_BK_WAIT 10075
@@ -212,6 +213,7 @@ public:
     iONode getProperties(){ return m_Props;}
     void OnSelectPage( wxCommandEvent& event );
     void fbProps( const char* fbid );
+    void sgProps( const char* sgid );
 
 ////@begin BlockDialog event handler declarations
 
@@ -250,6 +252,9 @@ public:
 
     /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_BUTTON_BK_WSIGNAL_R
     void OnButtonBkWsignalRClick( wxCommandEvent& event );
+
+    /// wxEVT_COMMAND_BUTTON_CLICKED event handler for ID_BK_STATESIGNAL_PROPS
+    void OnBkStatesignalPropsClick( wxCommandEvent& event );
 
     /// wxEVT_COMMAND_RADIOBOX_SELECTED event handler for ID_RADIOBOX_BK_WAIT
     void OnRadioboxBkWaitSelected( wxCommandEvent& event );
@@ -384,6 +389,10 @@ public:
     wxComboBox* m_WSignalR;
     wxButton* m_WSignalPropsR;
     wxCheckBox* m_BlankAtRedSignalR;
+    wxStaticBox* m_SpecialSignalBox;
+    wxStaticText* m_labStateSignal;
+    wxComboBox* m_StateSignal;
+    wxButton* m_StateSignalProps;
     wxPanel* m_PanelDetails;
     wxRadioBox* m_Incline;
     wxRadioBox* m_Wait;

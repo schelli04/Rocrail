@@ -301,6 +301,8 @@ namespace signaltype {
   static const char* signalaspect_occ   = "%ssignalaspect-%d-occ.svg";
   static const char* signalaspect_route = "%ssignalaspect-%d-route.svg";
 
+  static const char* blockstate = "blockstate.svg";
+
   static const char* signalmain_r = "signalmain-r.svg";
   static const char* signalmain_y = "signalmain-y.svg";
   static const char* signalmain_g = "signalmain-g.svg";
