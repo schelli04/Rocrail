@@ -2259,6 +2259,7 @@ static Boolean _unLockForGroup( iIBlockBase inst, const char* id ) {
         wBlock.setid( nodeD, data->id );
         wBlock.setlocid( nodeD, "" );
         wBlock.setacceptident(nodeD, data->acceptident);
+        wBlock.setstate( nodeD, wBlock.getstate( data->props ) );
         AppOp.broadcastEvent( nodeD );
       }
 
