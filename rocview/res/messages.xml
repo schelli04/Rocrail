@@ -29460,4 +29460,7 @@
   <Msg id="framerate">
     <en txt="Frame rate"/>
   </Msg>
+  <Msg id="blockstate_signal">
+    <en txt="Block state"/>
+  </Msg>
 </Messages>

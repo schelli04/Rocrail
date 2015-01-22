@@ -57,6 +57,7 @@ class WeatherDlg : public WeatherDlgGen
     void onIndexList( wxCommandEvent& event );
     void onAddWeather( wxCommandEvent& event );
     void onDeleteWeather( wxCommandEvent& event );
+    void onActions( wxCommandEvent& event );
 
 	public:
 		/** Constructor */

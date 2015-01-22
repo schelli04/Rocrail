@@ -38,6 +38,8 @@
 #include "rocs/public/trace.h"
 #include "rocs/public/list.h"
 
+#include "actionsctrldlg.h"
+
 
 WeatherDlg::WeatherDlg( wxWindow* parent, iONode props ):WeatherDlgGen( parent )
 {
@@ -261,6 +263,7 @@ void WeatherDlg::initLabels() {
   m_AddWeather->SetLabel( wxGetApp().getMsg( "add" ) );
   m_DeleteWeather->SetLabel( wxGetApp().getMsg( "delete" ) );
   m_ActivateWeather->SetLabel( wxGetApp().getMsg( "activate" ) );
+  m_Actions->SetLabel( wxGetApp().getMsg( "actions" )+_T("...") );
 
   // Day
   m_labOutputs->SetLabel( wxGetApp().getMsg( "outputs" ) );
@@ -559,7 +562,22 @@ void WeatherDlg::onThemeDelete( wxCommandEvent& event ) {
       m_ThemeList->Clear();
       initThemeIndex();
       initThemeValues();
+      // ToDo: Clean up node?
     }
   }
+}
+
+void WeatherDlg::onActions( wxCommandEvent& event ) {
+  if( m_Props == NULL ) {
+    return;
+  }
+
+  ActionsCtrlDlg*  dlg = new ActionsCtrlDlg(this, m_Props, "sunrise,noon,sunset" );
+
+  if( wxID_OK == dlg->ShowModal() ) {
+    // TODO: inform
+  }
+
+  dlg->Destroy();
 }
 

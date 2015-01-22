@@ -48,6 +48,7 @@
 #include "rocrail/wrapper/public/Color.h"
 #include "rocrail/wrapper/public/WeatherTheme.h"
 #include "rocrail/wrapper/public/Ctrl.h"
+#include "rocrail/wrapper/public/ActionCtrl.h"
 
 
 static int instCnt = 0;
@@ -106,6 +107,29 @@ static void* __event( void* inst, const void* evt ) {
 }
 
 /** ----- OWeather ----- */
+
+static void __checkAction( iOWeather inst, const char* msg ) {
+  iOWeatherData data   = Data(inst);
+  iOModel       model  = AppOp.getModel();
+  iONode        action = wWeather.getactionctrl( data->props );
+
+  /* loop over all actions */
+  while( action != NULL ) {
+    int counter = atoi(wActionCtrl.getstate( action ));
+
+    {
+      iOAction Action = ModelOp.getAction(model, wActionCtrl.getid( action ));
+      if( Action != NULL ) {
+        wActionCtrl.setparam(action, msg);
+        ActionOp.exec(Action, action);
+      }
+    }
+
+    action = wWeather.nextactionctrl( data->props, action );
+  }
+}
+
+
 static void __doInitialize(iOWeather weather, Boolean day, Boolean night) {
   iOWeatherData data = Data(weather);
   iOModel model = AppOp.getModel();
@@ -239,6 +263,13 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
     int daylight  = sunset - sunrise;
 
     Boolean adjustBri = (data->themedim > 0 || clearTheme) ? True:False;
+
+    if( minutes == sunrise )
+      __checkAction(weather, "sunrise");
+    if( minutes == noon )
+      __checkAction(weather, "noon");
+    if( minutes == sunset )
+      __checkAction(weather, "sunset");
 
     /* AM */
     if( minutes <= noon && minutes >= sunrise) {
@@ -420,6 +451,7 @@ static void __checkWeatherThemes(iOWeather weather, int hour, int min ) {
           data->requestedTheme = NULL;
         }
         TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "activating theme [%s]", wWeatherTheme.getid(theme) );
+          __checkAction(weather, wWeatherTheme.getid(theme));
         break;
       }
       theme = wWeather.nextweathertheme(data->props, theme);

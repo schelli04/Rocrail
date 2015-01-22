@@ -1623,7 +1623,8 @@
           <var name="sound" vt="string" defval="" range="*" remark="Comma separated list of sounds."/>
           <var name="soundoutput" vt="string" defval="" range="*" remark="Sound output"/>
           <var name="soundrandomrate" vt="int" defval="5" range="0-9"/>
-          </weathertheme>
+        </weathertheme>
+        <actionctrl cardinality="n"/>
       </weather>
     </weatherlist>
     <zlevel cardinality="n" remark="Z-Level description" wrappername="ZLevel">
@@ -1903,8 +1904,9 @@
         <var name="type" vt="string" defval="light" range="light,semaphore"/>
         <const name="shunting" vt="string" val="shunting"/>
         <const name="distant" vt="string" val="distant"/>
+        <const name="blockstate" vt="string" val="blockstate"/>
         <const name="main" vt="string" val="main"/>
-        <var name="signal" vt="string" defval="main" range="main,distant,shunting"/>
+        <var name="signal" vt="string" defval="main" range="main,distant,shunting,blockstate"/>
         <var name="aspects" vt="int" defval="3" range="2-16" remark="number of aspects to show"/>
         <var name="dwarf" vt="bool" defval="false"/>
         <var name="symbolprefix" vt="string" defval="" range="*" remark="Optional symbol name prefix for multiaspect signals."/>
