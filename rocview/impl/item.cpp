@@ -3418,8 +3418,16 @@ double Symbol::getSize() {
 void Symbol::Blockstate(iONode bk, iONode lc) {
   if( StrOp.equals(wSignal.name(), NodeOp.getName(m_Props) ) ) {
     if( lc != NULL ) {
-      TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s]", wLoc.getmode(lc));
-      m_Renderer->setLabel( wLoc.getmode(lc), 0 );
+      const char* mode = wLoc.getmode(lc);
+      TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s]", mode );
+      if( StrOp.equals( wLoc.mode_auto, mode) )
+        m_Renderer->setLabel( wLoc.getmode(lc), 1 );
+      else if( StrOp.equals( wLoc.mode_idle, mode) )
+        m_Renderer->setLabel( wLoc.getmode(lc), 0 );
+      else if( StrOp.equals( wLoc.mode_wait, mode) )
+        m_Renderer->setLabel( wLoc.getmode(lc), 2 );
+      else if( StrOp.equals( wLoc.mode_halfauto, mode) )
+        m_Renderer->setLabel( wLoc.getmode(lc), 4 );
     }
     else {
       TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s]", "-");

@@ -30,6 +30,7 @@
 #include "sym.h"
 
 #include "rocview/public/guiapp.h"
+#include "rocview/public/base.h"
 
 #include "rocrail/wrapper/public/Item.h"
 #include "rocrail/wrapper/public/Block.h"
@@ -1882,9 +1883,37 @@ void SymbolRenderer::drawSignal( wxPaintDC& dc, bool occupied, bool actroute, co
   }
 
   if( StrOp.equals( wSignal.blockstate, wSignal.getsignal( m_Props ) ) && StrOp.len(m_Label) > 0 ) {
-    int red = 0;
-    int green = 0;
-    int blue = 0;
+    int red    = 0;
+    int green  = 0;
+    int blue   = 0;
+
+    if( m_iOccupied == 1 ) {
+      setPen( wxPen(Base::getGreen()));
+      setBrush( wxBrush(Base::getGreen()));
+    }
+    else if( m_iOccupied == 2 ) {
+      setPen( wxPen(Base::getRed()));
+      setBrush( wxBrush(Base::getRed()));
+    }
+    else if( m_iOccupied == 3 ) {
+      setPen( wxPen(Base::getBlue()));
+      setBrush( wxBrush(Base::getBlue()));
+    }
+    else if( m_iOccupied == 4 ) {
+      setPen( wxPen(Base::getYellow()));
+      setBrush( wxBrush(Base::getYellow()));
+    }
+    else {
+      setPen( wxPen(Base::getGrey()));
+      setBrush( wxBrush(Base::getGrey()));
+    }
+
+    if( m_UseGC ) {
+      m_GC->DrawRectangle(6,6,19,19);
+    }
+    else {
+      dc.DrawRectangle(6,6,19,19);
+    }
 
     wxFont* font = setFont(m_iTextps, red, green, blue);
     /* center the text */
