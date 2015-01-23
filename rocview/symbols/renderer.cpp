@@ -1915,7 +1915,7 @@ void SymbolRenderer::drawSignal( wxPaintDC& dc, bool occupied, bool actroute, co
       dc.DrawRectangle(6,6,19,19);
     }
 
-    wxFont* font = setFont(m_iTextps, red, green, blue);
+    wxFont* font = setFont(m_iTextps, red, green, blue, true);
     /* center the text */
     double width = 0;
     double height = 0;
