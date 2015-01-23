@@ -67,7 +67,7 @@ void eventExit( iOLcDriver inst, const char* blockId, Boolean curBlockEvent, Boo
 
   if( newExitEvent && curBlockEvent && ( data->state == LC_GO || data->state == LC_GO || data->state == LC_CHECKROUTE ) ) {
     data->state = LC_EXITBLOCK;
-    data->loc->setMode(data->loc, wLoc.mode_auto);
+    data->loc->setMode(data->loc, wLoc.mode_auto, "");
     TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                    "Setting state for \"%s\" to LC_EXITBLOCK.",
                    data->loc->getId( data->loc ) );
@@ -91,7 +91,7 @@ void eventExit( iOLcDriver inst, const char* blockId, Boolean curBlockEvent, Boo
       data->loc->stop( data->loc, False );
 
       data->state = LC_IDLE;
-      data->loc->setMode(data->loc, wLoc.mode_idle);
+      data->loc->setMode(data->loc, wLoc.mode_idle, wLoc.modereason_unexpectedexit);
       data->run = False;
       if( data->curBlock != NULL ) {
         data->curBlock->exitBlock(data->curBlock, data->loc->getId( data->loc ), True);

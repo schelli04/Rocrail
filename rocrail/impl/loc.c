@@ -649,6 +649,7 @@ static void __broadcastLocoProps( iOLoc inst, const char* cmd, iONode node, cons
   wLoc.setplacing( node, wLoc.isplacing( data->props ) );
   wLoc.setblockenterside( node, wLoc.isblockenterside( data->props ) );
   wLoc.setmode( node, wLoc.getmode( data->props ) );
+  wLoc.setmodereason( node, wLoc.getmodereason( data->props ) );
   wLoc.setresumeauto( node, wLoc.isresumeauto(data->props) );
   wLoc.setmanual( node, data->gomanual );
   if( blockId != NULL )
@@ -2658,15 +2659,17 @@ static const char* _getTour( iOLoc inst ) {
 }
 
 
-static void _setMode( iOLoc inst, const char* mode ) {
+static void _setMode( iOLoc inst, const char* mode, const char* reason ) {
   iOLocData data = Data(inst);
 
   /* Only take over the new mode if it is different; Broadcast to clients. */
   if( !StrOp.equals( wLoc.getmode(data->props), mode ) ) {
     iONode node = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE );
 
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "Loco [%s] mode=%s prevmode=%s", LocOp.getId(inst), mode, wLoc.getmode(data->props) );
+    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
+        "Loco [%s] mode=%s prevmode=%s reason=%s", LocOp.getId(inst), mode, wLoc.getmode(data->props), reason );
     wLoc.setmode(data->props, mode);
+    wLoc.setmodereason(data->props, reason);
 
     __broadcastLocoProps( inst, NULL, NULL, NULL );
   }

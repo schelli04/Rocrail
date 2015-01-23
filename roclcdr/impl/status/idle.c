@@ -66,7 +66,7 @@ void statusIdle( iILcDriverInt inst, Boolean reverse ) {
   {
 
     data->state = LC_FINDDEST;
-    data->loc->setMode(data->loc, wLoc.mode_auto);
+    data->loc->setMode(data->loc, wLoc.mode_auto, "");
     data->forceDeparture = False; /* reset departure override */
 
     /* Check if we are on a tour: */
@@ -147,14 +147,14 @@ void statusIdle( iILcDriverInt inst, Boolean reverse ) {
     if( !data->curBlock->isDepartureAllowed(data->curBlock, data->loc->getId(data->loc), data->forceDeparture) ) {
       data->state = LC_WAITBLOCK;
       data->prevState = LC_FINDDEST; /* to force a minimal wait of 10 cycles depending of the priority */
-      data->loc->setMode(data->loc, wLoc.mode_wait);
+      data->loc->setMode(data->loc, wLoc.mode_wait, "");
     }
     if( data->reqstop ) {
       TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,"stop requested");
       data->reqstop = False;
       data->run = False;
       data->warningnodestfound = False;
-      data->loc->setMode(data->loc, wLoc.mode_idle);
+      data->loc->setMode(data->loc, wLoc.mode_idle, "");
     }
 
   }
@@ -162,6 +162,6 @@ void statusIdle( iILcDriverInt inst, Boolean reverse ) {
     /* DEBUG */
     data->state = LC_WAITBLOCK;
     data->prevState = LC_FINDDEST; /* to force a minimal wait of 10 cycles depending of the priority */
-    data->loc->setMode(data->loc, wLoc.mode_wait);
+    data->loc->setMode(data->loc, wLoc.mode_wait, "");
   }
 }

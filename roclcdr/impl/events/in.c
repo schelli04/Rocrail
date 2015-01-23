@@ -146,7 +146,7 @@ void eventIn( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolean c
     TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                    "Setting state for \"%s\" to LC_INBLOCK.",
                    data->loc->getId( data->loc ) );
-    data->loc->setMode(data->loc, wLoc.mode_auto);
+    data->loc->setMode(data->loc, wLoc.mode_auto, "");
 
     /* Check wheel counters */
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 4201, "wheel count %s[%d], %s[%d] ",
@@ -228,7 +228,7 @@ void eventIn( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolean c
     TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4101,
                    "Setting state for \"%s\" to LC_IDLE and stop running auto mode.",
                    data->loc->getId( data->loc ) );
-    data->loc->setMode(data->loc, wLoc.mode_idle);
+    data->loc->setMode(data->loc, wLoc.mode_idle, wLoc.modereason_unexpectedin);
     iONode cmd = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE );
     wLoc.setV( cmd, 0 );
     wLoc.setdir( cmd, wLoc.isdir( data->loc->base.properties( data->loc ) ) );

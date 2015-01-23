@@ -77,7 +77,7 @@ void eventEnter( iOLcDriver inst, const char* blockId, iIBlockBase block, Boolea
         (dstBlockEvent && dontcare) )
     {
       data->state = LC_ENTERBLOCK;
-      data->loc->setMode(data->loc, wLoc.mode_auto);
+      data->loc->setMode(data->loc, wLoc.mode_auto, "");
       TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201,
                      "Setting state for \"%s\" to LC_ENTERBLOCK.",
                      data->loc->getId( data->loc ) );

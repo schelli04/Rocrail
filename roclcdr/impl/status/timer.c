@@ -67,7 +67,7 @@ void statusTimer( iILcDriverInt inst, Boolean reverse ) {
     }
 
     data->state = LC_IDLE;
-    data->loc->setMode(data->loc, wLoc.mode_idle);
+    data->loc->setMode(data->loc, wLoc.mode_idle, "");
     TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999,
                    "Setting state for \"%s\" from LC_TIMER to LC_IDLE.",
                    data->loc->getId( data->loc ) );

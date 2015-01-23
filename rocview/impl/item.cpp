@@ -3419,15 +3419,17 @@ void Symbol::Blockstate(iONode bk, iONode lc) {
   if( StrOp.equals(wSignal.name(), NodeOp.getName(m_Props) ) ) {
     if( lc != NULL ) {
       const char* mode = wLoc.getmode(lc);
-      TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s]", mode );
+      const char* modereason = wLoc.getmodereason(lc);
+      Boolean nodest = StrOp.equals( wLoc.modereason_nodest, modereason);
+      TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s][%s]", mode, modereason );
       if( StrOp.equals( wLoc.mode_auto, mode) )
         m_Renderer->setLabel( wLoc.getmode(lc), 1 );
       else if( StrOp.equals( wLoc.mode_idle, mode) )
         m_Renderer->setLabel( wLoc.getmode(lc), 0 );
       else if( StrOp.equals( wLoc.mode_wait, mode) )
-        m_Renderer->setLabel( wLoc.getmode(lc), 2 );
+        m_Renderer->setLabel( wLoc.getmode(lc), nodest ? 4:1 );
       else if( StrOp.equals( wLoc.mode_halfauto, mode) )
-        m_Renderer->setLabel( wLoc.getmode(lc), 4 );
+        m_Renderer->setLabel( wLoc.getmode(lc), 3 );
     }
     else {
       TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s]", "-");

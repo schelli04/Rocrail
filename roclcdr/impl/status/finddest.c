@@ -130,14 +130,14 @@ void statusFindDest( iILcDriverInt inst ) {
     data->loc->informBlock( data->loc, data->next1Block->base.id(data->next1Block), data->curBlock->base.id(data->curBlock) );
 
     data->state = LC_INITDEST;
-    data->loc->setMode(data->loc, wLoc.mode_auto);
+    data->loc->setMode(data->loc, wLoc.mode_auto, wLoc.modereason_initdest);
     TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 4201, "Setting state for \"%s\" from LC_FINDDEST to LC_INITDEST.", data->loc->getId( data->loc ) );
 
   }
   else {
     data->state = LC_WAITBLOCK;
     data->prevState = LC_FINDDEST;
-    data->loc->setMode(data->loc, wLoc.mode_wait);
+    data->loc->setMode(data->loc, wLoc.mode_wait, wLoc.modereason_nodest);
     if( !data->warningnodestfound ) {
       data->warningnodestfound = True;
       TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 4101, "No destination found for [%s]; waiting...", data->loc->getId( data->loc ) );

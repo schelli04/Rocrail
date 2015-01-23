@@ -54,7 +54,7 @@ void statusWait( iILcDriverInt inst, Boolean reverse ) {
     data->loc->cmd( data->loc, cmd );
 
     data->state = LC_IDLE;
-    data->loc->setMode(data->loc, wLoc.mode_idle);
+    data->loc->setMode(data->loc, wLoc.mode_idle, "");
     return;
   }
 
@@ -67,7 +67,7 @@ void statusWait( iILcDriverInt inst, Boolean reverse ) {
   {
 
     data->state = LC_TIMER;
-    data->loc->setMode(data->loc, wLoc.mode_wait);
+    data->loc->setMode(data->loc, wLoc.mode_wait, "");
     Boolean oppwait = True;
     int    ioppwait = 0;
     Boolean wait    = data->curBlock->wait(data->curBlock, data->loc, reverse, &oppwait );

@@ -693,6 +693,7 @@
     <fun name="setMode" vt="void">
       <param name="inst" vt="this" remark="Loc instance"/>
       <param name="mode" vt="const char*" remark="Automatic mode phase."/>
+      <param name="reason" vt="const char*" remark="Automatic mode reason."/>
     </fun>
     <fun name="matchIdent" vt="Boolean">
       <param name="inst" vt="this" remark="Loco instance"/>

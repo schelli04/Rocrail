@@ -2822,6 +2822,16 @@
         <const name="mode_auto" vt="string" val="auto"/>
         <var name="mode" vt="string" defval="" range="*" remark="Loc mode."/>
 
+        <const name="modereason_nodest" vt="string" val="nodest"/>
+        <const name="modereason_initdest" vt="string" val="initdest"/>
+        <const name="modereason_destfound" vt="string" val="destfound"/>
+        <const name="modereason_unexpectedexit" vt="string" val="unexpectedexit"/>
+        <const name="modereason_unexpectedin" vt="string" val="unexpectedin"/>
+        <const name="modereason_unexpectedenter" vt="string" val="unexpectedenter"/>
+        <const name="modereason_waitforevent" vt="string" val="waitforevent"/>
+        <const name="modereason_checkroute" vt="string" val="checkroute"/>
+        <var name="modereason" vt="string" defval="" range="*" remark="Loco mode reason."/>
+        
         <var name="decfile" vt="string" defval="nmra-rp922.xml" range="*" remark="Decoder definition file."/>
         <cvbyte cardinality="n"/>
 
