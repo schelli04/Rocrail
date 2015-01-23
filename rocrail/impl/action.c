@@ -1424,6 +1424,16 @@ static void __executeAction( struct OAction* inst, iONode actionctrl ) {
           wLoc.setcmd( cmd, wLoc.blockside );
           LocOp.cmd(lc, cmd);
         }
+        else if( StrOp.equals(wLoc.setmanualmode, wAction.getcmd(data->action) ) ) {
+          iONode cmd = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE);
+          wLoc.setcmd( cmd, wLoc.setmanualmode );
+          LocOp.cmd(lc, cmd);
+        }
+        else if( StrOp.equals(wLoc.resetmanualmode, wAction.getcmd(data->action) ) ) {
+          iONode cmd = NodeOp.inst( wLoc.name(), NULL, ELEMENT_NODE);
+          wLoc.setcmd( cmd, wLoc.resetmanualmode );
+          LocOp.cmd(lc, cmd);
+        }
       }
     }
   }

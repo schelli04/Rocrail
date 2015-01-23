@@ -339,6 +339,7 @@ public:
     wxSpinCtrl* m_DepartDelay;
     wxStaticText* m_labFifoSize;
     wxSpinCtrl* m_FifoSize;
+    wxStaticText* m_labFifoSizeAutomobiles;
     wxStaticText* m_labRandomRate;
     wxSpinCtrl* m_RandomRate;
     wxStaticText* m_LabelLocID;

@@ -3993,6 +3993,10 @@ static iOLoc _inst( iONode props ) {
   data->fn0 = wLoc.isfn(data->props);
   wLoc.setthrottleid( data->props, "" );
 
+  data->manual   = wLoc.ismanual(data->props);
+  data->gomanual = wLoc.ismanual(data->props);
+
+
   __initCVmap( loc );
   __initBBTmap( loc );
 
