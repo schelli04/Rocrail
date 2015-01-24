@@ -5295,7 +5295,7 @@ void RocGuiFrame::UpdateLocImage( wxCommandEvent& event ){
             //m_LocImage->SetBitmapLabel( wxBitmap(wxString(pixpath,wxConvUTF8), bmptype) );
             wxImage img(wxString(pixpath,wxConvUTF8), bmptype);
 
-            if( img.GetHeight() > MAXLOCOIMAGE_HEIGHT ) {
+            if( img.IsOk() && img.GetHeight() > MAXLOCOIMAGE_HEIGHT ) {
               int h = img.GetHeight();
               int w = img.GetWidth();
               float scale = (float)h / (float)MAXLOCOIMAGE_HEIGHT;
@@ -5303,7 +5303,7 @@ void RocGuiFrame::UpdateLocImage( wxCommandEvent& event ){
               wxBitmap bmp(img.Scale((int)width, MAXLOCOIMAGE_HEIGHT, wxIMAGE_QUALITY_HIGH));
               m_LocImage->SetBitmapLabel( bmp );
             }
-            else {
+            else if(img.IsOk()) {
               m_LocImage->SetBitmapLabel( wxBitmap(img) );
             }
           }

@@ -389,7 +389,7 @@ void ThrottleDlg::updateImage() {
     if( isSupported && FileOp.exist(pixpath)) {
       TraceOp.trc( "throttledlg", TRCLEVEL_INFO, __LINE__, 9999, "picture [%s]", pixpath );
       wxImage img(wxString(pixpath,wxConvUTF8), bmptype);
-      if( img.GetHeight() > MAXHEIGHT ) {
+      if( img.IsOk() && img.GetHeight() > MAXHEIGHT ) {
         int h = img.GetHeight();
         int w = img.GetWidth();
         float scale = (float)h / (float)MAXHEIGHT;
@@ -397,7 +397,7 @@ void ThrottleDlg::updateImage() {
         wxBitmap bmp(img.Scale((int)width, MAXHEIGHT, wxIMAGE_QUALITY_HIGH));
         m_LocoImage->SetBitmapLabel( bmp );
       }
-      else {
+      else if(img.IsOk()) {
         m_LocoImage->SetBitmapLabel( wxBitmap(img) );
       }
     }

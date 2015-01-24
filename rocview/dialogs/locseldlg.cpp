@@ -182,7 +182,7 @@ void LocSelDlg::InitValues() {
     if( isSupported && imagename != NULL && StrOp.len(imagename) > 0 && FileOp.exist(pixpath)) {
       TraceOp.trc( "locseldlg", TRCLEVEL_INFO, __LINE__, 9999, "picture [%s]", pixpath );
       wxImage img(wxString(pixpath,wxConvUTF8), bmptype);
-      if( img.GetHeight() > MAXHEIGHT ) {
+      if( img.IsOk() && img.GetHeight() > MAXHEIGHT ) {
         int h = img.GetHeight();
         int w = img.GetWidth();
         float scale = (float)h / (float)MAXHEIGHT;
@@ -190,7 +190,7 @@ void LocSelDlg::InitValues() {
         wxBitmap bmp(img.Scale((int)width, MAXHEIGHT, wxIMAGE_QUALITY_HIGH));
         m_LocImageIndex->SetBitmapLabel( bmp );
       }
-      else {
+      else if(img.IsOk()) {
         m_LocImageIndex->SetBitmapLabel( wxBitmap(img) );
       }
     }
