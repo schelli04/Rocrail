@@ -2345,9 +2345,9 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
     }
 
     if( m_bLocoManual ) {
-      red   = 200;
+      red   = 0;
       green = 0;
-      blue  = 0;
+      blue  = 200;
     }
 
     wxFont* font = setFont(m_iTextps, red, green, blue, m_bLocoManual);
