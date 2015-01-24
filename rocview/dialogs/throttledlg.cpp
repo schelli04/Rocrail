@@ -583,7 +583,10 @@ void ThrottleDlg::onButton(wxCommandEvent& event) {
           m_bFn = m_F[i]->ON;
           speedCmd(true);
         }
-        funCmd(i+m_iFnGroup*14, m_F[i]->ON);
+        if( i == 0 )
+          funCmd(i, m_F[i]->ON);
+        else
+          funCmd(i+m_iFnGroup*14, m_F[i]->ON);
         break;
       }
     }
