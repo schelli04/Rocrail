@@ -8063,7 +8063,8 @@ static Boolean _checkPlanHealth(iOAnalyse inst) {
 
       if( StrOp.equals( wSignal.name(), NodeOp.getName(item) ) ) {
         if( wSignal.getaddr(item) == 0 && wSignal.getport1(item) == 0 ) {
-          TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "WARNING: signal %s has no primary address set", wItem.getid(item) );
+          if( !StrOp.equals(wSignal.blockstate, wSignal.getsignal(item)) )
+            TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "WARNING: signal %s has no primary address set", wItem.getid(item) );
         }
         else {
           int patterns = wSignal.getusepatterns(item);
