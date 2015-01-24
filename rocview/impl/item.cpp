@@ -122,7 +122,6 @@ enum {
     ME_East,
     ME_South,
     ME_West,
-    ME_Type,
     ME_Delete,
     ME_Copy,
     ME_CmdStraight,
@@ -207,7 +206,6 @@ BEGIN_EVENT_TABLE(Symbol, wxWindow)
   EVT_MENU     (ME_East , Symbol::OnRotate )
   EVT_MENU     (ME_South , Symbol::OnRotate )
   EVT_MENU     (ME_West , Symbol::OnRotate )
-  EVT_MENU     (ME_Type   , Symbol::OnType   )
   EVT_MENU     (ME_Delete , Symbol::OnDelete )
   EVT_MENU     (ME_Copy , Symbol::OnCopy )
   EVT_MENU     (ME_LocGoTo, Symbol::OnLocGoTo)
@@ -1991,10 +1989,6 @@ void Symbol::OnPopup(wxMouseEvent& event)
         menu.Append( ME_PanelSelect, wxGetApp().getMenu("select") );
       }
 
-      if( StrOp.equals( wTrack.name(), NodeOp.getName( m_Props ) ) ) {
-        menu.AppendSeparator();
-        menu.Append( ME_Type  , wxGetApp().getMenu("type") );
-      }
     }
     //SetFocus();
     PopupMenu(&menu );
