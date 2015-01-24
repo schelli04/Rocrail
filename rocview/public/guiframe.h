@@ -478,6 +478,7 @@ private:
 public:
   iOList m_ThrottleList;
   iOMap m_LocDlgMap;
+  iOMap m_RequestedData;
 private:
   JsSupport* m_JsSupport;
   bool m_bCheckedDonKey;

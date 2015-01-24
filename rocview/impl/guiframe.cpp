@@ -1891,6 +1891,7 @@ RocGuiFrame::RocGuiFrame(const wxString& title, const wxPoint& pos, const wxSize
   m_ModPanel           = NULL;
   m_LocDlgMap          = MapOp.inst();
   m_ThrottleList       = ListOp.inst();
+  m_RequestedData      = MapOp.inst();
   m_bAutoMode          = false;
   m_ThemePath          = theme;
   m_ServerPath         = sp;
@@ -5315,13 +5316,16 @@ void RocGuiFrame::UpdateLocImage( wxCommandEvent& event ){
           else
             m_LocImage->SetBitmapLabel( wxBitmap(nopict_xpm) );
           if( isSupported ) {
-            // request the image from server:
-            iONode node = NodeOp.inst( wDataReq.name(), NULL, ELEMENT_NODE );
-            wDataReq.setid( node, wLoc.getid(lc) );
-            wDataReq.setcmd( node, wDataReq.get );
-            wDataReq.settype( node, wDataReq.image );
-            wDataReq.setfilename( node, wLoc.getimage(lc) );
-            wxGetApp().sendToRocrail( node );
+            if( !MapOp.haskey(m_RequestedData, wLoc.getimage(lc) ) ) {
+              MapOp.put( m_RequestedData, wLoc.getimage(lc), (obj)lc);
+              // request the image from server:
+              iONode node = NodeOp.inst( wDataReq.name(), NULL, ELEMENT_NODE );
+              wDataReq.setid( node, wLoc.getid(lc) );
+              wDataReq.setcmd( node, wDataReq.get );
+              wDataReq.settype( node, wDataReq.image );
+              wDataReq.setfilename( node, wLoc.getimage(lc) );
+              wxGetApp().sendToRocrail( node );
+            }
           }
         }
       }
