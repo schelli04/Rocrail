@@ -1050,6 +1050,10 @@ static iONode __translate( iOBiDiB inst, iONode node ) {
     StrOp.fmtb( uidKey, "0x%08X", wSwitch.getbus(node) );
     bidibnode = (iOBiDiBNode)MapOp.get( data->nodemap, uidKey );
 
+    if( bidibnode == NULL && StrOp.len( wItem.getuidname(node) ) > 0 ) {
+      bidibnode = __findNodeByName(inst, wItem.getuidname(node));
+    }
+
     if( wFeedback.isactivelow(node) )
       wFeedback.setstate( node, !state);
 
