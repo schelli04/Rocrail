@@ -1121,8 +1121,28 @@ bool BlockDialog::evaluate() {
     }
 
     /*
+      <fbevent id="RM_B5" action="enter2in" from="all-reverse" byroute="all-reverse" endpuls="false" use_timer2="false"/>
+      <fbevent id="RM_B5" action="enter2in" from="all" byroute="all" endpuls="false" use_timer2="false"/>
+      <fbevent id="RM_B5" action="enter2in" from="B4" byroute="autogen-[B4+]-[B5-]" endpuls="false" use_timer2="false"/>
+      <fbevent id="RM_B5" action="enter2in" from="B4" byroute="autogen-[B4-]-[B5+]" endpuls="false" use_timer2="false"/>
+     */
+    const char* byroute = wFeedbackEvent.getbyroute(fb);
+    if( byroute != NULL && StrOp.len(byroute) > 0 && !StrOp.equals("all", byroute) && !StrOp.equals("all-reverse", byroute)) {
+      hasRoute = false;
+      int cnt = m_Routes->GetCount();
+      for( int i = 0; i < cnt; i++ ) {
+        iONode st = (iONode)m_Routes->GetClientData(i);
+        if( st == NULL )
+          continue;
+        if( StrOp.equals(wRoute.getid(st), wFeedbackEvent.getbyroute(fb) ) ) {
+          hasRoute = true;
+          break;
+        }
+      }
+    }
+
     if( !hasRoute ) {
-      char* msg = StrOp.fmt( wxGetApp().getMsg("unusedfbevent").mb_str(wxConvUTF8), wFeedbackEvent.getfrom( fb ) );
+      char* msg = StrOp.fmt( wxGetApp().getMsg("unusedfbevent").mb_str(wxConvUTF8), wFeedbackEvent.getbyroute( fb ) );
 
       int rc = wxMessageDialog( this, wxString(msg,wxConvUTF8),
           wxGetApp().getMsg("blocktable"), wxYES_NO | wxICON_QUESTION ).ShowModal();
@@ -1132,7 +1152,7 @@ bool BlockDialog::evaluate() {
         ListOp.add( delList, (obj)fb );
       }
     }
-    */
+
 
     fb = wBlock.nextfbevent( m_Props, fb );
   };
