@@ -95,7 +95,7 @@ static void* __event( void* inst, const void* evt ) {
 /** ----- ODMXArtNet ----- */
 
 #define ARTDMX_MSGSIZE 531
-#define ARTPOL_MSGSIZE 7
+#define ARTPOL_MSGSIZE 8+7
 #define ARTPOL_IP "255.255.255.255"
 #define ARTPOL_PORT 6454
 
