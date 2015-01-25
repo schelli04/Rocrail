@@ -1886,6 +1886,7 @@ void SymbolRenderer::drawSignal( wxPaintDC& dc, bool occupied, bool actroute, co
     int red    = 0;
     int green  = 0;
     int blue   = 0;
+    bool underline = false;
 
     if( m_iOccupied == 1 ) {
       setPen( wxPen(Base::getGreen()));
@@ -1903,6 +1904,11 @@ void SymbolRenderer::drawSignal( wxPaintDC& dc, bool occupied, bool actroute, co
       setPen( wxPen(Base::getYellow()));
       setBrush( wxBrush(Base::getYellow()));
     }
+    else if( m_iOccupied == 5 ) {
+      setPen( wxPen(Base::getGreen()));
+      setBrush( wxBrush(Base::getGreen()));
+      underline = true;
+    }
     else {
       setPen( wxPen(Base::getGrey()));
       setBrush( wxBrush(Base::getGrey()));
@@ -1915,7 +1921,7 @@ void SymbolRenderer::drawSignal( wxPaintDC& dc, bool occupied, bool actroute, co
       dc.DrawRectangle(6,6,19,19);
     }
 
-    wxFont* font = setFont(m_iTextps, red, green, blue, true);
+    wxFont* font = setFont(m_iTextps, red, green, blue, true, false, underline);
     /* center the text */
     double width = 0;
     double height = 0;

@@ -53,6 +53,8 @@
 wxColor Base::getWhite (){ return wxColor( 255, 255, 255 ); }
 wxColor Base::getBlack (){ return wxColor(   0,   0,   0 ); }
 wxColor Base::getRed   (){ return wxColor( 255, 200, 200 ); }
+wxColor Base::getOrange(){ return wxColor( 255, 127, 0 ); }
+wxColor Base::getTurquoise(){ return wxColor( 127, 224, 208 ); }
 wxColor Base::getYellow(){ return wxColor( 255, 255,   0 ); }
 wxColor Base::getYellow2(){ return wxColor( 255, 255, 100 ); }
 wxColor Base::getGreen (){ return wxColor( 200, 255, 200 ); }

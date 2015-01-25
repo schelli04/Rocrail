@@ -33,6 +33,8 @@ public:
   static wxColor getWhite ();
   static wxColor getBlack ();
   static wxColor getRed   ();
+  static wxColor getOrange();
+  static wxColor getTurquoise();
   static wxColor getYellow();
   static wxColor getYellow2();
   static wxColor getGreen ();
