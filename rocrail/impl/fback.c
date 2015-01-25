@@ -57,6 +57,7 @@
 #include "rocrail/wrapper/public/Output.h"
 #include "rocrail/wrapper/public/Ctrl.h"
 #include "rocrail/wrapper/public/RocRail.h"
+#include "rocrail/wrapper/public/Item.h"
 
 
 static int instCnt = 0;
@@ -367,6 +368,7 @@ static Boolean _cmd( iOFBack inst, iONode cmd, Boolean update ) {
       data->wheelcount++;
 
     wFeedback.setiid( cmd, wFeedback.getiid( data->props ) );
+    wItem.setuidname( cmd, wItem.getuidname( data->props ) );
     wFeedback.setbus( cmd, wFeedback.getbus( data->props ) );
     wFeedback.setfbtype( cmd, wFeedback.getfbtype( data->props ) );
     wFeedback.setaddr( cmd, wFeedback.getaddr( data->props ) );
