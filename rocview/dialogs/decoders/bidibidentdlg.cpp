@@ -677,6 +677,12 @@ void BidibIdentDlg::initLabels() {
     }
   }
 
+  // Buttons
+  m_stdButtonsOK->SetLabel( wxGetApp().getMsg( "ok" ) );
+  m_stdButtonsCancel->SetLabel( wxGetApp().getMsg( "cancel" ) );
+  m_stdButtonsHelp->SetLabel( wxGetApp().getMsg( "help" ) );
+
+
   // Resize
   m_IndexPanel->GetSizer()->Layout();
   m_FeaturesPanel->GetSizer()->Layout();

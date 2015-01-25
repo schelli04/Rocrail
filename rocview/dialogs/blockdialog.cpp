@@ -356,6 +356,7 @@ void BlockDialog::initLabels() {
   m_SleepOnClosed->SetLabel( wxGetApp().getMsg( "sleeponclosed" ) );
   m_FreeBlockOnEnter->SetLabel( wxGetApp().getMsg( "freeblockonenter" ) );
   m_labRandomRate->SetLabel( wxGetApp().getMsg( "randomrate" ) );
+  m_BlockActions->SetLabel( wxGetApp().getMsg( "actions" ) + _T("...") );
 
   initTurntableCombo();
 
