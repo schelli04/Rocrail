@@ -1909,6 +1909,11 @@ void SymbolRenderer::drawSignal( wxPaintDC& dc, bool occupied, bool actroute, co
       setBrush( wxBrush(Base::getGreen()));
       underline = true;
     }
+    else if( m_iOccupied == 6 ) {
+      setPen( wxPen(Base::getYellow()));
+      setBrush( wxBrush(Base::getYellow()));
+      underline = true;
+    }
     else {
       setPen( wxPen(Base::getGrey()));
       setBrush( wxBrush(Base::getGrey()));

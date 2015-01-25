@@ -1201,10 +1201,10 @@ static Boolean _hasPermission( iORoute inst, iOLoc loc, const char* prevBlockID,
     return False;
   }
   else {
-    TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "*****No conditions");
+    TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "*****No conditions");
   }
 
-  TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "*****OK");
+  TraceOp.trc( name, TRCLEVEL_DEBUG, __LINE__, 9999, "*****OK");
   return True;
 
 }

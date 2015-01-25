@@ -3415,7 +3415,10 @@ void Symbol::Blockstate(iONode bk, iONode lc) {
       const char* mode = wLoc.getmode(lc);
       const char* modereason = wLoc.getmodereason(lc);
       int scidx = wLoc.getscidx(lc);
-      Boolean schedule = (scidx == -1)?False:True;
+      Boolean schedule = False;
+      if( wLoc.getscheduleid(lc) != NULL && StrOp.len(wLoc.getscheduleid(lc)) > 0 ) {
+        schedule = (scidx == -1)?False:True;
+      }
       Boolean manual = wLoc.ismanual(lc);
       Boolean nodest = StrOp.equals( wLoc.modereason_nodest, modereason);
       TraceOp.trc( "item", TRCLEVEL_INFO, __LINE__, 9999, "blockstate: [%s][%s]", mode, modereason );
@@ -3424,7 +3427,7 @@ void Symbol::Blockstate(iONode bk, iONode lc) {
       else if( StrOp.equals( wLoc.mode_idle, mode) )
         m_Renderer->setLabel( "O", 0 );
       else if( StrOp.equals( wLoc.mode_wait, mode) )
-        m_Renderer->setLabel( "W", nodest ? 4:(manual?3:(schedule?5:1)) );
+        m_Renderer->setLabel( "W", nodest ? (schedule?6:4):(manual?3:(schedule?5:1)) );
       else if( StrOp.equals( wLoc.mode_halfauto, mode) )
         m_Renderer->setLabel( "H", 3 );
     }
