@@ -2270,25 +2270,23 @@ void SymbolRenderer::drawBlock( wxPaintDC& dc, bool occupied, const char* ori ) 
       imageWidth = imageBitmap->GetWidth();
 
       int x = (symbolLength - imageBitmap->GetWidth()) / 2;
-      if( symbolLength - imageBitmap->GetWidth() >= 20 ) {
-        if( (m_rotate && StrOp.equals(ori, wItem.west)) || (!m_rotate && StrOp.equals(ori, wItem.east)) ) {
-          x = symbolLength - imageBitmap->GetWidth() - 10;
-          if( m_rotate && StrOp.equals(ori, wItem.west) ) {
-            wxImage img = imageBitmap->ConvertToImage();
-            delete imageBitmap;
-            img = img.Mirror(true);
-            imageBitmap = new wxBitmap(img);
-          }
+      if( (m_rotate && StrOp.equals(ori, wItem.west)) || (!m_rotate && StrOp.equals(ori, wItem.east)) ) {
+        x = symbolLength - imageBitmap->GetWidth() - 10;
+        if( m_rotate && StrOp.equals(ori, wItem.west) ) {
+          wxImage img = imageBitmap->ConvertToImage();
+          delete imageBitmap;
+          img = img.Mirror(true);
+          imageBitmap = new wxBitmap(img);
         }
-        else {
-          x = 10;
-          labelOffset = imageBitmap->GetWidth();
-          if( !m_rotate && StrOp.equals(ori, wItem.west) ) {
-            wxImage img = imageBitmap->ConvertToImage();
-            delete imageBitmap;
-            img = img.Mirror(true);
-            imageBitmap = new wxBitmap(img);
-          }
+      }
+      else {
+        x = 10;
+        labelOffset = imageBitmap->GetWidth();
+        if( !m_rotate && StrOp.equals(ori, wItem.west) ) {
+          wxImage img = imageBitmap->ConvertToImage();
+          delete imageBitmap;
+          img = img.Mirror(true);
+          imageBitmap = new wxBitmap(img);
         }
       }
 
