@@ -74,7 +74,7 @@ SymbolRenderer::SymbolRenderer( iONode props, wxWindow* parent, iOMap symmap, in
   TraceOp.trc( "render", TRCLEVEL_DEBUG, __LINE__, 9999, "symbol map size = %d", symmap == NULL ? 0:MapOp.size(symmap) );
   if( m_Props != NULL )
     initSym();
-  m_Label = StrOp.dup("...");
+  m_Label = StrOp.dup("-");
   m_iItemIDps = itemidps;
   m_iTextps = textps;
   m_DC = NULL;
