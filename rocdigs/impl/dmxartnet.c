@@ -232,7 +232,9 @@ static void __ArtDmx(iODMXArtNet inst) {
 
 }
 
-static void __setChannel(iODMXArtNet inst, int addr, int red, int green, int blue, int brightness, Boolean active, int redChannel, int greenChannel, int blueChannel, int briChannel) {
+static void __setChannel(iODMXArtNet inst, int addr, int red, int green, int blue, int brightness,
+    Boolean active, int redChannel, int greenChannel, int blueChannel, int briChannel, int whiteChannel)
+{
   iODMXArtNetData data = Data(inst);
   if( MutexOp.wait( data->mux ) ) {
     TraceOp.trc( name, TRCLEVEL_BYTE, __LINE__, 9999,
@@ -244,6 +246,12 @@ static void __setChannel(iODMXArtNet inst, int addr, int red, int green, int blu
       green = (green * brightness) / 255;
       blue  = (blue  * brightness) / 255;
     }
+
+    if( whiteChannel > 0 && red == green && red == blue )
+      data->dmxchannel[addr+whiteChannel-1] = brightness;
+    else if( whiteChannel > 0 )
+      data->dmxchannel[addr+whiteChannel-1] = 0;
+
     if( redChannel > 0 )
       data->dmxchannel[addr+redChannel-1] = red;
     if( greenChannel > 0 )
@@ -281,6 +289,7 @@ static iONode __translate( iODMXArtNet inst, iONode node ) {
     int greenChannel = wOutput.getgreenChannel(node);
     int blueChannel  = wOutput.getblueChannel(node);
     int briChannel   = wOutput.getbrightnessChannel(node);
+    int whiteChannel = wOutput.getwhiteChannel(node);
     int r = 0;
     int g = 0;
     int b = 0;
@@ -296,7 +305,7 @@ static iONode __translate( iODMXArtNet inst, iONode node ) {
     TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output device=%d active=%d cmd=%s bri=%d briChannel(%d) RGB=%d,%d,%d RGBChannels(%d,%d,%d)",
         addr, active, wOutput.getcmd( node ), val, briChannel, r, g, b, redChannel, greenChannel, blueChannel );
 
-    __setChannel(inst, addr, r, g, b, val, active, redChannel, greenChannel, blueChannel, briChannel);
+    __setChannel(inst, addr, r, g, b, val, active, redChannel, greenChannel, blueChannel, briChannel, whiteChannel);
     data->refresh = True;
   }
 
