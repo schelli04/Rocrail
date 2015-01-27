@@ -180,6 +180,7 @@
         <var name="leftangle" vt="int" defval="0"/>
         <var name="rightangle" vt="int" defval="0"/>
         <var name="speed" vt="int" defval="0"/>
+        <var name="bounce" vt="int" defval="0"/>
         <var name="relay" vt="bool" defval="false"/>
       </mgvservo>
     </mgv>

@@ -70,6 +70,9 @@ public:
   void setServoLeftAngle();
   void setServoRightAngle();
   void setServoSpeed();
+  void setServoBounce();
+  void OnServoBounce( wxScrollEvent& event );
+  void onSetBounce( wxCommandEvent& event );
 
 };
 

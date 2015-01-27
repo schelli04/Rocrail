@@ -159,6 +159,7 @@ void MGVDlg::initLabels() {
   m_labServoLeft->SetLabel( wxGetApp().getMsg( "left" ) );
   m_labServoRight->SetLabel( wxGetApp().getMsg( "right" ) );
   m_labServoSpeed->SetLabel( wxGetApp().getMsg( "speed" ) );
+  m_labServoBounce->SetLabel( wxGetApp().getMsg( "bounce" ) );
   m_ServoRelay->SetLabel( wxGetApp().getMsg( "polarizationrelais" ) );
 
   // Buttons
@@ -170,12 +171,14 @@ void MGVDlg::initValues() {
     m_ServoLeftAng->SetValue(wMGVServo.getleftangle(m_MGVServo));
     m_ServoRightAng->SetValue(wMGVServo.getrightangle(m_MGVServo));
     m_ServoSpeed->SetValue(wMGVServo.getspeed(m_MGVServo));
+    m_ServoBounce->SetValue(wMGVServo.getbounce(m_MGVServo));
     m_ServoRelay->SetValue(wMGVServo.isrelay(m_MGVServo)?true:false);
   }
   else {
     m_ServoLeftAng->SetValue(50);
     m_ServoRightAng->SetValue(50);
     m_ServoSpeed->SetValue(1);
+    m_ServoBounce->SetValue(0);
     m_ServoRelay->SetValue(false);
   }
 }
@@ -185,6 +188,7 @@ void MGVDlg::evaluate() {
     wMGVServo.setleftangle(m_MGVServo, m_ServoLeftAng->GetValue());
     wMGVServo.setrightangle(m_MGVServo, m_ServoRightAng->GetValue());
     wMGVServo.setspeed(m_MGVServo, m_ServoSpeed->GetValue());
+    wMGVServo.setbounce(m_MGVServo, m_ServoBounce->GetValue());
     wMGVServo.setrelay(m_MGVServo, m_ServoRelay->IsChecked()?True:False);
   }
 }
@@ -352,12 +356,24 @@ void MGVDlg::OnServoSpeed( wxScrollEvent& event ){
   setServoSpeed();
 }
 
+void MGVDlg::OnServoBounce( wxScrollEvent& event ){
+  setServoBounce();
+}
+
 void MGVDlg::setServoSpeed(){
   int l_iSpeed = m_ServoSpeed->GetValue();
   evaluate();
   SendNibble(0x05); /* Command */
   SendNibble(SPEED_MASKS[l_iSpeed - 1] & 0x07); /* LSB */
   SendNibble((SPEED_MASKS[l_iSpeed - 1] >> 3) & 0x07); /* MSB */
+}
+
+void MGVDlg::setServoBounce(){
+  int l_iBounce = m_ServoBounce->GetValue();
+  evaluate();
+  SendNibble(0x06); /* Command */
+  SendNibble(SPEED_MASKS[l_iBounce - 1] & 0x07); /* LSB */
+  SendNibble((SPEED_MASKS[l_iBounce - 1] >> 3) & 0x07); /* MSB */
 }
 
 void MGVDlg::OnServoRelay( wxCommandEvent& event ){
@@ -403,6 +419,11 @@ void MGVDlg::onSetRightAngle( wxCommandEvent& event ) {
 
 void MGVDlg::onSetSpeed( wxCommandEvent& event ) {
   setServoSpeed();
+}
+
+
+void MGVDlg::onSetBounce( wxCommandEvent& event ) {
+  setServoBounce();
 }
 
 

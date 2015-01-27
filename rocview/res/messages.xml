@@ -29593,4 +29593,7 @@
   <Msg id="statesignal">
     <en txt="State signal"/>
   </Msg>
+  <Msg id="bounce">
+    <en txt="Bounce"/>
+  </Msg>
 </Messages>
