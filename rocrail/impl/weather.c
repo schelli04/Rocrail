@@ -108,23 +108,25 @@ static void* __event( void* inst, const void* evt ) {
 
 /** ----- OWeather ----- */
 
-static void __checkAction( iOWeather inst, const char* msg ) {
+static void __checkAction( iOWeather inst, const char* state ) {
   iOWeatherData data   = Data(inst);
   iOModel       model  = AppOp.getModel();
   iONode        action = wWeather.getactionctrl( data->props );
 
   /* loop over all actions */
   while( action != NULL ) {
-    int counter = atoi(wActionCtrl.getstate( action ));
-
+    if( StrOp.len(wActionCtrl.getstate( action )) == 0 || StrOp.equals(state, wActionCtrl.getstate( action )) )
     {
       iOAction Action = ModelOp.getAction(model, wActionCtrl.getid( action ));
       if( Action != NULL ) {
-        wActionCtrl.setparam(action, msg);
+        wActionCtrl.setparam(action, state);
         ActionOp.exec(Action, action);
       }
     }
-
+    else {
+      TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "%s action state does not match: [%s-%s]",
+          wWeather.getid(data->props), wActionCtrl.getstate( action ), state );
+    }
     action = wWeather.nextactionctrl( data->props, action );
   }
 }
