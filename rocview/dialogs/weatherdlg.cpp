@@ -398,13 +398,35 @@ void WeatherDlg::initValues() {
   m_BlueNight->SetValue( wNight.getblue(night) );
 
   iONode color = wWeather.getweathercolor(m_Props);
-  while(color != NULL) {
-    int hour = wWeatherColor.gethour(color);
-    m_ColorGrid->SetCellValue(hour, 0, wxString::Format(wxT("%d"), wWeatherColor.getred(color)));
-    m_ColorGrid->SetCellValue(hour, 1, wxString::Format(wxT("%d"), wWeatherColor.getgreen(color)));
-    m_ColorGrid->SetCellValue(hour, 2, wxString::Format(wxT("%d"), wWeatherColor.getblue(color)));
-    m_ColorGrid->SetCellValue(hour, 3, wxString::Format(wxT("%d"), wWeatherColor.getwhite(color)));
-    color = wWeather.nextweathercolor(m_Props, color);
+  if( color == NULL ) {
+    for( int hour = 6; hour < 12; hour++ ) {
+      m_ColorGrid->SetCellValue(hour, 0, wxString::Format(wxT("%d"), (int)((255.0/6.0) * ((float)hour/2.0))) );
+      m_ColorGrid->SetCellValue(hour, 1, wxString::Format(wxT("%d"), (int)((255.0/6.0) * ((float)hour/2.0))) );
+      m_ColorGrid->SetCellValue(hour, 2, wxString::Format(wxT("%d"), (int)((255.0/6.0) * ((float)hour/2.0))) );
+      m_ColorGrid->SetCellValue(hour, 3, wxString::Format(wxT("%d"), (int)((255.0/6.0) * ((float)hour/2.0))) );
+    }
+
+    m_ColorGrid->SetCellValue(12, 0, wxString::Format(wxT("%d"), 255) );
+    m_ColorGrid->SetCellValue(12, 1, wxString::Format(wxT("%d"), 255));
+    m_ColorGrid->SetCellValue(12, 2, wxString::Format(wxT("%d"), 255));
+    m_ColorGrid->SetCellValue(12, 3, wxString::Format(wxT("%d"), 255));
+
+    for( int hour = 13; hour < 18; hour++ ) {
+      m_ColorGrid->SetCellValue(hour, 0, wxString::Format(wxT("%d"), (int)(255.0 - ((255.0/6.0)*(hour-12))) ) );
+      m_ColorGrid->SetCellValue(hour, 1, wxString::Format(wxT("%d"), (int)(255.0 - ((255.0/6.0)*(hour-12))) ) );
+      m_ColorGrid->SetCellValue(hour, 2, wxString::Format(wxT("%d"), (int)(255.0 - ((255.0/6.0)*(hour-12))) ) );
+      m_ColorGrid->SetCellValue(hour, 3, wxString::Format(wxT("%d"), (int)(255.0 - ((255.0/6.0)*(hour-12))) ) );
+    }
+  }
+  else {
+    while(color != NULL) {
+      int hour = wWeatherColor.gethour(color);
+      m_ColorGrid->SetCellValue(hour, 0, wxString::Format(wxT("%d"), wWeatherColor.getred(color)));
+      m_ColorGrid->SetCellValue(hour, 1, wxString::Format(wxT("%d"), wWeatherColor.getgreen(color)));
+      m_ColorGrid->SetCellValue(hour, 2, wxString::Format(wxT("%d"), wWeatherColor.getblue(color)));
+      m_ColorGrid->SetCellValue(hour, 3, wxString::Format(wxT("%d"), wWeatherColor.getwhite(color)));
+      color = wWeather.nextweathercolor(m_Props, color);
+    }
   }
 
 }

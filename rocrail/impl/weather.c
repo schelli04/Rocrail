@@ -187,14 +187,26 @@ static Boolean __getColor4Time(iONode color[], int hour, int min, float* r, floa
   }
 
   if( color[fromHour] != NULL && color[toHour] != NULL ) {
-    float dif = wWeatherColor.getred(color[fromHour]) - wWeatherColor.getred(color[toHour]);
-    *r = wWeatherColor.getred(color[fromHour]) + (dif * min) / 60;
-    dif = wWeatherColor.getgreen(color[fromHour]) - wWeatherColor.getgreen(color[toHour]);
-    *g = wWeatherColor.getgreen(color[fromHour]) + (dif * min) / 60;
-    dif = wWeatherColor.getblue(color[fromHour]) - wWeatherColor.getblue(color[toHour]);
-    *b = wWeatherColor.getblue(color[fromHour]) + (dif * min) / 60;
-    dif = wWeatherColor.getwhite(color[fromHour]) - wWeatherColor.getwhite(color[toHour]);
-    *w = wWeatherColor.getwhite(color[fromHour]) + (dif * min) / 60;
+    if( fromHour < 12 ) {
+      float dif = wWeatherColor.getred(color[fromHour]) - wWeatherColor.getred(color[toHour]);
+      *r = wWeatherColor.getred(color[fromHour]) + (dif * min) / 60;
+      dif = wWeatherColor.getgreen(color[fromHour]) - wWeatherColor.getgreen(color[toHour]);
+      *g = wWeatherColor.getgreen(color[fromHour]) + (dif * min) / 60;
+      dif = wWeatherColor.getblue(color[fromHour]) - wWeatherColor.getblue(color[toHour]);
+      *b = wWeatherColor.getblue(color[fromHour]) + (dif * min) / 60;
+      dif = wWeatherColor.getwhite(color[fromHour]) - wWeatherColor.getwhite(color[toHour]);
+      *w = wWeatherColor.getwhite(color[fromHour]) + (dif * min) / 60;
+    }
+    else {
+      float dif = wWeatherColor.getred(color[fromHour]) - wWeatherColor.getred(color[toHour]);
+      *r = wWeatherColor.getred(color[fromHour]) - (dif * min) / 60;
+      dif = wWeatherColor.getgreen(color[fromHour]) - wWeatherColor.getgreen(color[toHour]);
+      *g = wWeatherColor.getgreen(color[fromHour]) - (dif * min) / 60;
+      dif = wWeatherColor.getblue(color[fromHour]) - wWeatherColor.getblue(color[toHour]);
+      *b = wWeatherColor.getblue(color[fromHour]) - (dif * min) / 60;
+      dif = wWeatherColor.getwhite(color[fromHour]) - wWeatherColor.getwhite(color[toHour]);
+      *w = wWeatherColor.getwhite(color[fromHour]) - (dif * min) / 60;
+    }
 
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "color4Time fromHour=%d toHour=%d red=%d green=%d blue=%d white=%d",
         fromHour, toHour, (int)*r, (int)*g, (int)*b, (int)*w);
