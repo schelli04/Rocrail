@@ -1590,6 +1590,7 @@
           <var name="red" vt="int" defval="255" range="0-255"/>
           <var name="green" vt="int" defval="255" range="0-255"/>
           <var name="blue" vt="int" defval="255" range="0-255"/>
+          <var name="white" vt="int" defval="0" range="0-255"/>
         </sunrise>
         <noon cardinality="1" remark="Noon definition" wrappername="Noon">
           <var name="hour" vt="int" defval="12" range="0-23"/>
@@ -1597,6 +1598,7 @@
           <var name="red" vt="int" defval="255" range="0-255"/>
           <var name="green" vt="int" defval="255" range="0-255"/>
           <var name="blue" vt="int" defval="255" range="0-255"/>
+          <var name="white" vt="int" defval="255" range="0-255"/>
         </noon>
         <sunset cardinality="1" remark="Sunset definition" wrappername="Sunset">
           <var name="hour" vt="int" defval="18" range="0-23"/>
@@ -1604,6 +1606,7 @@
           <var name="red" vt="int" defval="255" range="0-255"/>
           <var name="green" vt="int" defval="255" range="0-255"/>
           <var name="blue" vt="int" defval="255" range="0-255"/>
+          <var name="white" vt="int" defval="0" range="0-255"/>
         </sunset>
         <night cardinality="1" remark="Night definition" wrappername="Night">
           <var name="outputs" vt="string" defval="" range="*" remark="Comma separated list of outputs."/>
@@ -1611,7 +1614,16 @@
           <var name="red" vt="int" defval="0" range="0-255"/>
           <var name="green" vt="int" defval="0" range="0-255"/>
           <var name="blue" vt="int" defval="255" range="0-255"/>
+          <var name="white" vt="int" defval="0" range="0-255"/>
         </night>
+        <weathercolor cardinality="n" remark="Hourly color definition" wrappername="WeatherColor">
+          <var name="hour" vt="int" defval="6" range="0-23"/>
+          <var name="minute" vt="int" defval="0" range="0-59"/>
+          <var name="red" vt="int" defval="255" range="0-255"/>
+          <var name="green" vt="int" defval="255" range="0-255"/>
+          <var name="blue" vt="int" defval="255" range="0-255"/>
+          <var name="white" vt="int" defval="0" range="0-255"/>
+        </weathercolor>
         <weathertheme cardinality="n" wrappername="WeatherTheme">
           <var name="id" vt="string" defval="" range="*"/>
           <var name="dim" vt="int" defval="0" unit="%" range="0-100"/>

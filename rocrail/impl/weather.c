@@ -49,6 +49,7 @@
 #include "rocrail/wrapper/public/WeatherTheme.h"
 #include "rocrail/wrapper/public/Ctrl.h"
 #include "rocrail/wrapper/public/ActionCtrl.h"
+#include "rocrail/wrapper/public/WeatherColor.h"
 
 
 static int instCnt = 0;
@@ -177,6 +178,33 @@ static void __doInitialize(iOWeather weather, Boolean day, Boolean night) {
 }
 
 
+static Boolean __getColor4Time(iONode color[], int hour, int min, float* r, float* g, float* b, float* w) {
+  int fromHour = hour;
+  int toHour   = hour + 1;
+
+  if( toHour > 23 ) {
+    toHour -= 24;
+  }
+
+  if( color[fromHour] != NULL && color[toHour] != NULL ) {
+    float dif = wWeatherColor.getred(color[fromHour]) - wWeatherColor.getred(color[toHour]);
+    *r = wWeatherColor.getred(color[fromHour]) + (dif * min) / 60;
+    dif = wWeatherColor.getgreen(color[fromHour]) - wWeatherColor.getgreen(color[toHour]);
+    *g = wWeatherColor.getgreen(color[fromHour]) + (dif * min) / 60;
+    dif = wWeatherColor.getblue(color[fromHour]) - wWeatherColor.getblue(color[toHour]);
+    *b = wWeatherColor.getblue(color[fromHour]) + (dif * min) / 60;
+    dif = wWeatherColor.getwhite(color[fromHour]) - wWeatherColor.getwhite(color[toHour]);
+    *w = wWeatherColor.getwhite(color[fromHour]) + (dif * min) / 60;
+
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "color4Time fromHour=%d toHour=%d red=%d green=%d blue=%d white=%d",
+        fromHour, toHour, (int)*r, (int)*g, (int)*b, (int)*w);
+    return True;
+  }
+
+  return False;
+}
+
+
 static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown, Boolean clearTheme ) {
   iOWeatherData data = Data(weather);
   iOModel model = AppOp.getModel();
@@ -205,6 +233,18 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
     iONode noonProps    = wWeather.getnoon(data->props);
     iONode sunsetProps  = wWeather.getsunset(data->props);
     iONode nightProps   = wWeather.getnight(data->props);
+    iONode colorProps[24] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+                             NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+
+    iONode color = wWeather.getweathercolor(data->props);
+    while(color != NULL) {
+      int hour = wWeatherColor.gethour(color);
+      if( hour < 24 && hour >= 0 ) {
+        colorProps[hour] = color;
+      }
+      color = wWeather.nextweathercolor(data->props, color);
+    }
+
 
     if( sunriseProps == NULL ) {
       sunriseProps = NodeOp.inst(wSunrise.name(), data->props, ELEMENT_NODE );
@@ -257,6 +297,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
     float red          = wNoon.getred(noonProps);
     float green        = wNoon.getgreen(noonProps);
     float blue         = wNoon.getblue(noonProps);
+    float white        = wNoon.getblue(noonProps);
     float noonRed      = wNoon.getred(noonProps);
     float noonGreen    = wNoon.getgreen(noonProps);
     float noonBlue     = wNoon.getblue(noonProps);
@@ -266,12 +307,16 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
 
     Boolean adjustBri = (data->themedim > 0 || clearTheme) ? True:False;
 
+    Boolean color4time = __getColor4Time(colorProps, hour, min, &red, &green, &blue, &white);
+
     if( minutes == sunrise )
       __checkAction(weather, "sunrise");
     if( minutes == noon )
       __checkAction(weather, "noon");
     if( minutes == sunset )
       __checkAction(weather, "sunset");
+
+
 
     /* AM */
     if( minutes <= noon && minutes >= sunrise) {
@@ -281,7 +326,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
       brightness = l_brightness;
       adjustBri = True;
 
-      if( minutes <= sunrise + colorsliding ) {
+      if( !color4time && minutes <= sunrise + colorsliding ) {
         float pMinutes = minutes - sunrise;
         float redDif = (noonRed - sunriseRed) / colorsliding;
         red = sunriseRed + redDif * pMinutes;
@@ -302,7 +347,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
       brightness = l_brightness;
       adjustBri = True;
 
-      if( minutes >= sunset - colorsliding ) {
+      if( !color4time && minutes >= sunset - colorsliding ) {
         float pMinutes = sunset - minutes;
         float redDif = (noonRed - sunsetRed) / colorsliding;
         red = sunsetRed + redDif * pMinutes;
@@ -358,6 +403,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
         wColor.setred(color, red);
         wColor.setgreen(color, green);
         wColor.setblue(color, blue);
+        wColor.setwhite(color, white);
         wOutput.setaddr(cmd, wOutput.getaddr(OutputOp.base.properties(output)));
         TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999,
             "lamp %s brightness=%d(of %.2f), lampAngle=%.2f sunAngle=%.2f dayminutes=%d sunrise=%d sunset=%d",
@@ -410,6 +456,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
           wColor.setred(color, wNight.getred(nightProps));
           wColor.setgreen(color, wNight.getgreen(nightProps));
           wColor.setblue(color, wNight.getblue(nightProps));
+          wColor.setwhite(color, wNight.getwhite(nightProps));
           wOutput.setcmd(cmd, shutdown?wOutput.off:wOutput.value);
           OutputOp.cmd(output, cmd, True);
         }

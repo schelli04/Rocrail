@@ -26,6 +26,7 @@
 #include "rocrail/wrapper/public/Noon.h"
 #include "rocrail/wrapper/public/Sunset.h"
 #include "rocrail/wrapper/public/Night.h"
+#include "rocrail/wrapper/public/WeatherColor.h"
 #include "rocrail/wrapper/public/Output.h"
 #include "rocrail/wrapper/public/OutputList.h"
 #include "rocrail/wrapper/public/ModelCmd.h"
@@ -316,6 +317,22 @@ void WeatherDlg::initLabels() {
     }
   }
 
+  // Color
+  for( int i = 0; i < 24; i++ ) {
+    m_ColorGrid->SetRowLabelValue(i, wxString::Format(wxT("%02d:%02d"), i, 0) );
+    for( int n = 0; n < 4; n++) {
+      m_ColorGrid->SetCellAlignment(wxALIGN_CENTRE, i, n);
+      m_ColorGrid->SetCellValue(i, n, wxT("0"));
+    }
+  }
+  for( int n = 0; n < 4; n++)
+    m_ColorGrid->SetColFormatNumber(n);
+
+  m_ColorGrid->SetColLabelValue(0, wxT("R"));
+  m_ColorGrid->SetColLabelValue(1, wxT("G"));
+  m_ColorGrid->SetColLabelValue(2, wxT("B"));
+  m_ColorGrid->SetColLabelValue(3, wxT("W"));
+
   // Buttons
   m_StdButtonsOK->SetLabel( wxGetApp().getMsg( "ok" ) );
   m_StdButtonsApply->SetLabel( wxGetApp().getMsg( "apply" ) );
@@ -379,6 +396,17 @@ void WeatherDlg::initValues() {
   m_RedNight->SetValue( wNight.getred(night) );
   m_GreenNight->SetValue( wNight.getgreen(night) );
   m_BlueNight->SetValue( wNight.getblue(night) );
+
+  iONode color = wWeather.getweathercolor(m_Props);
+  while(color != NULL) {
+    int hour = wWeatherColor.gethour(color);
+    m_ColorGrid->SetCellValue(hour, 0, wxString::Format(wxT("%d"), wWeatherColor.getred(color)));
+    m_ColorGrid->SetCellValue(hour, 1, wxString::Format(wxT("%d"), wWeatherColor.getgreen(color)));
+    m_ColorGrid->SetCellValue(hour, 2, wxString::Format(wxT("%d"), wWeatherColor.getblue(color)));
+    m_ColorGrid->SetCellValue(hour, 3, wxString::Format(wxT("%d"), wWeatherColor.getwhite(color)));
+    color = wWeather.nextweathercolor(m_Props, color);
+  }
+
 }
 
 bool WeatherDlg::evaluate() {
@@ -428,6 +456,23 @@ bool WeatherDlg::evaluate() {
   wNight.setred(night, m_RedNight->GetValue() );
   wNight.setgreen(night, m_GreenNight->GetValue() );
   wNight.setblue(night, m_BlueNight->GetValue() );
+
+  iONode color = wWeather.getweathercolor(m_Props);
+  while(color != NULL) {
+    NodeOp.removeChild(m_Props, color);
+    NodeOp.base.del(color);
+    color = wWeather.getweathercolor(m_Props);
+  }
+  for( int i = 0; i < 24; i++ ) {
+    color = NodeOp.inst(wWeatherColor.name(), m_Props, ELEMENT_NODE);
+    NodeOp.addChild(m_Props, color);
+    wWeatherColor.sethour(color, i);
+    wWeatherColor.setred  (color, atoi(m_ColorGrid->GetCellValue(i, 0).mb_str(wxConvUTF8)));
+    wWeatherColor.setgreen(color, atoi(m_ColorGrid->GetCellValue(i, 1).mb_str(wxConvUTF8)));
+    wWeatherColor.setblue (color, atoi(m_ColorGrid->GetCellValue(i, 2).mb_str(wxConvUTF8)));
+    wWeatherColor.setwhite(color, atoi(m_ColorGrid->GetCellValue(i, 3).mb_str(wxConvUTF8)));
+  }
+
   return true;
 }
 
@@ -581,3 +626,8 @@ void WeatherDlg::onActions( wxCommandEvent& event ) {
   dlg->Destroy();
 }
 
+
+void WeatherDlg::onColorCellChanged( wxGridEvent& event ) {
+
+  event.Skip();
+}
