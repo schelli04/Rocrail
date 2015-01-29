@@ -38,8 +38,11 @@
 
 #include "rocs/public/trace.h"
 #include "rocs/public/list.h"
+#include "rocs/public/strtok.h"
 
 #include "actionsctrldlg.h"
+
+#include <wx/filedlg.h>
 
 
 WeatherDlg::WeatherDlg( wxWindow* parent, iONode props ):WeatherDlgGen( parent )
@@ -258,6 +261,7 @@ void WeatherDlg::initLabels() {
   m_WeatherBook->SetPageText( 1, wxGetApp().getMsg( "day" ) );
   m_WeatherBook->SetPageText( 2, wxGetApp().getMsg( "night" ) );
   m_WeatherBook->SetPageText( 3, wxGetApp().getMsg( "theme" ) );
+  m_WeatherBook->SetPageText( 4, wxGetApp().getMsg( "color" ) );
 
   // Index
   m_labID->SetLabel( wxGetApp().getMsg( "id" ) );
@@ -328,10 +332,12 @@ void WeatherDlg::initLabels() {
   for( int n = 0; n < 4; n++)
     m_ColorGrid->SetColFormatNumber(n);
 
-  m_ColorGrid->SetColLabelValue(0, wxT("R"));
-  m_ColorGrid->SetColLabelValue(1, wxT("G"));
-  m_ColorGrid->SetColLabelValue(2, wxT("B"));
-  m_ColorGrid->SetColLabelValue(3, wxT("W"));
+  m_ColorGrid->SetColLabelValue(0, wxGetApp().getMsg("red") );
+  m_ColorGrid->SetColLabelValue(1, wxGetApp().getMsg("green") );
+  m_ColorGrid->SetColLabelValue(2, wxGetApp().getMsg("blue") );
+  m_ColorGrid->SetColLabelValue(3, wxGetApp().getMsg("white") );
+  m_ColorImport->SetLabel( wxGetApp().getMsg( "import" ) + wxT("...") );
+  m_ColorExport->SetLabel( wxGetApp().getMsg( "export" ) + wxT("...") );
 
   // Buttons
   m_StdButtonsOK->SetLabel( wxGetApp().getMsg( "ok" ) );
@@ -398,35 +404,13 @@ void WeatherDlg::initValues() {
   m_BlueNight->SetValue( wNight.getblue(night) );
 
   iONode color = wWeather.getweathercolor(m_Props);
-  if( color == NULL ) {
-    for( int hour = 6; hour < 12; hour++ ) {
-      m_ColorGrid->SetCellValue(hour, 0, wxString::Format(wxT("%d"), (int)((255.0/6.0) * ((float)hour/2.0))) );
-      m_ColorGrid->SetCellValue(hour, 1, wxString::Format(wxT("%d"), (int)((255.0/6.0) * ((float)hour/2.0))) );
-      m_ColorGrid->SetCellValue(hour, 2, wxString::Format(wxT("%d"), (int)((255.0/6.0) * ((float)hour/2.0))) );
-      m_ColorGrid->SetCellValue(hour, 3, wxString::Format(wxT("%d"), (int)((255.0/6.0) * ((float)hour/2.0))) );
-    }
-
-    m_ColorGrid->SetCellValue(12, 0, wxString::Format(wxT("%d"), 255) );
-    m_ColorGrid->SetCellValue(12, 1, wxString::Format(wxT("%d"), 255));
-    m_ColorGrid->SetCellValue(12, 2, wxString::Format(wxT("%d"), 255));
-    m_ColorGrid->SetCellValue(12, 3, wxString::Format(wxT("%d"), 255));
-
-    for( int hour = 13; hour < 18; hour++ ) {
-      m_ColorGrid->SetCellValue(hour, 0, wxString::Format(wxT("%d"), (int)(255.0 - ((255.0/6.0)*(hour-12))) ) );
-      m_ColorGrid->SetCellValue(hour, 1, wxString::Format(wxT("%d"), (int)(255.0 - ((255.0/6.0)*(hour-12))) ) );
-      m_ColorGrid->SetCellValue(hour, 2, wxString::Format(wxT("%d"), (int)(255.0 - ((255.0/6.0)*(hour-12))) ) );
-      m_ColorGrid->SetCellValue(hour, 3, wxString::Format(wxT("%d"), (int)(255.0 - ((255.0/6.0)*(hour-12))) ) );
-    }
-  }
-  else {
-    while(color != NULL) {
-      int hour = wWeatherColor.gethour(color);
-      m_ColorGrid->SetCellValue(hour, 0, wxString::Format(wxT("%d"), wWeatherColor.getred(color)));
-      m_ColorGrid->SetCellValue(hour, 1, wxString::Format(wxT("%d"), wWeatherColor.getgreen(color)));
-      m_ColorGrid->SetCellValue(hour, 2, wxString::Format(wxT("%d"), wWeatherColor.getblue(color)));
-      m_ColorGrid->SetCellValue(hour, 3, wxString::Format(wxT("%d"), wWeatherColor.getwhite(color)));
-      color = wWeather.nextweathercolor(m_Props, color);
-    }
+  while(color != NULL) {
+    int hour = wWeatherColor.gethour(color);
+    m_ColorGrid->SetCellValue(hour, 0, wxString::Format(wxT("%d"), wWeatherColor.getred(color)));
+    m_ColorGrid->SetCellValue(hour, 1, wxString::Format(wxT("%d"), wWeatherColor.getgreen(color)));
+    m_ColorGrid->SetCellValue(hour, 2, wxString::Format(wxT("%d"), wWeatherColor.getblue(color)));
+    m_ColorGrid->SetCellValue(hour, 3, wxString::Format(wxT("%d"), wWeatherColor.getwhite(color)));
+    color = wWeather.nextweathercolor(m_Props, color);
   }
 
 }
@@ -652,4 +636,85 @@ void WeatherDlg::onActions( wxCommandEvent& event ) {
 void WeatherDlg::onColorCellChanged( wxGridEvent& event ) {
 
   event.Skip();
+}
+
+
+/*
+0,26,64,0
+0,26,64,0
+0,26,64,0
+0,26,64,0
+0,26,64,0
+0,33,64,0
+0,43,64,0
+20,59,64,13
+77,77,59,59
+140,77,38,135
+186,51,15,199
+209,26,8,242
+232,10,0,255
+242,0,0,255
+250,0,0,255
+252,0,0,245
+252,0,0,224
+247,0,0,201
+240,0,0,171
+230,0,0,140
+212,5,8,110
+179,10,13,69
+128,20,59,33
+26,26,64,0
+ */
+
+void WeatherDlg::onColorImport( wxCommandEvent& event ) {
+  wxFileDialog* fdlg = new wxFileDialog(this, _T("Weather color"), wxString(".",wxConvUTF8), _T(""),
+      _T("CSV files (*.csv)|*.csv"), wxFD_OPEN);
+  if( fdlg->ShowModal() == wxID_OK ) {
+    if( FileOp.exist(fdlg->GetPath().mb_str(wxConvUTF8)) ) {
+      iOFile f = FileOp.inst( fdlg->GetPath().mb_str(wxConvUTF8), OPEN_READONLY );
+      char* buffer = (char*)allocMem( FileOp.size( f ) +1 );
+      int hour = 0;
+      while( FileOp.readStr(f, buffer) && hour < 24) {
+        iOStrTok tok = StrTokOp.inst(buffer, ',');
+        if( StrTokOp.hasMoreTokens(tok) )
+          m_ColorGrid->SetCellValue(hour, 0, wxString( StrTokOp.nextToken(tok), wxConvUTF8 ) );
+        if( StrTokOp.hasMoreTokens(tok) )
+          m_ColorGrid->SetCellValue(hour, 1, wxString( StrTokOp.nextToken(tok), wxConvUTF8 ) );
+        if( StrTokOp.hasMoreTokens(tok) )
+          m_ColorGrid->SetCellValue(hour, 2, wxString( StrTokOp.nextToken(tok), wxConvUTF8 ) );
+        if( StrTokOp.hasMoreTokens(tok) )
+          m_ColorGrid->SetCellValue(hour, 3, wxString( StrTokOp.nextToken(tok), wxConvUTF8 ) );
+        StrTokOp.base.del(tok);
+        hour++;
+      }
+      FileOp.base.del( f );
+    }
+  }
+  fdlg->Destroy();
+}
+
+
+void WeatherDlg::onColorExport( wxCommandEvent& event ) {
+  wxFileDialog* fdlg = new wxFileDialog(this, _T("Weather color"), wxString(".",wxConvUTF8), _T(""),
+      _T("CSV files (*.csv)|*.csv"), wxFD_SAVE);
+  if( fdlg->ShowModal() == wxID_OK ) {
+    wxString path = fdlg->GetPath();
+
+    if( !path.Contains( _T(".csv") ) )
+      path.Append( _T(".csv") );
+
+    iOFile f = FileOp.inst( path.mb_str(wxConvUTF8), OPEN_WRITE );
+    if( f != NULL ) {
+      for( int hour = 0; hour < 24; hour++) {
+        FileOp.fmt( f, "%d,%d,%d,%d\n",
+            atoi(m_ColorGrid->GetCellValue(hour, 0).mb_str(wxConvUTF8)),
+            atoi(m_ColorGrid->GetCellValue(hour, 1).mb_str(wxConvUTF8)),
+            atoi(m_ColorGrid->GetCellValue(hour, 2).mb_str(wxConvUTF8)),
+            atoi(m_ColorGrid->GetCellValue(hour, 3).mb_str(wxConvUTF8))
+            );
+      }
+      FileOp.base.del( f );
+    }
+  }
+  fdlg->Destroy();
 }
