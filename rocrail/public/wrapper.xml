@@ -2869,6 +2869,7 @@
           <var name="fixed" vt="bool" defval="False" remark="Fixed block brake timer."/>
           <var name="generatein" vt="bool" defval="False" remark="Generate an IN event at the last BBT step."/>
           <var name="count" vt="int" defval="0" remark="Counter for dynamically adjust the correction factor."/>
+          <var name="delay" vt="int" defval="0" unit="10ms" range="0-*"/>
         </bbt>
       </lc>
     </lclist>

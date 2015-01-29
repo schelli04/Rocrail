@@ -679,6 +679,8 @@ public:
     wxComboBox* m_BBTRoute;
     wxStaticText* m_labBBTSpeed;
     wxSpinCtrl* m_BBTSpeed;
+    wxStaticText* m_labBBTDelay;
+    wxSpinCtrl* m_BBTDelay;
     wxButton* m_BBTAdd;
     wxButton* m_BBTDelete;
     wxButton* m_BBTCopy;

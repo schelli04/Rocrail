@@ -1711,6 +1711,12 @@ static void __BBT(iOLoc loc) {
   int bbtsteps      = wLoc.getbbtsteps(data->props);
   int bbtmaxdiff    = wLoc.getbbtmaxdiff(data->props);
   int bbtcorrection = wLoc.getbbtcorrection(data->props);
+
+  if( data->bbtDelay > 0 ) {
+    data->bbtDelay--;
+    return;
+  }
+
   if( bbtsteps < 4 || bbtsteps > 16 )
     bbtsteps = 10;
   if( bbtmaxdiff < 100 || bbtmaxdiff > 500 )
@@ -1754,6 +1760,7 @@ static void __BBT(iOLoc loc) {
         TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "BBT-Record found: [%s] keytype=%d", key, bbtkey);
         data->bbtInterval = wBBT.getinterval(bbt) / bbtsteps;
         data->bbtGenerateIn = wBBT.isgeneratein(bbt);
+        data->bbtDelay = wBBT.getdelay(bbt);
         if( wBBT.getinterval(bbt) % bbtsteps > 5 )
           data->bbtInterval++;
         wBBT.setsteps(bbt, 0 );
