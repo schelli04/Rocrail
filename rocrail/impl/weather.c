@@ -319,7 +319,12 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
 
     Boolean adjustBri = (data->themedim > 0 || clearTheme) ? True:False;
 
-    Boolean color4time = __getColor4Time(colorProps, hour, min, &red, &green, &blue, &white);
+    Boolean color4time = False;
+
+    if( wWeather.iscolortable(data->props) ) {
+      color4time = __getColor4Time(colorProps, hour, min, &red, &green, &blue, &white);
+    }
+
 
     if( minutes == sunrise )
       __checkAction(weather, "sunrise");

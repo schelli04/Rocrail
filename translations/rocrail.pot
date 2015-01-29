@@ -7721,3 +7721,9 @@ msgstr ""
 msgid "Bounce"
 msgstr ""
 
+#. 
+# id="colortable"
+#, c-format
+msgid "Color table"
+msgstr ""
+

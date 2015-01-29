@@ -29596,4 +29596,7 @@
   <Msg id="bounce">
     <en txt="Bounce"/>
   </Msg>
+  <Msg id="colortable">
+    <en txt="Color table"/>
+  </Msg>
 </Messages>

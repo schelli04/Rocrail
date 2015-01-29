@@ -278,6 +278,7 @@ void WeatherDlg::initLabels() {
   m_labNightSliding->SetLabel( wxGetApp().getMsg( "nightsliding" ) );
   m_SlidingDaylight->SetLabel( wxGetApp().getMsg( "slidingdaylight" ) );
   m_RelativeTime->SetLabel( wxGetApp().getMsg( "relative" ) );
+  m_ColorTable->SetLabel( wxGetApp().getMsg( "colortable" ) );
 
   m_SunriseBox->GetStaticBox()->SetLabel( wxGetApp().getMsg( "sunrise" ) );
   m_NoonBox->GetStaticBox()->SetLabel( wxGetApp().getMsg( "noon" ) );
@@ -359,6 +360,7 @@ void WeatherDlg::initValues() {
   m_NightSliding->SetValue( wWeather.getnightsliding(m_Props) );
   m_SlidingDaylight->SetValue(wWeather.isslidingdaylight(m_Props)?true:false);
   m_RelativeTime->SetValue(wWeather.isrelativetime(m_Props)?true:false);
+  m_ColorTable->SetValue(wWeather.iscolortable(m_Props)?true:false);
   iONode sunrise = wWeather.getsunrise(m_Props);
   if( sunrise == NULL ) {
     sunrise = NodeOp.inst(wSunrise.name(), m_Props, ELEMENT_NODE );
@@ -435,6 +437,7 @@ bool WeatherDlg::evaluate() {
   wWeather.setnightsliding(m_Props, m_NightSliding->GetValue() );
   wWeather.setslidingdaylight(m_Props, m_SlidingDaylight->IsChecked()?True:False);
   wWeather.setrelativetime(m_Props, m_RelativeTime->IsChecked()?True:False);
+  wWeather.setcolortable(m_Props, m_ColorTable->IsChecked()?True:False);
   iONode sunrise = wWeather.getsunrise(m_Props);
   wSunrise.sethour( sunrise, m_SunriseHour->GetValue() );
   wSunrise.setminute( sunrise, m_SunriseMin->GetValue() );
