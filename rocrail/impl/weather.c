@@ -675,7 +675,7 @@ static void __makeWeather( void* threadinst ) {
     if( loopCnt >= 10 ) {
       loopCnt = 0;
 
-      if( lastMin != ltm->tm_min ) {
+      if( lastMin != min ) {
         if( wCtrl.isweather(wRocRail.getctrl(AppOp.getIni())) ) {
           TraceOp.trc( name, TRCLEVEL_USER1, __LINE__, 9999, "weather time is %02d:%02d", hour, min );
           __doDaylight(weather, hour, min, False, False );
@@ -712,6 +712,11 @@ static void _setWeather( iOWeather inst, const char* id, const char* param ) {
   if( id != NULL && StrOp.len(id) > 0 ) {
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "use weather [%s] with parameter [%s]", id, param!=NULL?param:"-" );
     data->props = ModelOp.getWeather(model, id);
+
+    if( data->props == NULL ) {
+      TraceOp.trc( name, TRCLEVEL_WARNING, __LINE__, 9999, "weather [%s] not found", id );
+    }
+
     if( data->props != NULL && param != NULL ) {
       iONode clone = NULL;
       Boolean relativetime = wWeather.isrelativetime(data->props);
@@ -764,7 +769,6 @@ static void _setWeather( iOWeather inst, const char* id, const char* param ) {
   }
   else {
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "reset weather" );
-    WeatherOp.halt(inst);
     data->props = NULL;
   }
 }
