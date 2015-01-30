@@ -56,11 +56,14 @@ WeatherDlg::WeatherDlg( wxWindow* parent, iONode props ):WeatherDlgGen( parent )
   m_DayPanel->GetSizer()->Layout();
   m_NightPanel->GetSizer()->Layout();
   m_ThemePanel->GetSizer()->Layout();
+  m_ColorPanel->GetSizer()->Layout();
 
   m_WeatherBook->Fit();
 
   GetSizer()->Fit(this);
   GetSizer()->SetSizeHints(this);
+
+  initColorGrid();
 
   initIndex();
   m_WeatherBook->SetSelection(0);
@@ -71,6 +74,7 @@ WeatherDlg::WeatherDlg( wxWindow* parent, iONode props ):WeatherDlgGen( parent )
     if( m_Props != NULL ) {
       initValues();
       initThemeIndex();
+      m_RGBWPanel->setWeather(m_Props);
     }
   }
 
@@ -139,6 +143,7 @@ void WeatherDlg::onIndexList( wxCommandEvent& event ) {
     if( m_Props != NULL ) {
       initValues();
       initThemeIndex();
+      m_RGBWPanel->setWeather(m_Props);
     }
     else
       TraceOp.trc( "weatherdlg", TRCLEVEL_INFO, __LINE__, 9999, "no selection..." );
@@ -163,6 +168,8 @@ void WeatherDlg::onAddWeather( wxCommandEvent& event ) {
         NodeOp.addChild( weatherlist, weather );
         wWeather.setid( weather, "NEW" );
         m_Props = weather;
+        m_RGBWPanel->setWeather(m_Props);
+
       }
     }
   }
@@ -196,6 +203,8 @@ void WeatherDlg::onDeleteWeather( wxCommandEvent& event ) {
     if( weatherlist != NULL ) {
       NodeOp.removeChild( weatherlist, m_Props );
       m_Props = NULL;
+      m_RGBWPanel->setWeather(m_Props);
+
     }
   }
   initIndex();
@@ -254,6 +263,21 @@ void WeatherDlg::onCancel( wxCommandEvent& event )
 {
   EndModal(0);
 }
+
+
+void WeatherDlg::initColorGrid() {
+  m_ColorGrid->AppendRows(24);
+  for( int i = 0; i < 24; i++ ) {
+    m_ColorGrid->SetRowLabelValue(i, wxString::Format(wxT("%02d:%02d"), i, 0) );
+    for( int n = 0; n < 4; n++) {
+      m_ColorGrid->SetCellAlignment(wxALIGN_CENTRE, i, n);
+      m_ColorGrid->SetCellValue(i, n, wxT("0"));
+    }
+  }
+  for( int n = 0; n < 4; n++)
+    m_ColorGrid->SetColFormatNumber(n);
+}
+
 
 void WeatherDlg::initLabels() {
   SetTitle(wxGetApp().getMsg( "weather" ));
@@ -323,16 +347,6 @@ void WeatherDlg::initLabels() {
   }
 
   // Color
-  for( int i = 0; i < 24; i++ ) {
-    m_ColorGrid->SetRowLabelValue(i, wxString::Format(wxT("%02d:%02d"), i, 0) );
-    for( int n = 0; n < 4; n++) {
-      m_ColorGrid->SetCellAlignment(wxALIGN_CENTRE, i, n);
-      m_ColorGrid->SetCellValue(i, n, wxT("0"));
-    }
-  }
-  for( int n = 0; n < 4; n++)
-    m_ColorGrid->SetColFormatNumber(n);
-
   m_ColorGrid->SetColLabelValue(0, wxGetApp().getMsg("red") );
   m_ColorGrid->SetColLabelValue(1, wxGetApp().getMsg("green") );
   m_ColorGrid->SetColLabelValue(2, wxGetApp().getMsg("blue") );
@@ -638,6 +652,7 @@ void WeatherDlg::onActions( wxCommandEvent& event ) {
 
 
 void WeatherDlg::onColorCellChanged( wxGridEvent& event ) {
+  m_RGBWPanel->Refresh();
 
   event.Skip();
 }
@@ -696,6 +711,7 @@ void WeatherDlg::onColorImport( wxCommandEvent& event ) {
   }
   fdlg->Destroy();
   m_ColorGrid->Refresh();
+  m_RGBWPanel->Refresh();
 }
 
 
