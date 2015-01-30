@@ -182,6 +182,7 @@ static const char* __createRoute( iOModPlanData data, iONode model, iOList route
   int r = 0;
   char* routeID = NULL;
   char* bkc = NULL;
+  int cnt = 1;
 
   NodeOp.setStr( toRoute, "tomodid", modid );
   wRoute.setbka( newRoute, wRoute.getbka( fromRoute ) );
@@ -198,6 +199,12 @@ static const char* __createRoute( iOModPlanData data, iONode model, iOList route
   }
 
   routeID = StrOp.fmt( "%s-%s", wRoute.getbka(newRoute), wRoute.getbkb(newRoute) );
+
+  /* check if exist and create new */
+  while( MapOp.haskey(data->routeIdMap, routeID) ) {
+    routeID = StrOp.fmt( "%s-%s-%0.1d", wRoute.getbka(newRoute), wRoute.getbkb(newRoute), cnt++ );
+  }
+
   wRoute.setid( newRoute, routeID );
   StrOp.free(routeID);
 
@@ -225,6 +232,14 @@ static const char* __createRoute( iOModPlanData data, iONode model, iOList route
       iONode swcmd  = wRoute.getswcmd(routeseg);
       iONode fbevent  = wRoute.getfbevent(routeseg);
       iONode acctrl = wRoute.getactionctrl(routeseg);
+      int maxlen = wRoute.getmaxlen(routeseg);
+      int minlen = wRoute.getminlen(routeseg);
+      if( minlen > wRoute.getminlen( newRoute ) ) {             /* set maximum minlen */
+        wRoute.setminlen( newRoute, minlen );
+      }
+      if( maxlen > 0 && maxlen < wRoute.getmaxlen( newRoute ) ) { /* set minimal maxlen */
+        wRoute.setmaxlen( newRoute, maxlen );
+      }
       while(swcmd != NULL) {
         NodeOp.addChild( newRoute, (iONode)NodeOp.base.clone(swcmd) );
         swcmd = wRoute.nextswcmd(routeseg, swcmd);
