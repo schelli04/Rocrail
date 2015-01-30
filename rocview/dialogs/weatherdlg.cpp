@@ -260,8 +260,8 @@ void WeatherDlg::initLabels() {
   m_WeatherBook->SetPageText( 0, wxGetApp().getMsg( "index" ) );
   m_WeatherBook->SetPageText( 1, wxGetApp().getMsg( "day" ) );
   m_WeatherBook->SetPageText( 2, wxGetApp().getMsg( "night" ) );
-  m_WeatherBook->SetPageText( 3, wxGetApp().getMsg( "theme" ) );
-  m_WeatherBook->SetPageText( 4, wxGetApp().getMsg( "color" ) );
+  m_WeatherBook->SetPageText( 3, wxGetApp().getMsg( "color" ) );
+  m_WeatherBook->SetPageText( 4, wxGetApp().getMsg( "theme" ) );
 
   // Index
   m_labID->SetLabel( wxGetApp().getMsg( "id" ) );
@@ -496,7 +496,8 @@ void WeatherDlg::onHelp( wxCommandEvent& event ) {
   case 0: wxGetApp().openLink( "weather", "index" ); break;
   case 1: wxGetApp().openLink( "weather", "day" ); break;
   case 2: wxGetApp().openLink( "weather", "night" ); break;
-  case 3: wxGetApp().openLink( "weather", "theme" ); break;
+  case 3: wxGetApp().openLink( "weather", "color" ); break;
+  case 4: wxGetApp().openLink( "weather", "theme" ); break;
   default: wxGetApp().openLink( "weather" ); break;
   }
 
@@ -694,6 +695,7 @@ void WeatherDlg::onColorImport( wxCommandEvent& event ) {
     }
   }
   fdlg->Destroy();
+  m_ColorGrid->Refresh();
 }
 
 

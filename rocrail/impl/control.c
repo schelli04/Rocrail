@@ -1326,7 +1326,7 @@ static void __listener( obj inst, iONode nodeC, int level ) {
     }
 
     if( wState.isshortcut(nodeC) ) {
-      __checkAction((iOControl)inst, "shortcut", "event");
+      __checkAction((iOControl)inst, "short-circuit", "event");
     }
 
     AppOp.broadcastEvent( nodeC );

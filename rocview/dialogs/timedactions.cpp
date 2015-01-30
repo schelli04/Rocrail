@@ -1073,7 +1073,6 @@ void TimedActions::initCommands()
       m_Command->Append(wxString( wAutoCmd.v0locos, wxConvUTF8));
       m_Command->Append(wxString( wAutoCmd.vrestorelocos, wxConvUTF8));
       m_Command->Append(wxString( wSysCmd.resetfx, wxConvUTF8));
-      m_Command->Append(wxString( wBlock.shortcut, wxConvUTF8));
       break;
     case 5: // signal
       m_Command->Append(wxString( wAction.signal_red, wxConvUTF8));
