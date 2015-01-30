@@ -323,6 +323,10 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
 
     if( wWeather.iscolortable(data->props) ) {
       color4time = __getColor4Time(colorProps, hour, min, &red, &green, &blue, &white);
+      if(color4time) {
+        brightness = maxbri;
+        adjustBri = True;
+      }
     }
 
 
@@ -336,7 +340,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
 
 
     /* AM */
-    if( minutes <= noon && minutes >= sunrise) {
+    if( !color4time && minutes <= noon && minutes >= sunrise) {
       float range = noon - sunrise;
       percent = (100.0 / range) * (float)(minutes - sunrise);
       float l_brightness = (percent * maxbri) / 100.0;
@@ -357,7 +361,7 @@ static void __doDaylight(iOWeather weather, int hour, int min, Boolean shutdown,
     }
 
     /* PM */
-    if( minutes > noon && minutes <= sunset) {
+    if( !color4time && minutes > noon && minutes <= sunset) {
       float range = sunset - noon;
       percent = 100.0 - ((100.0 / range) * (float)(minutes - noon));
       float l_brightness = (percent * maxbri) / 100.0;
