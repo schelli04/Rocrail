@@ -2119,6 +2119,21 @@
       <var name="listenerFun" vt="digint_listener"/>
     </data>
   </object>
+  
+  <object name="gertbot" interface="$../rocint/rocint.xml:DigInt" use="node,trace,thread" include="$rocint/public/digint" remark="Use the Gertbot interface on Raspberry Pi">
+    <fun name="inst" vt="this">
+      <param name="ini" vt="const iONode" remark="Ini node"/>
+      <param name="trc" vt="const iOTrace" remark="Trace instance"/>
+    </fun>
+    <data>
+      <var name="ini" vt="iONode"/>
+      <var name="iid" vt="const char*"/>
+      <var name="device" vt="const char*"/>
+      <var name="run" vt="Boolean"/>
+      <var name="listenerObj" vt="obj"/>
+      <var name="listenerFun" vt="digint_listener"/>
+    </data>
+  </object>
 
 </Project>
 
