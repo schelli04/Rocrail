@@ -1983,10 +1983,17 @@ void SymbolRenderer::drawOutput( wxPaintDC& dc, bool occupied, bool actroute, co
       m_GC->DrawEllipse(6, 6, 20, 20);
       if( wOutput.getcolor(m_Props) != NULL && wOutput.iscolortype(m_Props) ) {
         iONode color = wOutput.getcolor(m_Props);
-        TraceOp.trc( "render", TRCLEVEL_DEBUG, __LINE__, 9999, "setting output %s to brightness %d, factor=%.2f RGB=%d,%d,%d",
-            wOutput.getid( m_Props ), bri, factor, wColor.getred(color), wColor.getgreen(color), wColor.getblue(color) );
-        setPen( wxPen(wxColour(wColor.getred(color), wColor.getgreen(color), wColor.getblue(color))));
-        setBrush( wxBrush(wxColour(wColor.getred(color), wColor.getgreen(color), wColor.getblue(color))) );
+        TraceOp.trc( "render", TRCLEVEL_DEBUG, __LINE__, 9999, "setting output %s to brightness %d, factor=%.2f RGBW=%d,%d,%d,%d",
+            wOutput.getid( m_Props ), bri, factor, wColor.getred(color), wColor.getgreen(color), wColor.getblue(color), wColor.getwhite(color) );
+        int w = wColor.getwhite(color);
+        int r = wColor.getred(color) + w;
+        int g = wColor.getgreen(color) + w;
+        int b = wColor.getblue(color) + w;
+        if( r > 255 ) r = 255;
+        if( g > 255 ) g = 255;
+        if( b > 255 ) b = 255;
+        setPen( wxPen(wxColour(r,g,b)));
+        setBrush( wxBrush(wxColour(r,g,b)) );
       }
       else {
         TraceOp.trc( "render", TRCLEVEL_DEBUG, __LINE__, 9999, "setting output %s to brightness %d, factor=%.2f", wOutput.getid( m_Props ), bri, factor );

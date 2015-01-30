@@ -304,8 +304,8 @@ static iONode __translate( iODMXArtNet inst, iONode node ) {
       b = wColor.getblue(color);
       w = wColor.getwhite(color);
     }
-    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output device=%d active=%d cmd=%s bri=%d briChannel(%d) RGB=%d,%d,%d RGBChannels(%d,%d,%d)",
-        addr, active, wOutput.getcmd( node ), val, briChannel, r, g, b, redChannel, greenChannel, blueChannel );
+    TraceOp.trc( name, TRCLEVEL_MONITOR, __LINE__, 9999, "output device=%d active=%d cmd=%s bri=%d briChannel(%d) RGBW=%d,%d,%d,%d RGBWChannels(%d,%d,%d,%d)",
+        addr, active, wOutput.getcmd( node ), val, briChannel, r, g, b, w, redChannel, greenChannel, blueChannel, whiteChannel );
 
     __setChannel(inst, addr, r, g, b, w, val, active, redChannel, greenChannel, blueChannel, briChannel, whiteChannel);
     data->refresh = True;
