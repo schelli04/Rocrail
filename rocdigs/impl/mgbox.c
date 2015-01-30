@@ -1944,7 +1944,9 @@ static void __GleisboxSvc( void* threadinst ) {
   byte buffer[32];
 
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "Boot helper and Gleisbox Channel Reporter started on interface: %s.", data->iid );
-
+  if( !data->power ) {
+    ThreadOp.post( data->writer, (obj)__makeMsg(0, CAN_CMD_PING, False, 0, buffer) );
+  }
   ThreadOp.sleep(50); /* give time to ping to determine the CAN bus config */
 /* Wait until at least one CANbus member is detected */
   if( data->ms2UID == 0 && data->mcs2guiUID == 0 && data->gbUID == 0 ) {
@@ -1952,21 +1954,7 @@ static void __GleisboxSvc( void* threadinst ) {
     ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_CAN_BOOT_BOUND, False, 0, buffer) );
     ThreadOp.sleep(2040);
   }
-//  ThreadOp.sleep(2300);  /* to let the gfp start the mfx recognization
-/*
-  if( wMCS2.isdiscovery(data->mcs2ini) && data->ms2UID == 0 && data->mcs2gfpUID == 0 && data->gbUID != 0 ) {
-//1f 00 0300 5 47 43 71 09 80 00 00 00
-    buffer[0]  = (data->gbUID & 0xFF000000) >> 24;
-    buffer[1]  = (data->gbUID & 0x00FF0000) >> 16;
-    buffer[2]  = (data->gbUID & 0x0000FF00) >> 8;
-    buffer[3]  = (data->gbUID & 0x000000FF);
-    buffer[4] = CMD_SYSSUB_RESET;
-    buffer[5] = 0;
-    ThreadOp.post( data->writer, (obj)__makeMsg(0, CMD_SYSTEM, False, 6, buffer) );
-    TraceOp.trc(name, TRCLEVEL_MONITOR, __LINE__, 9999, "Reset Gleisbox for discovery.");
-    ThreadOp.sleep(1900);
-  }
-*/
+
   __setSwitchtime(data);
 
    while( data->run && i < 8 && data->ms2UID == 0 && data->mcs2gfpUID == 0){
@@ -2020,7 +2008,7 @@ static void __GleisboxSvc( void* threadinst ) {
  
   if( wDigInt.isreportstate(data->ini) ) {
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "reportGleisboxChannel started on interface: %s.", data->iid );
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "mgbsvc: data->mcs2gfpUID: 0x%08X data->gbUID: 0x%08X", data->run, data->mcs2gfpUID, data->gbUID );
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "mgbsvc: data->mcs2gfpUID: 0x%08X data->gbUID: 0x%08X", data->mcs2gfpUID, data->gbUID );
     while( data->run && data->gbUID != 0 && wDigInt.isreportstate(data->ini) ) {
       byte buffer[32];
       buffer[0]  = (data->gbUID & 0xFF000000) >> 24;
@@ -2131,27 +2119,27 @@ static struct OMCS2* _inst( const iONode ini ,const iOTrace trc ) {
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "MGBOX %d.%d.%d", vmajor, vminor, patch );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  s88 modules [%d]", wDigInt.getfbmod( ini ) );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  version [%d]", wDigInt.getprotver( ini ) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  s88 modules      [%d]", wDigInt.getfbmod( ini ) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  version          [%d]", wDigInt.getprotver( ini ) );
   TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  sensor device ID [%d]", wMCS2.getfbdevid(data->mcs2ini) );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  command pause [%d]ms", data->cmdpause );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  sensor range [%d-%d]", data->sensorbegin, data->sensorend );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  hash [0x%04X]", rrHash );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  discovery [%s]", wMCS2.isdiscovery(data->mcs2ini)?"yes":"no" );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  bind [%s]", wMCS2.isbind(data->mcs2ini)?"yes":"no" );
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  report state   [%s]", wDigInt.isreportstate(data->ini)?"yes":"no" );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  command pause    [%d]ms", data->cmdpause );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  sensor range     [%d-%d]", data->sensorbegin, data->sensorend );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  hash             [0x%04X]", rrHash );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  discovery        [%s]", wMCS2.isdiscovery(data->mcs2ini)?"yes":"no" );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  bind             [%s]", wMCS2.isbind(data->mcs2ini)?"yes":"no" );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  report state     [%s]", wDigInt.isreportstate(data->ini)?"yes":"no" );
 
   data->udp = !StrOp.equals( wDigInt.sublib_serial, wDigInt.getsublib(data->ini));
 
-  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  sublib      [%s]", wDigInt.getsublib(data->ini) );
+  TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  sublib           [%s]", wDigInt.getsublib(data->ini) );
   if( data->udp ) {
     if( wDigInt.getudpportTX(data->ini) > 0 )
       portTX = wDigInt.getudpportTX(data->ini);
     if( wDigInt.getudpportRX(data->ini) > 0 )
       portRX = wDigInt.getudpportRX(data->ini);
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  udp address [%s]", wDigInt.gethost(data->ini) );
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  udp tx port [%d]", portTX );
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  udp rx port [%d]", portRX );
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  udp address      [%s]", wDigInt.gethost(data->ini) );
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  udp tx port      [%d]", portTX );
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  udp rx port      [%d]", portRX );
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
 
     data->readUDP = SocketOp.inst( wDigInt.gethost(data->ini), portRX, False, True, False );
@@ -2160,9 +2148,9 @@ static struct OMCS2* _inst( const iONode ini ,const iOTrace trc ) {
     data->conOK = True;
   }
   else {
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  device         [%s]", wDigInt.getdevice(data->ini) );
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  bps            [%d]", wDigInt.isasciiprotocol( data->ini )?115200:500000 );
-    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  SLCAN          [%s]", wDigInt.isasciiprotocol( data->ini )?"yes":"no" );
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  device           [%s]", wDigInt.getdevice(data->ini) );
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  bps              [%d]", wDigInt.isasciiprotocol( data->ini )?115200:500000 );
+    TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "  SLCAN            [%s]", wDigInt.isasciiprotocol( data->ini )?"yes":"no" );
     TraceOp.trc( name, TRCLEVEL_INFO, __LINE__, 9999, "----------------------------------------" );
 
     data->serial = SerialOp.inst( wDigInt.getdevice(data->ini) );
