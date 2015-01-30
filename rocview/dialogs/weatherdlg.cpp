@@ -711,6 +711,7 @@ void WeatherDlg::onColorImport( wxCommandEvent& event ) {
   }
   fdlg->Destroy();
   m_ColorGrid->Refresh();
+  evaluate();
   m_RGBWPanel->Refresh();
 }
 
